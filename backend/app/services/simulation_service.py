@@ -48,7 +48,7 @@ from app.domain.stats import (
     margin_differences,
     rotation_ranges,
 )
-from app.domain.types import CropSegment, FallowSegment, Weather, Window
+from app.domain.types import CropSegment, Timeline, Weather, Window
 from app.domain.water_balance import BalanceRun, SegmentBalance, run_daily_balance
 from app.domain.wind_proxy import SoilExposure, soil_exposure
 from app.domain.yield_response import YieldResult, crop_yields
@@ -60,6 +60,7 @@ from app.services.parameter_resolver import (
     ResolvedInput,
     ResolvedRotation,
     crop_scope_id,
+    fallow_scope_id,
     resolve_parameters,
 )
 from app.services.power_client import PowerClient, PowerQuery
@@ -285,6 +286,27 @@ def _calculate_scenario(
     return runs, outcome
 
 
+def _register_fallow_assumptions(
+    timeline: Timeline, rotation_id: str, registry: AssumptionRegistry
+) -> None:
+    """Supuestos de barbecho: capa evaporable y rastrojo sin descomposición (CA-8.10, CA-8.11)."""
+    crops_before = 0
+    for segment in timeline.segments:
+        if isinstance(segment, CropSegment):
+            crops_before += 1
+            continue
+        registry.add("FALLOW_EVAPORATION_LAYER")
+        if segment.residue_cover_pct > 0:
+            registry.add(
+                "RESIDUE_NO_DECOMPOSITION",
+                scope="fallow",
+                scope_id=fallow_scope_id(rotation_id, crops_before),
+                value=segment.residue_cover_pct,
+                unit="%",
+                day=segment.start,
+            )
+
+
 def _run_rotation(
     window: Window,
     rotation: ResolvedRotation,
@@ -295,8 +317,7 @@ def _run_rotation(
     registry: AssumptionRegistry,
 ) -> RunResult:
     timeline = build_timeline(window, rotation.spec)
-    if any(isinstance(segment, FallowSegment) for segment in timeline.segments):
-        registry.add("FALLOW_EVAPORATION_LAYER")
+    _register_fallow_assumptions(timeline, rotation.rotation_id, registry)
     balance = run_daily_balance(timeline, rain_mm, et0_mm, resolved.parcel.spec)
     yields = crop_yields(balance, rotation.spec)
     economics = rotation_economics(rotation.spec.crops, yields)

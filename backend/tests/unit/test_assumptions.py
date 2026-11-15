@@ -1,8 +1,9 @@
 """Pruebas del registro de supuestos (T030).
 
-Cubren CA-14.1 (código, descripción, alcance, valor, unidad y origen), CA-14.2 (supuestos
-siempre presentes), CA-14.3 (supuestos cuando ocurren), CA-14.4 (agrupación con conteo y fechas),
-CA-6.7 (sustituciones por fecha) y RNF-1 (misma secuencia, misma lista).
+Cubren CA-1.7 (secano: riego = 0), CA-14.1 (código, descripción, alcance, valor, unidad y
+origen), CA-14.2 (supuestos siempre presentes), CA-14.3 (supuestos cuando ocurren), CA-14.4
+(agrupación con conteo y fechas), CA-6.7 (sustituciones por fecha) y RNF-1 (misma secuencia,
+misma lista).
 """
 
 from __future__ import annotations

@@ -100,7 +100,9 @@ ASSUMPTION_DESCRIPTIONS: Final[dict[str, str]] = {
     ),
     "FIXED_DEPTH_PROFILE": "El perfil de suelo tiene una profundidad fija durante toda la ventana.",
     "CONSTANT_PRICES_COSTS": (
-        "Los precios y costos ingresados por el usuario son constantes durante toda la ventana."
+        "Los precios y costos ingresados se aplican sin cambios a todos los escenarios "
+        "históricos: no son precios históricos ni pronosticados y no se descuentan entre el "
+        "año 1 y el año 2."
     ),
     "PARAMETERS_NOT_CALIBRATED": "Los parámetros del cultivo y del suelo no están calibrados.",
     "CELL_SCALE_CLIMATE": (

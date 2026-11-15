@@ -152,3 +152,85 @@ def test_the_detector_finds_a_text_literal(tmp_path: Path) -> None:
     sample = tmp_path / "sample_literal.py"
     sample.write_text('"""Docstring que se ignora."""\nX = "Esto es un mensaje"\nY = "codigo"\n')
     assert user_text_literals(sample) == ["Esto es un mensaje"]
+
+
+# --- Respuesta completa del endpoint (T049) ---
+
+
+def response_strings(node: Any) -> Iterator[str]:
+    """Todos los textos de un JSON, sin las claves ni los códigos técnicos de una sola palabra."""
+    if isinstance(node, str):
+        yield node
+    elif isinstance(node, dict):
+        for value in node.values():
+            yield from response_strings(value)
+    elif isinstance(node, list):
+        for item in node:
+            yield from response_strings(item)
+
+
+def full_response_body() -> dict[str, Any]:
+    """Respuesta con todo a la vez: sustituciones, bloqueo, coordenadas fuera de San Luis."""
+    from datetime import date
+
+    from tests.api.conftest import make_client
+    from tests.builders.requests import plan_request
+    from tests.builders.simulation import Power
+
+    payload = plan_request()
+    payload["parcel"].update(latitude_deg=-31.42, longitude_deg=-64.18)
+    gaps = {"PRECTOTCORR": [date(2018, 3, 4)], "ALLSKY_SFC_SW_DWN": [date(2009, 1, 17)]}
+    client, _ = make_client(Power(fill_dates=gaps))
+    response = client.post("/api/v1/simulations", json=payload)
+    assert response.status_code == 200
+    return response.json()
+
+
+def test_the_complete_response_contains_no_forbidden_term() -> None:
+    """CA-17.1 y CA-17.5 sobre todos los textos de la respuesta del endpoint."""
+    body = full_response_body()
+    codes = {warning["code"] for warning in body["warnings"]}
+    assert codes == {
+        "HISTORICAL_DESCRIPTIVE",
+        "UNCALIBRATED_PARAMETERS",
+        "CELL_SCALE_DATA",
+        "NOT_A_RECOMMENDATION",
+        "SUBSTITUTIONS_PRESENT",
+        "SCENARIOS_BLOCKED",
+        "OUTSIDE_SAN_LUIS",
+    }
+    offenders = {text: forbidden_in(text) for text in response_strings(body) if forbidden_in(text)}
+    assert offenders == {}
+
+
+def test_the_complete_response_has_the_required_warning_and_range_labels() -> None:
+    body = full_response_body()
+    texts = {warning["message"] for warning in body["warnings"]}
+    assert messages.WARNINGS["HISTORICAL_DESCRIPTIVE"] in texts  # CA-17.2
+    assert messages.WARNINGS["UNCALIBRATED_PARAMETERS"] in texts  # CA-17.3
+    assert all(ranges["label"] == messages.RANGE_LABEL for ranges in body["ranges"])  # CA-12.5
+    assert body["provenance"]["label"] == messages.CELL_SCALE_LABEL  # CA-13.2
+
+
+def test_error_responses_contain_no_forbidden_term() -> None:
+    import httpx
+
+    from tests.api.conftest import make_client
+    from tests.builders.requests import plan_request
+
+    invalid = plan_request()
+    invalid["parcel"]["latitude_deg"] = 75
+    invalid["parcel"]["irrigation_mm"] = 1
+    bodies = []
+    client, _ = make_client()
+    bodies.append(client.post("/api/v1/simulations", json=invalid).json())
+    for failure in (httpx.ConnectError("x"), httpx.ReadTimeout("x")):
+
+        def refuse(request: httpx.Request, failure: Exception = failure) -> httpx.Response:
+            raise failure
+
+        failing, _ = make_client(refuse)
+        bodies.append(failing.post("/api/v1/simulations", json=plan_request()).json())
+    for body in bodies:
+        offenders = [text for text in response_strings(body) if forbidden_in(text)]
+        assert offenders == []

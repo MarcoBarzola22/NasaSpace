@@ -1,10 +1,11 @@
 """Pruebas del constructor de la respuesta (T045).
 
 Cubren CA-1.11 (coordenadas fuera de San Luis), CA-6.7 (sustituciones por escenario), CA-10.9
-(margen no calculado), CA-12.4 (escenarios excluidos), CA-13.1, CA-13.2 (procedencia), CA-14.1
-(alcance de los supuestos), CA-14.4 (agrupación), CA-15.1–CA-15.5 (contenido de la respuesta),
-CA-16.3 (todos los escenarios bloqueados), CA-16.5 (error de integridad sin resultados parciales),
-CA-17.2, CA-17.3 y CA-17.5 (advertencias). Además, el redondeo del plan §5.1.
+(margen no calculado), CA-12.4 (escenarios excluidos), CA-13.1, CA-13.2 (procedencia), CA-13.3
+(versión del modelo), CA-14.1 (alcance de los supuestos), CA-14.4 (agrupación),
+CA-15.1–CA-15.5 (contenido de la respuesta), CA-16.3 (todos los escenarios bloqueados), CA-16.5
+(error de integridad sin resultados parciales), CA-17.2, CA-17.3 y CA-17.5 (advertencias).
+Además, el redondeo del plan §5.1.
 """
 
 from __future__ import annotations

@@ -1,8 +1,9 @@
 """Pruebas de los textos centralizados en ``core.messages`` (T029).
 
-Cubren CA-1.9 (supuesto del Kc de barbecho), CA-11.5 (fuente del umbral), CA-12.5 (rótulo de los
-rangos), CA-13.2 (rótulo de la serie), CA-14.1–CA-14.3 (supuestos), CA-16.6 (textos en español),
-CA-17.2, CA-17.3 y CA-17.5 (advertencias).
+Cubren CA-10.8 (precios y costos constantes), CA-1.9 (supuesto del Kc de barbecho), CA-11.5
+(fuente del umbral), CA-12.5 (rótulo de los rangos), CA-13.2 (rótulo de la serie),
+CA-14.1–CA-14.3 (supuestos), CA-16.6 (textos en español), CA-17.2, CA-17.3 y CA-17.5
+(advertencias).
 """
 
 from __future__ import annotations
@@ -138,3 +139,11 @@ def test_error_messages_do_not_expose_technical_details() -> None:
 
 def test_range_label_is_the_only_text_that_denies_probability() -> None:
     assert messages.ALLOWED_PHRASES == ("no es una probabilidad ni un pronóstico",)
+
+
+def test_constant_prices_assumption_states_the_three_points_of_the_spec() -> None:
+    """CA-10.8: sin cambios en los escenarios, ni históricos ni pronosticados, sin descuento."""
+    text = messages.ASSUMPTION_DESCRIPTIONS["CONSTANT_PRICES_COSTS"]
+    assert "sin cambios" in text
+    assert "no son precios históricos ni pronosticados" in text
+    assert "no se descuentan entre el año 1 y el año 2" in text

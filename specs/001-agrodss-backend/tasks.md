@@ -595,7 +595,8 @@
 
 ## Fase 7 — Cierre
 
-- [ ] **T049 — Pruebas no funcionales: persistencia, reproducibilidad, lenguaje y rendimiento**
+- [x] **T049 — Pruebas no funcionales: persistencia, reproducibilidad, lenguaje y rendimiento**
+  - **Nota de ejecución:** la prueba de rendimiento está marcada `slow` (se corre con `pytest -m slow`); mide la simulación completa sin la espera de red (30 corridas en unos 0,25 s, límite 5 s). La prueba de lenguaje se amplió a toda la respuesta del endpoint y a las respuestas de error.
   - **Depende de:** T046
   - **RF:** RNF-1, RNF-3, RNF-8, RF-5 (CA-5.2), RF-17 (CA-17.1), C5
   - **Archivos:** `tests/nonfunctional/test_no_persistence.py`, `test_reproducibility.py`, `test_language.py` (ampliado), `test_performance.py`
@@ -605,7 +606,8 @@
     - **lenguaje:** ningún texto de la respuesta completa contiene los términos prohibidos de T029;
     - **rendimiento:** 3 rotaciones × 10 escenarios se procesan en ≤ 5 s, excluida la espera de red.
 
-- [ ] **T050 — Prueba manual contra NASA POWER real**
+- [x] **T050 — Prueba manual contra NASA POWER real**
+  - **Nota de ejecución:** ejecutada el 2026-11-15 con internet (`pytest -m live -s`): 3 rotaciones × 3 escenarios, HTTP 200 en 2,9 s, cierre de masa 0,000000 mm. Resultado en `research.md` («Prueba en vivo»), junto con el contraste de V-1 contra la API real.
   - **Depende de:** T046
   - **RF:** RF-5 (CA-5.1), RF-8 (CA-8.16), plan §12 (riesgos R-1 y R-5)
   - **Archivos:** `tests/live/test_power_live.py`, `specs/001-agrodss-backend/research.md` (sección «Prueba en vivo»)
@@ -614,7 +616,7 @@
     - `research.md` tiene la sección «Prueba en vivo» con fecha, coordenadas, años, código HTTP, duración total, máximo |cierre| y cantidad de días sin cultivo vivo con WS2M_MAX > 8 m/s por escenario y rotación;
     - la sección no contiene valores de las series diarias.
 
-- [ ] **T051 — Prueba de trazabilidad de criterios de aceptación**
+- [x] **T051 — Prueba de trazabilidad de criterios de aceptación**
   - **Depende de:** T047, T048, T049, T050
   - **RF:** todos (verifica la cobertura de CA-1.1 a CA-17.5)
   - **Archivos:** `tests/nonfunctional/test_traceability.py`
@@ -624,6 +626,7 @@
     - `NOT_AUTOMATABLE` tiene como máximo 3 entradas (se prevé solo CA-6.9, inactivo por D-12).
 
 - [ ] **T052 — Verificación final y preparación del PR**
+  - **Estado:** verificaciones técnicas hechas el 2026-11-15 (`pytest` 1447 pruebas, `pytest -m slow` 39, `ruff check`, `ruff format --check` y arranque de `uvicorn` con `GET /api/v1/health` 200). Casillas del spec §8: quedan **dos sin marcar porque requieren una decisión humana**: la aprobación de la enmienda del principio 5 en el PR y la resolución o aplazamiento de cada [NECESITA ACLARACIÓN] (§9.1), más el informe al equipo, que es la descripción del PR (`pr-description.md`). La tarea se cierra cuando el equipo las marque.
   - **Depende de:** T051
   - **RF:** criterios de finalización del spec §8, checklist de AGENTS
   - **Archivos:** `specs/001-agrodss-backend/spec.md` (§8 marcado), descripción del PR

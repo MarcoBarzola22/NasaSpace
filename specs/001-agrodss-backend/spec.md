@@ -498,25 +498,25 @@ Las referencias **[NECESITA ACLARACIÓN: D-x]** remiten a las dudas abiertas de 
 
 La funcionalidad se considera terminada cuando se cumple todo lo siguiente:
 
-- [ ] **Gobierno:** la enmienda del principio 5 de la constitución está commiteada y aprobada en el PR.
-- [ ] Cada criterio de aceptación de RF-1 a RF-17 tiene al menos una prueba automática que lo verifica, o una justificación escrita de por qué no se puede probar automáticamente.
-- [ ] **Conservación de masa:** error de cierre de 0,01 mm o menos en todas las corridas de prueba (rotación × escenario), incluidas las de lluvias extremas, suelo seco, barbechos largos y transiciones sin barbecho.
-- [ ] **Límites:** pruebas que verifican cada día `0 ≤ almacenamiento ≤ capacidad del perfil`, `ETa ≤ ETc`, evaporación de barbecho ≤ demandada, consumo ≤ agua disponible y `0 ≤ Ya ≤ Ym`.
-- [ ] **Transferencia:** una prueba verifica que el almacenamiento al terminar un cultivo o barbecho es exactamente el inicial del siguiente.
-- [ ] **Raíces:** una prueba verifica que un cultivo no extrae agua por debajo de su Zr del día y que esa agua queda disponible al profundizar.
-- [ ] **Barbecho y rastrojo:** pruebas del Kc base por defecto y del factor de rastrojo (0 % → 1; 50 % → 0,75; 100 % → 0,5).
-- [ ] **Excedente:** una prueba verifica que la lluvia por encima de la capacidad disponible se informa como excedente perdido y no se acumula.
-- [ ] **Proxy de viento:** pruebas con WS2M_MAX = 8,0 (no cuenta), 8,1 sin cultivo vivo (cuenta) y 8,1 con cultivo vivo (no cuenta).
-- [ ] **Cronología:** 730 o 731 días por ventana, sin huecos ni duplicados.
-- [ ] **ET₀:** se reproduce el ejemplo 18 de FAO-56 con 0,1 mm/día de diferencia o menos.
-- [ ] **Faltantes:** pruebas con series sintéticas que cubren el bloqueo por lluvia o temperatura, las tres sustituciones FAO-56 y su registro como supuestos.
-- [ ] **NASA POWER:** las pruebas automáticas usan respuestas simuladas y no requieren red; cubren error, tiempo agotado, formato inesperado y variable ausente. Además, una prueba manual documentada contra la API real para un punto de San Luis completa una solicitud de 3 rotaciones × al menos 3 escenarios.
-- [ ] **Sin persistencia:** se verifica que el backend no escribe series climáticas en disco.
-- [ ] **Lenguaje:** una prueba verifica que los mensajes y rótulos no contienen «pérdida neta», «probabilidad», «precisión», «recomendada», «óptima» ni «mejor» aplicados a resultados o rotaciones.
-- [ ] El contrato de entrada y salida está documentado y el frontend puede consultarlo.
-- [ ] Linter, formato y pruebas del backend en verde. El servidor arranca sin errores de importación.
-- [ ] Cada [NECESITA ACLARACIÓN] de esta especificación está resuelto o diferido explícitamente por un humano.
-- [ ] Informe al equipo: qué cambió, qué pruebas corrieron y qué supuestos nuevos se introdujeron.
+- [ ] **Gobierno:** la enmienda del principio 5 de la constitución está commiteada y aprobada en el PR. *Commit hecho por el equipo; falta la aprobación en el PR.*
+- [x] Cada criterio de aceptación de RF-1 a RF-17 tiene al menos una prueba automática que lo verifica, o una justificación escrita de por qué no se puede probar automáticamente. *`tests/nonfunctional/test_traceability.py::test_every_acceptance_criterion_is_covered_or_justified`; único criterio justificado: CA-6.9 (inactivo por D-12).*
+- [x] **Conservación de masa:** error de cierre de 0,01 mm o menos en todas las corridas de prueba (rotación × escenario), incluidas las de lluvias extremas, suelo seco, barbechos largos y transiciones sin barbecho. *`tests/invariants/test_balance_invariants.py::test_balance_invariants_reduced_matrix` (180 corridas) y `::test_balance_invariants_full_matrix` (1 800, `-m slow`); `test_water_balance.py::test_closure_of_a_731_day_run_is_within_tolerance`.*
+- [x] **Límites:** pruebas que verifican cada día `0 ≤ almacenamiento ≤ capacidad del perfil`, `ETa ≤ ETc`, evaporación de barbecho ≤ demandada, consumo ≤ agua disponible y `0 ≤ Ya ≤ Ym`. *Mismas matrices de invariantes; `test_yield_response.py` (Ya en [0, Ym]) y `test_response_builder.py::test_a_yield_above_ym_or_negative_raises_an_integrity_error`.*
+- [x] **Transferencia:** una prueba verifica que el almacenamiento al terminar un cultivo o barbecho es exactamente el inicial del siguiente. *`test_water_balance.py::test_transfer_end_storage_is_the_start_storage_of_the_next_segment`.*
+- [x] **Raíces:** una prueba verifica que un cultivo no extrae agua por debajo de su Zr del día y que esa agua queda disponible al profundizar. *`test_water_balance.py::test_transfer_shallow_roots_cannot_use_deep_water_until_they_grow`.*
+- [x] **Barbecho y rastrojo:** pruebas del Kc base por defecto y del factor de rastrojo (0 % → 1; 50 % → 0,75; 100 % → 0,5). *`test_redistribution.py::test_residue_factor_values`; `test_parameter_resolver.py::test_default_fallow_kc_is_020_team_decision_with_assumption`.*
+- [x] **Excedente:** una prueba verifica que la lluvia por encima de la capacidad disponible se informa como excedente perdido y no se acumula. *`test_water_balance.py::test_fallow_excess_is_not_accumulated_for_later_days`.*
+- [x] **Proxy de viento:** pruebas con WS2M_MAX = 8,0 (no cuenta), 8,1 sin cultivo vivo (cuenta) y 8,1 con cultivo vivo (no cuenta). *`tests/unit/test_wind_proxy.py`.*
+- [x] **Cronología:** 730 o 731 días por ventana, sin huecos ni duplicados. *`test_calendar.py::test_timeline_covers_every_day_once`; `test_simulation_service.py` (730 y 731 días).*
+- [x] **ET₀:** se reproduce el ejemplo 18 de FAO-56 con 0,1 mm/día de diferencia o menos. *`test_et0.py::test_et0_fao56_example_18`.*
+- [x] **Faltantes:** pruebas con series sintéticas que cubren el bloqueo por lluvia o temperatura, las tres sustituciones FAO-56 y su registro como supuestos. *`tests/unit/test_missing_data.py`; `test_assumptions.py::test_substitutions_are_recorded_per_date_with_value_and_unit`.*
+- [x] **NASA POWER:** las pruebas automáticas usan respuestas simuladas y no requieren red; cubren error, tiempo agotado, formato inesperado y variable ausente. Además, una prueba manual documentada contra la API real para un punto de San Luis completa una solicitud de 3 rotaciones × al menos 3 escenarios. *`tests/integration/test_power_client.py`, `test_climate_parser.py` y `tests/api/test_simulations_endpoint.py`; prueba en vivo del 2026-11-15 en `research.md` («Prueba en vivo»).*
+- [x] **Sin persistencia:** se verifica que el backend no escribe series climáticas en disco. *`tests/nonfunctional/test_no_persistence.py`.*
+- [x] **Lenguaje:** una prueba verifica que los mensajes y rótulos no contienen «pérdida neta», «probabilidad», «precisión», «recomendada», «óptima» ni «mejor» aplicados a resultados o rotaciones. *`tests/nonfunctional/test_language.py` (mensajes, notas del dominio y respuesta completa del endpoint).*
+- [x] El contrato de entrada y salida está documentado y el frontend puede consultarlo. *`/docs`, `/openapi.json` con ejemplos y `tests/snapshots/openapi_v1.json` (`tests/api/test_contract.py`).*
+- [x] Linter, formato y pruebas del backend en verde. El servidor arranca sin errores de importación. *Verificado en T052.*
+- [ ] Cada [NECESITA ACLARACIÓN] de esta especificación está resuelto o diferido explícitamente por un humano. *Pendiente de decisión humana: el plan adoptó la propuesta por defecto de cada duda de la §9.1 (ver plan §2); falta que el equipo las confirme o las difiera.*
+- [ ] Informe al equipo: qué cambió, qué pruebas corrieron y qué supuestos nuevos se introdujeron. *Se entrega en la descripción del PR (T052).*
 
 ---
 

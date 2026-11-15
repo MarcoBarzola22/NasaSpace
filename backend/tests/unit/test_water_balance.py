@@ -1,11 +1,11 @@
 """Pruebas del balance hídrico diario continuo (T017, T018, T019, T020).
 
 Criterios que verifica: CA-8.1 (cronología continua), CA-8.3 (humedad inicial), CA-8.4 y CA-8.5
-(raíces y agua bajo ellas), CA-8.6 (transferencia exacta entre segmentos), CA-8.8 a CA-8.10
-(Kc, Ks y evaporación de barbecho con rastrojo), CA-8.12 y CA-8.13 (lluvia y excedente perdido),
-CA-8.14 y CA-8.15 (límites físicos), CA-8.16 y CA-8.17 (cierre de masa y error de integridad),
-CA-9.6 (días con estrés y almacenamiento al sembrar y al terminar) y los casos límite
-CL-13 a CL-17.
+(raíces y agua bajo ellas), CA-8.6 (transferencia exacta entre segmentos), CA-8.8, CA-8.9,
+CA-8.10 y CA-8.11 (Kc, Ks, evaporación de barbecho y rastrojo constante), CA-8.12 y CA-8.13
+(lluvia y excedente perdido), CA-8.14 y CA-8.15 (límites físicos), CA-8.16 y CA-8.17 (cierre de
+masa y error de integridad), CA-9.6 (días con estrés y almacenamiento al sembrar y al terminar)
+y los casos límite CL-13 a CL-17.
 
 Perfil de referencia: 1,2 m de profundidad, agua útil 0,16 m³/m³ → capacidad de 192 mm.
 """
@@ -409,3 +409,23 @@ def test_closure_rejects_a_crop_segment_with_the_wrong_length() -> None:
     crop = make_crop("maize", 1, 1, 7, (30, 40, 50, 30))  # 150 días
     with pytest.raises(ValueError, match="150"):
         run_daily_balance(crop_timeline(crop, 100), [0.0] * 100, [1.0] * 100, parcel(50.0))
+
+
+@pytest.mark.parametrize(
+    ("w_active_mm", "ks"),
+    [(100.0, 1.0), (50.0, 1.0), (25.0, 0.5), (10.0, 0.2), (0.0, 0.0)],
+)
+def test_crop_day_ks_is_linear_between_the_readily_available_water_and_the_wilting_point(
+    w_active_mm: float, ks: float
+) -> None:
+    """CA-8.9: Ks = 1 hasta agotar p·ADT y luego decrece linealmente hasta 0 (ec. 84)."""
+    assert wb._stress_coefficient(w_active_mm, 100.0, 0.5) == pytest.approx(ks, abs=EPS)
+
+
+def test_fallow_residue_cover_stays_constant_during_the_whole_fallow() -> None:
+    """CA-8.11: sin descomposición, la demanda diaria no cambia aunque pasen los días."""
+    run = run_daily_balance(
+        fallow_timeline(60, 60.0), [0.0] * 60, [5.0] * 60, parcel(100.0), record_days=True
+    )
+    expected = 0.20 * 5.0 * wb.residue_factor(60.0)
+    assert all(d.demand_mm == pytest.approx(expected, abs=EPS) for d in run.daily)

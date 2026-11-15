@@ -288,3 +288,26 @@ def test_the_service_writes_nothing_to_disk(monkeypatch: pytest.MonkeyPatch, tmp
     monkeypatch.setattr(builtins, "open", guarded)
     run(fill_dates=RAIN_GAP)
     assert list(tmp_path.iterdir()) == []
+
+
+def test_runs_every_scenario_starts_from_the_declared_moisture_not_the_previous_end() -> None:
+    """CA-4.6: la humedad inicial se aplica al primer día de cada escenario, sin arrastre."""
+    outcome, _ = run(fill_dates=RAIN_GAP)
+    runs = [r for r in outcome.runs if r.rotation_id == "A"]
+    assert len(runs) == 2
+    assert runs[0].balance.final_storage_mm != pytest.approx(96.0, abs=1.0)  # no vuelve a 96
+    assert [r.balance.initial_storage_mm for r in runs] == [pytest.approx(96.0)] * 2
+    entries = {a.code for a in outcome.assumptions}
+    assert {"INITIAL_MOISTURE_EACH_SCENARIO", "INITIAL_MOISTURE_UNIFORM"} <= entries
+
+
+def test_runs_declared_residue_is_registered_as_never_decomposing() -> None:
+    """CA-8.11: el rastrojo declarado se mantiene constante y queda como supuesto con su alcance."""
+    outcome, _ = run(fill_dates=RAIN_GAP)
+    entries = [a for a in outcome.assumptions if a.code == "RESIDUE_NO_DECOMPOSITION"]
+    assert entries
+    scopes = {(a.scope, a.scope_id) for a in entries}
+    assert ("fallow", "A/0") in scopes  # barbecho previo al primer cultivo, 30 % declarado
+    assert ("fallow", "A/1") in scopes  # tras el maíz de A: 60 %
+    assert all(a.unit == "%" and a.value and a.value > 0 for a in entries)
+    assert all(a.count == 2 for a in entries if a.scope_id == "A/0")  # dos escenarios calculados

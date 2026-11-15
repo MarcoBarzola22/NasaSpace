@@ -294,4 +294,42 @@ Tolerancia para T012 y T027: Rs de Lyon = 22,3 ± 0,1 MJ/m²/día. La numeració
 
 ## Prueba en vivo
 
-Sin empezar (tarea T050).
+**Fecha:** 2026-11-15 (UTC) · **Comando:** `pytest -m live -s tests/live` · **Resultado:** 1 prueba aprobada.
+
+Solicitud completa por la API (`POST /api/v1/simulations`), con NASA POWER real: 3 rotaciones × 3 escenarios, en un punto genérico de San Luis. No se guardó ninguna serie; este resumen solo tiene totales y conteos.
+
+| Dato | Valor |
+|---|---|
+| Coordenadas | −33,68; −65,47 |
+| Años de inicio | 2010, 2015, 2020 (ventanas del 1 de julio) |
+| Rotaciones | A (maíz → centeno de cobertura → soja de primera), B (maíz → trigo → soja de segunda) y C (maíz → maíz) |
+| Código HTTP | 200 |
+| Duración total | 2,9 s (consulta a NASA incluida) |
+| Rango consultado | 2010-07-01 a 2022-06-30, en una sola consulta |
+| Versión de la fuente | `v2.10.3` |
+| Escenarios | los 3 calculados (ninguno bloqueado) |
+| Máximo \|cierre de masa\| | 0,000000 mm (límite: 0,01 mm) |
+| Días faltantes por variable | 0 en las 7 variables |
+
+**Días sin cultivo vivo con `WS2M_MAX` > 8 m/s** (y total de días sin cultivo vivo), por rotación y escenario; ningún día quedó «sin dato de viento»:
+
+| Rotación | 2010 | 2015 | 2020 |
+|---|---|---|---|
+| A | 12 de 326 | 8 de 326 | 15 de 325 |
+| B | 7 de 286 | 4 de 286 | 10 de 285 |
+| C | 13 de 431 | 7 de 431 | 17 de 430 |
+
+**Riesgo R-5 del plan** (umbral de 8 m/s que da cero días casi siempre): **no se materializó** en este punto. Hay entre 4 y 17 días por escenario y la diferencia entre rotaciones se ve (C tiene más días sin cultivo vivo y más días de viento fuerte que B). Con una sola celda y tres años no se puede concluir sobre otras ubicaciones; el umbral no se cambió.
+
+**Riesgo R-1** (rango largo de fechas): una consulta de 12 años (4 383 días) se resolvió con HTTP 200 en pocos segundos.
+
+### Contraste de V-1 con la API real
+
+El mismo día se ejecutó la consulta de «Verificación humana sugerida» (`start=19831229&end=19840103`) y se compararon solo `header`, `geometry` y `parameters`:
+
+- 7 variables presentes; `header.fill_value = -999.0`; `header.api.version = v2.10.3`; `header.time_standard = LST`.
+- `geometry.coordinates = [-65.47, -33.68, 699.34]` (longitud, latitud, elevación).
+- Unidades exactas: `mm/day`, `C`, `C`, `C`, `m/s`, `m/s` y `MJ/m^2/day`, iguales a las del parser.
+- Radiación en `-999.0` el 29, 30 y 31 de diciembre de 1983 y con dato desde el 1 de enero de 1984.
+
+Todo coincide con la tabla V-1. La verificación humana del parser (T040) sigue sugerida con la propia consulta del equipo, pero el contraste automático ya no muestra diferencias.

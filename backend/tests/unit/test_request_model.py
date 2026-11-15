@@ -1,8 +1,8 @@
 """Pruebas de los modelos de la solicitud, validación estructural (T033).
 
-Cubren CA-1.1–CA-1.5 (parcela), CA-3.1, CA-3.2, CA-3.9 (rotaciones y cultivos), CA-4.1 (años) y
-CA-10.5 (datos económicos). Cada caso fuera de rango corresponde a una fila de la tabla del plan
-§5.2 y debe fallar en la ruta de campo esperada.
+Cubren CA-1.1–CA-1.5 y CA-1.10 (parcela), CA-3.1, CA-3.2, CA-3.9 (rotaciones y cultivos),
+CA-4.1 (años) y CA-10.5 (datos económicos). Cada caso fuera de rango corresponde a una fila de
+la tabla del plan §5.2 y debe fallar en la ruta de campo esperada.
 """
 
 from __future__ import annotations
