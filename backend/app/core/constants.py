@@ -42,6 +42,7 @@ MAX_KY: Final = 2.0
 MAX_YM_T_HA: Final = 30.0
 MAX_STAGE_DAYS: Final = 365
 MAX_FALLOW_KC_BASE: Final = 1.0
+MAX_ABS_LATITUDE_DEG: Final = 60.0  # CA-1.12: evita latitudes polares (Rso puede ser 0)
 
 # --- Ventana por defecto (D-6): 1 de julio ---
 DEFAULT_WINDOW_START_DAY: Final = 1

@@ -54,6 +54,7 @@ def test_constants_match_approved_decisions() -> None:
     assert c.MAX_YM_T_HA == 30.0
     assert c.MAX_STAGE_DAYS == 365
     assert c.MAX_FALLOW_KC_BASE == 1.0
+    assert c.MAX_ABS_LATITUDE_DEG == 60.0  # CA-1.12 (decisión del equipo, 2026-11-15)
     # Ventana por defecto (1 de julio) y caja de San Luis.
     assert (c.DEFAULT_WINDOW_START_DAY, c.DEFAULT_WINDOW_START_MONTH) == (1, 7)
     assert (c.SAN_LUIS_LAT_MIN_DEG, c.SAN_LUIS_LAT_MAX_DEG) == (-36.0, -31.8)

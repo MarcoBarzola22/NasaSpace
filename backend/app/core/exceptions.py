@@ -94,6 +94,11 @@ class PowerTimeoutError(PowerError):
 
     code: ClassVar[str] = "power_timeout"
 
+    def __init__(self, message: str = "", *, timeout_s: float | None = None) -> None:
+        # Segundos de espera que se agotaron: el manejador HTTP los cita en el mensaje (CA-5.6).
+        self.timeout_s = timeout_s
+        super().__init__(message)
+
 
 class PowerRateLimitedError(PowerError):
     """NASA POWER rechazó la consulta por exceso de pedidos (HTTP 429)."""
@@ -105,3 +110,8 @@ class PowerBadResponseError(PowerError):
     """Estado HTTP de error, formato inesperado, variable ausente o unidades distintas."""
 
     code: ClassVar[str] = "power_bad_response"
+
+    def __init__(self, message: str = "", *, status_code: int | None = None) -> None:
+        # Código HTTP recibido, si lo hubo: el manejador HTTP lo cita en el mensaje (CA-5.4).
+        self.status_code = status_code
+        super().__init__(message)

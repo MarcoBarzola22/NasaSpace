@@ -394,7 +394,8 @@
     - `limits.max_rotations == 3` y `limits.max_start_years == 10`;
     - cada cultivo tiene `label`.
 
-- [ ] **T033 — Modelos Pydantic de la solicitud (validación estructural)**
+- [x] **T033 — Modelos Pydantic de la solicitud (validación estructural)**
+  - **Nota de ejecución:** se hizo antes que T034 por ser requisito de la validación semántica. Los años de inicio tienen un rango plausible [1900, 2200] para evitar desbordes de fecha; no está en el plan §5.2 (un año anterior a la cobertura sigue siendo válido y su escenario se bloquea, CA-4.5).
   - **Depende de:** T006
   - **RF:** RF-1 (CA-1.1–CA-1.5), RF-3 (CA-3.1, CA-3.2, CA-3.9), RF-4 (CA-4.1), RF-10 (CA-10.5)
   - **Archivos:** `app/models/common.py`, `app/models/request.py`, `tests/unit/test_request_model.py`
@@ -414,7 +415,7 @@
     - ningún `details[].message` contiene «Field required», «Input should» ni «Extra inputs»;
     - una clave `irrigation_mm` devuelve `code == "irrigation_not_supported"` con el mensaje de CA-1.8.
 
-- [ ] **T035 — Validación semántica (1/2): parcela, catálogo y reglas de cultivo**
+- [x] **T035 — Validación semántica (1/2): parcela, catálogo y reglas de cultivo**
   - **Depende de:** T033, T031
   - **RF:** RF-1 (CA-1.3, CA-1.10), RF-2 (CA-2.3), RF-3 (CA-3.2, CA-3.9, CA-3.13), RF-10 (CA-10.6), RF-16 (CA-16.1)
   - **Archivos:** `app/services/validation.py`, `tests/unit/test_validation.py`
@@ -422,7 +423,8 @@
     - una solicitud con θPMP ≥ θCC, Ym ausente en un cultivo de grano y precio en uno de cobertura devuelve **exactamente 3** errores en una sola llamada;
     - también se detectan, con un error cada uno: `crop_code` inexistente, `rye_cover` sin Kc («sin referencia» omitido), Zr inicial > Zr máxima y datos económicos sin `currency`.
 
-- [ ] **T036 — Validación semántica (2/2): años, fechas y calendario por escenario**
+- [x] **T036 — Validación semántica (2/2): años, fechas y calendario por escenario**
+  - **Nota de ejecución:** el solapamiento y la salida de la ventana usan `domain.calendar.issues_for_cycles` (extraída de la función interna de la línea de tiempo), la misma regla que el cálculo. Los mensajes están en español dentro de `validation.py` y se reubican en T029.
   - **Depende de:** T035, T014
   - **RF:** RF-1 (CA-1.12), RF-3 (CA-3.6–CA-3.8), RF-4 (CA-4.3, CA-4.4), CA-5.3
   - **Archivos:** `app/services/validation.py`, `tests/unit/test_validation.py`; agrega `MAX_ABS_LATITUDE_DEG = 60.0` a `app/core/constants.py` y su aserción a `tests/unit/test_constants.py`
@@ -453,7 +455,7 @@
 
 ## Fase 5 — NASA POWER
 
-- [ ] **T038 — Generador de respuestas sintéticas de NASA POWER**
+- [x] **T038 — Generador de respuestas sintéticas de NASA POWER**
   - **Depende de:** T001
   - **RF:** RF-5, RF-6 (soporte de pruebas, plan §9.4, decisión T-22)
   - **Archivos:** `tests/builders/power_payload.py`, `tests/unit/test_power_payload_builder.py`
@@ -462,7 +464,8 @@
     - las opciones `fill_dates`, `drop_parameter`, `units_override`, `without_elevation` y `trailing_fill` producen cada una su efecto;
     - el generador no abre ningún archivo (`open` bloqueado con `monkeypatch` durante la prueba).
 
-- [ ] **T039 — Cliente de NASA POWER con httpx**
+- [x] **T039 — Cliente de NASA POWER con httpx**
+  - **Nota de ejecución:** con `httpx.MockTransport` y `asyncio.run` (sin `pytest-asyncio` ni `respx`, que no están aprobadas). `PowerTimeoutError` ahora lleva `timeout_s` y `PowerBadResponseError`, `status_code`, para el mensaje de T041.
   - **Depende de:** T005, T006, T038
   - **RF:** RF-5 (CA-5.1, CA-5.4, CA-5.6, CA-5.7), RNF-11, RNF-12
   - **Archivos:** `app/services/power_client.py`, `app/core/dependencies.py`, `tests/integration/test_power_client.py`
@@ -620,3 +623,18 @@
     - `uvicorn app.main:app` arranca y `GET /api/v1/health` responde 200;
     - todas las casillas del spec §8 están marcadas, cada una con el nombre de la prueba que la cubre;
     - la descripción del PR incluye: la aprobación de httpx del 2026-11-15, el commit de la enmienda del principio 5 de la constitución, la lista de supuestos del plan §11, la salida resumida de `pytest` y el resultado de T050.
+
+---
+
+## Ampliaciones aprobadas durante la ejecución
+
+- [x] **T053 — Resolución de la ventana histórica (últimos N años, años elegidos o todo el registro)**
+  - **Depende de:** T005, T014
+  - **RF:** RF-4 (CA-4.2–CA-4.5, CA-4.7), RF-5 (CA-5.1)
+  - **Archivos:** `app/services/window_service.py`, `tests/unit/test_window_service.py`
+  - **Nota:** pedida por el equipo el 2026-11-15 como «T032 (cálculo de fechas)»; el T032 de este documento es el endpoint del catálogo y sigue pendiente. El contrato de la API aún recibe `window.start_years` explícitos: usar `LastYears` o `AllRecord` desde la API requiere una decisión sobre el contrato (campo nuevo).
+  - **Hecho cuando:** `pytest tests/unit/test_window_service.py` pasa, con el reloj fijado en 2026-11-15, verificando que:
+    - el último año elegible es 2024 y el primero es 1984 (inicio de cobertura de la radiación);
+    - el año en curso nunca es elegible, con cualquier fecha de inicio;
+    - `LastYears(n)`, `SpecificYears` y `AllRecord` resuelven en orden creciente; un año elegido con ventana posterior a hoy se rechaza con su fecha; un año anterior a la cobertura se conserva y se marca;
+    - la consulta a NASA POWER cubre de la ventana más temprana a la más tardía y no pide fechas anteriores a la cobertura de la radiación.

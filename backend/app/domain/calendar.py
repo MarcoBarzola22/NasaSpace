@@ -143,21 +143,27 @@ def _cycles(window: Window, rotation: RotationSpec) -> list[tuple[date, date]]:
 
 
 def _issues_in_window(rotation: RotationSpec, window: Window) -> list[CalendarIssue]:
-    cycles = _cycles(window, rotation)
+    return issues_for_cycles(rotation.rotation_id, _cycles(window, rotation), window)
+
+
+def issues_for_cycles(
+    rotation_id: str, cycles: list[tuple[date, date]], window: Window
+) -> list[CalendarIssue]:
+    """Solapamientos y salidas de la ventana a partir de los (siembra, fin) de cada cultivo.
+
+    La validación de la solicitud usa esta misma función antes de tener los parámetros completos
+    del cultivo, de modo que el rechazo y el cálculo aplican exactamente la misma regla.
+    """
     issues: list[CalendarIssue] = []
     for index, (start, end) in enumerate(cycles):
         position = index + 1
         if index > 0 and start <= cycles[index - 1][1]:
             issues.append(
-                CalendarIssue(
-                    ISSUE_OVERLAP, rotation.rotation_id, window.start_year, position, position - 1
-                )
+                CalendarIssue(ISSUE_OVERLAP, rotation_id, window.start_year, position, position - 1)
             )
         if start < window.first_day or end > window.last_day:
             issues.append(
-                CalendarIssue(
-                    ISSUE_OUTSIDE_WINDOW, rotation.rotation_id, window.start_year, position
-                )
+                CalendarIssue(ISSUE_OUTSIDE_WINDOW, rotation_id, window.start_year, position)
             )
     return issues
 
