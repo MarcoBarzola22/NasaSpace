@@ -15,7 +15,7 @@ export default function AgronomicInputs({stage, update}) {
  return <div className="agronomic-inputs">
    {Object.keys(errors).length>0 && <Status tone="warning">Preparación incompleta · {Object.values(errors).join(" ")}</Status>}
    {stage.kind==="commercial" && <>
-     <p className="work-note">Ym representa el rendimiento de referencia sin limitación hídrica. La estimación del escenario queda pendiente de ejecución del modelo.</p>
+     <p className="work-note">Ym representa el rendimiento de referencia sin limitación hídrica. El motor estima con él el rendimiento de cada escenario histórico.</p>
      <DeclaredParameter label="Rendimiento de referencia sin limitación hídrica" unit="t/ha" value={data.ym} error={errors.ym} onChange={value=>set("ym",value)}/>
    </>}
    <h3>Siembra relativa a la ventana histórica</h3>

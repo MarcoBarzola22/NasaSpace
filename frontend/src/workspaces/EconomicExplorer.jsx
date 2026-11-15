@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { DataTable, Field, FieldGrid } from "./Controls.jsx";
-import { amountError, costCategories, economicChanges, economicEntryErrors, economicEntryIssue, economicResultNotice, editPrice, priceRowsForCrop, priceSources, saleCrops } from "./economics.js";
+import { amountError, costCategories, economicChanges, economicEntryErrors, economicEntryIssue, editPrice, priceRowsForCrop, priceSources, saleCrops } from "./economics.js";
 import { stageName } from "./strategies/model.js";
 import { updateRecord } from "./session.js";
+import { CostAssignment, EngineGate, MarginRangeTable } from "./SimulationResults.jsx";
 
 const currencies = ["ARS", "USD"];
 const amount = { inputMode: "decimal", autoComplete: "off" };
@@ -96,7 +97,7 @@ function ImpactSummary({ changes }) {
   const formatter = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 12, signDisplay: "exceptZero" });
   return <>
     <h3>Impacto de los cambios</h3>
-    <p className="work-note">La diferencia compara entradas de la misma moneda y unidad. El impacto en los resultados requiere cálculo en FastAPI.</p>
+    <p className="work-note">La diferencia compara entradas de la misma moneda y unidad. Volvé a ejecutar la simulación para ver su efecto en los márgenes.</p>
     <DataTable caption="Variación de las entradas" columns={["Entrada", "Original", "Modificado", "Diferencia"]}
       rows={changes.map(({ id, kind, label, original, edited, delta, metadataChanged }) => ({
         id: `${kind}-${id}`, cells: [<>{label}{metadataChanged && <small className="work-note"> · Datos de la entrada modificados</small>}</>,
@@ -105,7 +106,8 @@ function ImpactSummary({ changes }) {
   </>;
 }
 
-export default function EconomicExplorer({ parcel, scenario, selected, strategies, draft, baseline, patch, onClose }) {
+export default function EconomicExplorer({ parcel, scenario, selected, strategies, draft, baseline, patch, onClose, engine }) {
+  const simulation = engine?.simulation;
   const closeButton = useRef(null);
   const changes = economicChanges(baseline, draft);
   const active = strategies.find(({ id }) => id === selected?.id);
@@ -137,11 +139,15 @@ export default function EconomicExplorer({ parcel, scenario, selected, strategie
           <p>{parcel.name} · {scenario} · Dos campañas · {selected?.name || "Sin estrategia seleccionada"}</p></div>
         <button ref={closeButton} className="work-button" type="button" onClick={onClose}>Cerrar</button>
       </header>
-      <p className="work-status warning" role="status">{economicResultNotice(draft) || "Resultados pendientes de cálculo · Integración con FastAPI pendiente."}</p>
+      <EngineGate engine={engine}>
+        {simulation?.response && <MarginRangeTable run={simulation.run} strategies={strategies} />}
+      </EngineGate>
       {missingPrices.length > 0 && <p className="work-note">Precios pendientes de la estrategia activa: {missingPrices.join(", ")}.</p>}
       {missingOperations.length > 0 && <p className="work-note">Operaciones sin costo declarado: {missingOperations.map(({ type, date }) => `${type} (${date})`).join(", ")}.</p>}
       <PriceEditor crops={priceCrops} rows={draft.prices} onChange={(prices) => patch({ prices })} />
       <ActivityCostEditor strategies={strategies} rows={draft.costs} onChange={(costs) => patch({ costs })} />
+      <h3>Costos que entran al cálculo</h3>
+      <CostAssignment economy={simulation?.economy} />
       <ImpactSummary changes={changes} />
       <p className="work-note">Restablecer recupera los precios y costos que tenía esta parcela al abrir el explorador por primera vez en esta sesión.</p>
       <button type="button" className="work-button" disabled={!changes.length}

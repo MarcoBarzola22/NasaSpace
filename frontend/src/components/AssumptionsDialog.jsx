@@ -30,17 +30,16 @@ export default function AssumptionsDialog({ parcel, simulation, isOpen, onClose 
         <AssumptionTable response={response} />
         <h3>Procedencia de NASA POWER</h3><ProvenanceBlock response={response} />
       </> : <>
-        <div className="eyebrow">CONTEXTO / PROTOTIPO</div>
+        <div className="eyebrow">CONTEXTO / SIN EJECUTAR</div>
         <h2 id="modalTitle">Datos del lote de muestra</h2>
-        <p>{DEMO_LABEL}. Esta ventana demuestra cómo consultaríamos las entradas y la procedencia. Los datos son completamente ficticios.</p>
+        <p>{DEMO_LABEL}. Ejecutá la simulación con NASA POWER desde la mesa comparativa para consultar aquí los supuestos, las advertencias y la procedencia del cálculo. Los datos siguientes son la referencia ficticia del lote.</p>
         <div className="modal-list">
           {[
             ["Parcela", `${parcel.name} · ${parcel.id}`],
             ["Ubicación", "San Luis (ejemplo)"],
             ["Modalidad", "Secano"],
             ...getParcelFacts(parcel),
-            ["Datos NASA POWER", "Sin consultar"],
-            ["Modelo de rendimientos", "No ejecutado"],
+            ["Datos NASA POWER", "Se consultan al ejecutar"],
           ].map(([label, value]) => (
             <div key={label}><span>{label}</span><strong>{value}</strong></div>
           ))}

@@ -47,8 +47,10 @@ export function economicEntryIssue(row) {
   return Object.values(economicEntryErrors(row)).find(Boolean);
 }
 
+export const ECONOMIC_ENTRIES_NOTICE = "Hay precios o costos declarados. Ejecutá la simulación para calcular los resultados económicos.";
+
 export function economicResultNotice(draft) {
-  return hasEconomicEntries(draft) ? "Entradas modificadas. Resultados pendientes de cálculo." : "";
+  return hasEconomicEntries(draft) ? ECONOMIC_ENTRIES_NOTICE : "";
 }
 
 function comparableUnit(row) {
@@ -117,29 +119,49 @@ function stagePrice(prices, stage) {
   return null;
 }
 
+function costLabel(row) {
+  return [row.crop, row.category || row.operation || row.description].filter(Boolean).join(" · ") || "Costo sin identificar";
+}
+
 /**
  * Declared prices and direct costs per crop stage, with one common currency.
  * `costPerHa` adds the valid cost rows (per hectare) assigned to the stage, either through a
  * linked operation or through the declared crop. A missing value stays `null`: the backend then
  * reports the margin as not computed. Mixed currencies leave every value in `null`.
+ * `assignedCosts` lists the rows that enter the request and `unassignedCosts` the rows left
+ * out, each with the reason, so the user can link or convert them.
  */
 export function economicSummary(draft, strategies) {
   const stages = {};
   const currencies = new Set();
-  const unassignedCostIds = [];
+  const assignedCosts = [];
+  const unassignedCosts = [];
+  const names = new Map(strategies.map(({ id, name }) => [id, name]));
+  const describe = (row) => ({ id: row.id, label: costLabel(row), strategyId: row.strategy || null,
+    strategyName: names.get(row.strategy) ?? row.strategy ?? null, amount: describeAmount(row) });
+  const exclude = (row, reason) => unassignedCosts.push({ ...describe(row), reason });
+  for (const row of draft.costs) {
+    if (!Object.entries(row).some(([field, value]) => field !== "id" && value)) continue;
+    if (!row.strategy) exclude(row, "Sin estrategia asignada.");
+    else if (!names.has(row.strategy)) exclude(row, "La estrategia no está en la mesa comparativa.");
+  }
   for (const strategy of strategies) {
     const cropStages = strategy.stages.filter(({ kind }) => kind === "commercial" || kind === "cover");
     const costs = Object.fromEntries(cropStages.map(({ id }) => [id, null]));
     for (const row of draft.costs.filter((cost) => cost.strategy === strategy.id)) {
-      const amount = amountValue(row.amount);
-      const targets = cropStages.filter((stage) => stage.operations.some(({ id }) => id === row.operationId));
-      const byCrop = targets.length ? targets : cropStages.filter((stage) => stageLabels(stage).some((label) => normal(label) === normal(row.crop)));
-      if (economicEntryIssue(row) || amount === null || comparableUnit(row) !== "ha" || byCrop.length !== 1) {
-        unassignedCostIds.push(row.id);
-        continue;
+      const issue = economicEntryIssue(row);
+      const linked = cropStages.filter((stage) => stage.operations.some(({ id }) => id === row.operationId));
+      const targets = linked.length ? linked : cropStages.filter((stage) => stageLabels(stage).some((label) => normal(label) === normal(row.crop)));
+      if (issue) exclude(row, `Entrada incompleta o inválida: ${issue}`);
+      else if (comparableUnit(row) !== "ha") exclude(row, `Unidad distinta de por hectárea (${row.unit}). Convertí el costo a ${row.currency}/ha.`);
+      else if (!targets.length) exclude(row, "Sin cultivo u operación vinculada a un cultivo de la estrategia.");
+      else if (targets.length > 1) exclude(row, "Coincide con más de un cultivo de la estrategia. Vinculá una operación.");
+      else {
+        const [stage] = targets;
+        costs[stage.id] = (costs[stage.id] ?? 0) + amountValue(row.amount);
+        currencies.add(row.currency);
+        assignedCosts.push({ ...describe(row), stageId: stage.id, stageName: stageName(stage) });
       }
-      costs[byCrop[0].id] = (costs[byCrop[0].id] ?? 0) + amount;
-      currencies.add(row.currency);
     }
     stages[strategy.id] = Object.fromEntries(cropStages.map((stage) => {
       const price = stage.kind === "commercial" ? stagePrice(draft.prices, stage) : null;
@@ -149,5 +171,5 @@ export function economicSummary(draft, strategies) {
   }
   const incompatible = currencies.size > 1;
   if (incompatible) for (const entries of Object.values(stages)) for (const entry of Object.values(entries)) Object.assign(entry, { pricePerT: null, costPerHa: null });
-  return { currency: currencies.size === 1 ? [...currencies][0] : null, currencies: [...currencies].sort(), incompatible, stages, unassignedCostIds };
+  return { currency: currencies.size === 1 ? [...currencies][0] : null, currencies: [...currencies].sort(), incompatible, stages, assignedCosts, unassignedCosts };
 }

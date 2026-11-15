@@ -172,6 +172,7 @@ export default function App() {
     setInspectorOpen(true);
   }
 
+  const engine = { simulation, serviceNotice, onRun: runSimulation, onCheckService: checkService, onLoadDemo: () => patch(demoPreparation(draft)) };
   const strategyBook = {
     strategies, comparisonIds, inspection, item, details: route.detail, missingItem: Boolean(route.strategyId && !item),
     onInspect: inspectStrategy,
@@ -203,7 +204,7 @@ export default function App() {
 
   const report = { parcel, referenceParcel, draft, strategies, comparisonIds, parcelRotations, selected, scenario, periodLabel };
   const workspaceProps = {
-    ...report, section, patch, requestedIndicator: route.indicatorId,
+    ...report, section, patch, engine, requestedIndicator: route.indicatorId,
     interpretationEvidence: storedInspection.result ? { ...storedInspection.result, strategyName: selected.name } : undefined, parcels: displayParcels, rotations, strategyBook, explorerOpen, onOpenExplorer: openExplorer, selectedId: selected.id, metricId,
     onMetric: setMetricId, onSelectParcel: selectMapParcel, onSelectStrategy: inspectStrategy, onInspectResult: inspectStrategy,
   };
@@ -212,7 +213,7 @@ export default function App() {
     <>
       <WorkspaceHeader parcels={displayParcels} activeParcel={parcel} onSelectParcel={selectParcel}
         rotations={strategies} activeStrategy={selected} onSelectStrategy={inspectStrategy} localStrategyControls={localStrategyControls}
-        scenario={scenario} periodLabel={periodLabel} />
+        scenario={scenario} periodLabel={periodLabel} engineStatus={simulation.response ? simulation.status : undefined} />
       <div className={`shell workspace-shell${explorerOpen ? " economy-editing" : ""}${showParcelContext ? " with-parcel-context" : ""}${inspectorOpen && !explorerOpen ? " with-inspector" : ""}`}>
         <Navigation activeWorkspace={workspace.id} />
         {showParcelContext && <ParcelSidebar parcel={parcel} facts={parcelFacts} onReview={() => setReviewOpen(true)} />}
@@ -238,11 +239,12 @@ export default function App() {
             document.getElementById("parcel-inspector")?.focus();
           }}>Ir al inspector</a>}
           <Workspace {...workspaceProps} />
-          <footer className="footer-note">Datos ficticios de demostración. Los datos declarados se conservan durante la sesión abierta.</footer>
+          <footer className="footer-note">{simulation.response ? "Resultados calculados por el motor AgroDSS (FAO-56 y FAO-33) con datos de NASA POWER: escenarios históricos descriptivos, no pronósticos."
+            : "Las cifras de referencia son de demostración hasta ejecutar la simulación."} Los datos declarados se conservan durante la sesión abierta.</footer>
         </main>
         {explorerOpen
           ? <EconomicExplorer parcel={parcel} scenario={scenario} selected={selected} strategies={strategies} draft={draft}
-            baseline={economicBaselines[activeParcelId]} patch={patch} onClose={closeExplorer} />
+            baseline={economicBaselines[activeParcelId]} patch={patch} onClose={closeExplorer} engine={engine} />
 
           : inspectorOpen && <Inspector parcel={parcel} parcelFacts={parcelFacts}
               strategy={selected} inspection={inspection} simulation={simulation} strategies={strategies} onStage={(stageId) => inspectStrategy(selected.id, { stageId })} parcelMode={workspace.id === "parcela" || parcelInspection}

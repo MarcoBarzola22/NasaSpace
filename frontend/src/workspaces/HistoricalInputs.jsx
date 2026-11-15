@@ -7,7 +7,7 @@ export default function HistoricalInputs({ draft, patch }) {
   const [error, setError] = useState("");
   const check = historicalWindows(config);
   const years = config.start_years ?? [];
-  return <Panel title="Períodos históricos de análisis" description="Ventanas de dos años para preparar un análisis futuro.">
+  return <Panel title="Períodos históricos de análisis" description="Ventanas de dos años. Cada año de inicio es un escenario histórico que el motor calcula con datos de NASA POWER.">
     <p className="work-note">Referencia del modelo · 1 de julio. Confirmá explícitamente el día y mes de tu análisis.</p>
     <FieldGrid fields={[["start_day","Día de inicio",{inputMode:"numeric"}],["start_month","Mes de inicio",{options:Array.from({length:12},(_,i)=>[String(i+1),String(i+1)])}]]}
       values={config} errors={check.errors} onChange={(key,value)=>patch({historical:{...config,[key]:value}})}/>
@@ -21,9 +21,9 @@ export default function HistoricalInputs({ draft, patch }) {
     {check.errors.start_years && <Status>{check.errors.start_years}</Status>}
     <DataTable caption="Ventanas históricas declaradas" columns={["Año","Inicio","Fin","Validación temporal","Clima","Acción"]}
       rows={check.rows.map(row=>({id:row.year,cells:[row.year,row.start,row.end,row.error || "Ventana finalizada",
-        row.warning || "Disponibilidad pendiente de verificación",
+        row.warning || "Se consulta al ejecutar la simulación",
         <button type="button" className="work-button" onClick={()=>patch({historical:{...config,start_years:years.filter(y=>y!==row.year)}})}>Quitar {row.year}</button>]}))}/>
-    <Status>Resultados científicos no disponibles. Las series climáticas requieren una futura etapa de ejecución.</Status>
+    <Status>Las series de NASA POWER se consultan al ejecutar la simulación desde la mesa comparativa.</Status>
   </Panel>;
 }
 

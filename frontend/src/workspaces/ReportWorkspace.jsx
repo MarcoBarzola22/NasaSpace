@@ -32,7 +32,8 @@ export function buildReportPayload({ parcel, referenceParcel, draft, strategies,
     simulationResponse: simulation.response,
     simulationError: simulation.run?.error ?? null,
     context: { parcelId: parcel.id, strategyId: selected.id, comparisonIds: selectedItems.map(({ id }) => id), scenario, period: comparisonPeriod },
-    preparation: preparationRows(draft),
+    preparation: preparationRows(draft, simulation.economy),
+    costAssignment: { assigned: simulation.economy.assignedCosts, unassigned: simulation.economy.unassignedCosts },
     draftsForReview: { strategies: declared.strategies, soil: draft.soil, historical: draft.historical, status: "Declaraciones originales pendientes de revisión" },
     declared: { ...declared, soil: Object.fromEntries(Object.entries(declared.soil).filter(([key])=>!soilIssues[key])), historical: windows.valid ? draft.historical : undefined, prices, costs, strategies: declared.strategies.filter((strategy) => validateStrategy(strategy).valid && !strategyIssues(strategy).length) },
     comparedStrategies: selectedItems.map(({ id, name, sequence, isTemplate }) => ({ id, name, sequence, isTemplate })),
@@ -70,7 +71,8 @@ export function ReportContent(props) {
     </dl>
     <DataTable caption="Estrategias seleccionadas en la mesa" columns={["Estrategia", "Secuencia", "Horizonte", "Revisión", "Resultados"]}
       empty="No hay estrategias seleccionadas en la mesa." rows={rows.map(({ strategy, status }) => ({
-        id: strategy.id, cells: [strategy.name, strategy.sequence, strategyHorizon(strategy), reviewLabel(strategy), status],
+        id: strategy.id, cells: [strategy.name, strategy.sequence, strategyHorizon(strategy), reviewLabel(strategy),
+          !simulation.response ? status : Object.values(simulation.run.strategyMap).includes(strategy.id) ? "Calculado por el motor" : "Fuera de la última ejecución"],
       }))} />
     {simulation.response ? <SimulationResults run={simulation.run} status={simulation.status} strategies={strategies} /> : <>
     <DataTable caption="Indicadores disponibles · Referencia de demostración · Dos campañas" numericColumns={[2, 3, 4, 5, 6]}
@@ -86,7 +88,7 @@ export function ReportContent(props) {
         cells: [strategy.name, ...yieldValues(strategy, demonstration).map((value) => value === null ? "No aplicable" : formatNumber(value))],
       }))} empty="No hay rendimientos disponibles para la selección." />
     </>}
-    <PreparationReview draft={draft} />
+    <PreparationReview draft={draft} economy={simulation.economy} />
     <h3>Parámetros de las estrategias seleccionadas</h3>
     <DataTable caption="Entradas declaradas por cultivo" columns={["Estrategia","Etapa","Ym (t/ha)","Siembra relativa","Rastrojos (%)","Revisión"]}
       rows={rows.flatMap(({strategy})=>strategy.stages.map(stage=>{const issues=cropIssues(stage), data=stage.agronomy ?? {};return {id:strategy.id+"-"+stage.id,cells:[strategy.name,stageName(stage),issues.ym ? "Pendiente" : data.ym?.value,issues.sowing ? "Pendiente" : [data.sowing?.window_year,data.sowing?.day,data.sowing?.month].filter(Boolean).join(" / "),issues.residue ? "Pendiente" : data.residue?.value,Object.values(issues).join(" ") || "Pendiente de revisión técnica"]};}))}/>

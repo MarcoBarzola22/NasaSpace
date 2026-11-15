@@ -130,14 +130,9 @@ export function Results({ strategies, demoResults, metric, setMetric, inspect, s
       <ComparisonChart metric={chartMetric} rotations={available} selectedId={selectedId} />
       <p className="work-note">Fuente: valores de demostración precargados. El gráfico incluye las estrategias con cifras disponibles.</p>
     </>}
-    {metric !== "economy" && <DataTable caption="Resultados previstos · Pendientes de ejecución" columns={["Indicador","Unidad","Disponibilidad"]}
-      rows={(metric === "water" ? [["Agua inicial y final del perfil","mm"],["Precipitación acumulada","mm"],["ET₀ acumulada","mm"],["Evapotranspiración real","mm"]]
-        : metric === "production" ? [["Siembra y finalización estimada","fecha"],["Rendimiento relativo","%"],["Días de estrés","días"]]
-        : [["Días con cultivo vivo","días"],["Días sin cultivo vivo","días"],["Viento fuerte sin cultivo vivo","días"],["Sin información de viento","días"]])
-        .map(([label,unit])=>({id:label,cells:[label,unit,"Resultados científicos no disponibles"]}))}/>}
-    {metric === "soil" && <p className="work-note">El barbecho es una etapa de manejo y puede conservar rastrojos. La demo no incluye exposición al viento.</p>}
-    {metric === "water" && <p className="work-note">Sin series temporales de agua del suelo o demanda. El déficit de demostración es un valor agregado.</p>}
-    {metric === "production" && <p className="work-note">Las cifras de soja corresponden a primera en Barbecho y a segunda en Doble cultivo. En Cobertura se informa soja sin distinguir el tipo.</p>}
+    {metric === "soil" && <p className="work-note">El barbecho es una etapa de manejo y puede conservar rastrojos. La exposición al viento se calcula al ejecutar la simulación.</p>}
+    {metric === "water" && <p className="work-note">El déficit de demostración es un valor agregado. El balance hídrico real se calcula al ejecutar la simulación.</p>}
+    {metric === "production" && <p className="work-note">Las cifras de soja corresponden a primera en Barbecho y a segunda en Doble cultivo. En Cobertura la soja también es de primera.</p>}
   </Panel>;
 }
 
@@ -208,7 +203,7 @@ export function ContextualInspector({ strategy, inspection, simulation, onStage,
           <dl className="work-readout">
             <div><dt>Fechas previstas</dt><dd>{dateLabel(stage.startDate)} → {dateLabel(stage.endDate)}</dd></div>
             <div><dt>Duración</dt><dd>{duration === null ? "Sin dato" : `${duration} días entre fechas`}</dd></div>
-            <div><dt>Parámetros del cultivo</dt><dd>{stage.cropId === "custom" ? "Sin modelo disponible para esta especie" : "Sin parámetros verificados en esta sesión"}</dd></div>
+            <div><dt>Parámetros del cultivo</dt><dd>{stage.cropId === "custom" ? "Sin modelo disponible para esta especie" : "Los parámetros vacíos toman la referencia del catálogo al ejecutar"}</dd></div>
             <div><dt>Validación</dt><dd>{strategy.isTemplate ? "Demostración · Sin calendario confirmado"
               : Object.keys(validateStrategy(strategy).stageErrors[stage.id] ?? {}).length ? "Fechas o datos por completar" : "Datos registrados · Pendiente de revisión agronómica"}</dd></div>
             <div><dt>Observaciones</dt><dd>{stage.notes || "Sin observaciones"}</dd></div>
@@ -223,8 +218,8 @@ export function ContextualInspector({ strategy, inspection, simulation, onStage,
             <div><dt>Valor</dt><dd>{result.shown} · {result.unit}</dd></div>
             <div><dt>Fuente</dt><dd>Valores precargados de demostración</dd></div>
             <div><dt>Período</dt><dd>Dos campañas · Sin fecha puntual</dd></div>
-            <div><dt>Estado</dt><dd>Referencia de demostración. Cálculo real pendiente.</dd></div>
-            <div><dt>Entradas</dt><dd>{result.indicatorId === "deficit" ? "Sin series de suelo, clima ni demanda vinculadas a este valor." : "Datos de la plantilla. Las entradas de la sesión requieren cálculo en FastAPI."}</dd></div>
+            <div><dt>Estado</dt><dd>Referencia de demostración. Ejecutá la simulación para ver el valor calculado.</dd></div>
+            <div><dt>Entradas</dt><dd>{result.indicatorId === "deficit" ? "Sin series de suelo, clima ni demanda vinculadas a este valor." : "Datos de la plantilla, independientes de las entradas de la sesión."}</dd></div>
             {result.indicatorId === "deficit" && <div><dt>Alcance</dt><dd>Escenario ficticio de secano. Solo se dispone del agregado, sin desglose por día o etapa.</dd></div>}
           </dl>
           {result.indicatorId && <a className="work-button" href={"#interpretacion/resultados/" + result.indicatorId}>Ver explicación del indicador</a>}

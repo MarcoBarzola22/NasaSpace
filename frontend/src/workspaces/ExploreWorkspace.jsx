@@ -5,14 +5,14 @@ import StrategyComparison, { Results, Timeline } from "./strategies/StrategyComp
 import { validIdentity } from "./session.js";
 import { comparisonContext } from "./strategies/model.js";
 import { DataTable, Panel, Status } from "./Controls.jsx";
-import SimulationResults, { DemoNotice, ProvenanceBlock, ScenarioTable } from "./SimulationResults.jsx";
+import SimulationResults, { DemoNotice, EngineGate, FindingsTables, ProvenanceBlock, ScenarioTable } from "./SimulationResults.jsx";
 
 const variables = [
   ["Precipitación", "mm"], ["Temperatura", "°C"], ["Radiación solar", "MJ/m²/día"], ["Viento", "m/s"],
 ];
 
 export default function ExploreWorkspace({ section, parcel, parcelRotations,
-   metricId, onMetric, periodLabel, draft, patch, strategyBook, scenario, explorerOpen, onOpenExplorer }) {
+   metricId, onMetric, periodLabel, draft, patch, strategyBook, scenario, explorerOpen, onOpenExplorer, engine }) {
   if (section === "biblioteca") return <StrategyLibrary key={parcel.id} {...strategyBook} />;
   if (section === "editor") {
     const { item, details, missingItem, onSave, onDuplicate } = strategyBook;
@@ -28,32 +28,28 @@ export default function ExploreWorkspace({ section, parcel, parcelRotations,
   const compared = strategyBook.comparisonIds.map((id) => strategyBook.strategies.find((strategy) => strategy.id === id)).filter(Boolean);
   const context = comparisonContext(compared);
   const { simulation } = strategyBook;
-  const engine = simulation?.response
-    ? <SimulationResults run={simulation.run} status={simulation.status} strategies={strategyBook.strategies} summary /> : null;
   if (section === "cronologia") return compared.length ? <Timeline strategies={compared} inspection={strategyBook.inspection}
     inspect={strategyBook.inspect} context={context} /> : <Status>Seleccioná estrategias en la mesa comparativa.</Status>;
   const identity = validIdentity(draft.identity);
   if (section === "clima") return <><HistoricalInputs draft={draft} patch={patch} /><Panel title="Clima histórico" description={`NASA POWER · Horizonte de referencia: ${periodLabel}`}>
-    {simulation?.response ? <><ScenarioTable response={simulation.response} /><ProvenanceBlock response={simulation.response} /></>
-      : <Status tone="warning">Sin ejecutar. Las series de NASA POWER se consultan al ejecutar la simulación desde la mesa comparativa.</Status>}
-    <dl className="work-readout"><div><dt>Horizonte declarado</dt><dd>{identity.firstYear || "Sin inicio"} · {identity.lastYear || "Sin final"}</dd></div>
-      <div><dt>Fechas exactas de la serie</dt><dd>Sin dato</dd></div><div><dt>Procedencia</dt><dd>NASA POWER previsto</dd></div></dl>
-    <DataTable caption="Disponibilidad de variables" columns={["Variable", "Unidad prevista", "Datos", "Faltantes"]}
-      rows={variables.map(([label, unit]) => ({ id: label, cells: [label, unit, "Sin serie", "No evaluables"] }))} />
+    <EngineGate engine={engine}>
+      {simulation?.response && <><ScenarioTable response={simulation.response} /><ProvenanceBlock response={simulation.response} /></>}
+    </EngineGate>
+    {!simulation?.response && <DataTable caption="Variables que se consultan a NASA POWER" columns={["Variable", "Unidad"]}
+      rows={variables.map(([label, unit]) => ({ id: label, cells: [label, unit] }))} />}
   </Panel></>;
-  if (section === "agua") return engine ?? <>
+  if (section === "agua") return simulation?.response ? <Panel title="Agua y cobertura · resultados del motor" description="Balance hídrico FAO-56, estrés hídrico y exposición del suelo por escenario histórico.">
+    <EngineGate engine={engine}><FindingsTables run={simulation.run} strategies={strategyBook.strategies} /></EngineGate>
+  </Panel> : <>
+    <EngineGate engine={engine} />
     <DemoNotice>Datos ficticios · Dos campañas completas.</DemoNotice>
     <Results strategies={compared} demoResults={parcelRotations} selectedId={strategyBook.inspection.strategyId}
       metric={metricId} setMetric={onMetric} visibleMetrics={[["water", "Agua"], ["soil", "Cobertura"]]}
       inspect={strategyBook.inspect} scenario={scenario} context={context} />
-    <Panel title="Disponibilidad de resultados hídricos y de cobertura">
-      <DataTable caption="Detalle disponible" columns={["Indicador", "Disponibilidad"]} rows={[
-        ["Evolución del agua del suelo", "Sin serie"], ["Demanda del cultivo", "Sin serie"], ["Días o etapas con déficit", "Sin desglose"],
-        ["Rastrojos de la parcela", "Consultar antecedentes declarados"], ["Exposición potencial al viento", "Pendiente de integración"],
-      ].map(([label, state]) => ({ id: label, cells: [label, state] }))} />
-    </Panel>
   </>;
-  if (section === "produccion") return engine ?? <>
+  if (section === "produccion") return simulation?.response
+    ? <SimulationResults run={simulation.run} status={simulation.status} strategies={strategyBook.strategies} summary /> : <>
+    <EngineGate engine={engine} />
     <DemoNotice>Rendimientos de muestra general en t/ha para el horizonte de dos campañas.</DemoNotice>
     <Results strategies={compared} demoResults={parcelRotations} selectedId={strategyBook.inspection.strategyId}
       metric="production" setMetric={onMetric} visibleMetrics={[]} inspect={strategyBook.inspect} scenario={scenario} context={context} />

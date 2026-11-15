@@ -27,7 +27,7 @@ describe("Comparison report", () => {
     expect(html).not.toContain("sdsd");
     expect(html).toContain("Sin informar");
     expect(html).toContain("Horizonte de dos campañas");
-    expect(html).toContain("Entradas modificadas. Resultados pendientes de cálculo.");
+    expect(html).toContain("Hay precios o costos declarados. Ejecutá la simulación para calcular los resultados económicos.");
   });
 
   it("exports selected strategy IDs, separates fixtures and excludes invalid amounts and location data", () => {

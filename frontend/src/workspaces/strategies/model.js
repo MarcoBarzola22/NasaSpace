@@ -100,10 +100,10 @@ export function reviewLabel(strategy) {
 }
 
 export function calculationLabel(strategy) {
-  if (strategy.calculationStatus === "demonstration") return "Resultados de demostración";
+  if (strategy.calculationStatus === "demonstration") return "Plantilla ejecutable con el motor";
   return strategy.stages.some(({ cropId }) => cropId === "custom")
-    ? "Pendiente de parametrización · Sin modelo disponible para esta especie"
-    : "No calculable en esta sesión · Pendiente de integración";
+    ? "Sin modelo disponible para esta especie"
+    : "Calculable al ejecutar la simulación";
 }
 
 export function dateTime(value) {

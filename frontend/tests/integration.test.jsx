@@ -9,7 +9,11 @@ import { buildSimulationRequestPayload, contractStrategyMap, demoPreparation, ro
 import { buildReportPayload, ReportContent } from "../src/workspaces/ReportWorkspace.jsx";
 import { emptyDraft, exportDraft, parcelWithIdentity } from "../src/workspaces/session.js";
 import { DEMO_LABEL, simulationContext, simulationStatus } from "../src/workspaces/simulation.js";
-import SimulationResults, { SimulationError, StrategyEngineSummary } from "../src/workspaces/SimulationResults.jsx";
+import SimulationResults, { CostAssignment, RUN_PROMPT, SimulationError, StrategyEngineSummary } from "../src/workspaces/SimulationResults.jsx";
+import EconomyWorkspace from "../src/workspaces/EconomyWorkspace.jsx";
+import EconomicExplorer from "../src/workspaces/EconomicExplorer.jsx";
+import InterpretationWorkspace from "../src/workspaces/InterpretationWorkspace.jsx";
+import PreparationReview, { preparationRows } from "../src/workspaces/PreparationReview.jsx";
 import StrategyComparison from "../src/workspaces/strategies/StrategyComparison.jsx";
 import { duplicateStrategy, saveStrategy, strategyTemplates } from "../src/workspaces/strategies/model.js";
 
@@ -149,7 +153,39 @@ describe("Contract 1.0 request", () => {
       { id: "nowhere", strategy: "A", crop: "Girasol", amount: "10", currency: "USD", unit: "USD/ha" }] };
     const summary = economicSummary(draft, templates);
     expect(summary.stages.A["A-0"]).toEqual({ pricePerT: 180, costPerHa: 650.5 });
-    expect(summary.unassignedCostIds).toEqual(["total", "nowhere"]);
+    expect(summary.assignedCosts.filter(({ stageId }) => stageId === "A-0").map(({ id }) => id)).toEqual(["demo-cost-A-Maíz", "seed"]);
+    expect(summary.unassignedCosts.map(({ id }) => id)).toEqual(["total", "nowhere"]);
+  });
+
+  it("explains why each cost row is left out of the request", () => {
+    let count = 0;
+    const custom = saveStrategy({ ...duplicateStrategy(templates[2], () => `other-${++count}`), name: "Fuera de la mesa" });
+    const twoSoy = { ...templates[0], stages: [...templates[0].stages, { ...templates[0].stages[2], id: "A-3" }] };
+    const cost = (id, fields) => ({ id, strategy: "A", crop: "Maíz", amount: "100", currency: "USD", unit: "USD/ha", ...fields });
+    const draft = { ...demoDraft, costs: [cost("ok"), cost("lot", { unit: "USD/lote" }), cost("crop", { crop: "Girasol" }), cost("soy", { crop: "Soja" }),
+      cost("money", { amount: "" }), cost("none", { strategy: "" }), cost("away", { strategy: custom.id }), { id: "blank" }] };
+    const summary = economicSummary(draft, [twoSoy, templates[1]]);
+    expect(summary.assignedCosts).toEqual([{ id: "ok", label: "Maíz", strategyId: "A", strategyName: "Barbecho", amount: "100 USD/ha", stageId: "A-0", stageName: "Maíz" }]);
+    expect(Object.fromEntries(summary.unassignedCosts.map(({ id, reason }) => [id, reason]))).toEqual({
+      none: "Sin estrategia asignada.",
+      away: "La estrategia no está en la mesa comparativa.",
+      lot: "Unidad distinta de por hectárea (USD/lote). Convertí el costo a USD/ha.",
+      crop: "Sin cultivo u operación vinculada a un cultivo de la estrategia.",
+      soy: "Coincide con más de un cultivo de la estrategia. Vinculá una operación.",
+      money: "Entrada incompleta o inválida: Indicá el importe.",
+    });
+    expect(summary.stages.A["A-0"].costPerHa).toBe(100);
+    const request = buildSimulationRequestPayload(parcel, preparation(draft, [twoSoy, templates[1]]), summary);
+    expect(request.rotations[0].crops.map(({ economics }) => economics.direct_costs_per_ha)).toEqual([100, null, null]);
+    const html = renderToStaticMarkup(<CostAssignment economy={summary} />);
+    for (const { reason } of summary.unassignedCosts) expect(html).toContain(reason);
+    expect(html).toContain("6 costo(s) declarado(s) no entran al cálculo");
+    expect(html).toContain("Costos que entran al cálculo");
+    const oneOut = { ...demoDraft, costs: [...demoDraft.costs, cost("crop", { crop: "Girasol" })] };
+    expect(preparationRows(oneOut, economicSummary(oneOut, templates)).at(-1)[2]).toBe("1 costo(s) fuera del cálculo · Revisar vínculo o unidad");
+    expect(preparationRows(demoDraft, economicSummary(demoDraft, templates)).at(-1)[2]).toBe("Entradas registradas · 8 costo(s) entran al cálculo");
+    expect(renderToStaticMarkup(<PreparationReview draft={draft} economy={summary} />)).toContain("Costos fuera del cálculo");
+    expect(renderToStaticMarkup(<CostAssignment economy={economicSummary(demoDraft, templates)} />)).not.toContain("no entran al cálculo");
   });
 
   it("lists what is missing before calling the service", () => {
@@ -234,6 +270,87 @@ describe("Run state", () => {
     const report = renderToStaticMarkup(<ReportContent {...props} draft={{ ...demoDraft, simulationRun: run }} />);
     expect(report).toContain("Resultados del motor");
     expect(report).not.toContain("Referencia de demostración");
+  });
+});
+
+describe("Economy and interpretation with the engine", () => {
+  const draft = { ...demoDraft, costs: [...demoDraft.costs, { id: "lot", strategy: "A", crop: "Maíz", amount: "900", currency: "USD", unit: "USD/lote" }] };
+  const context = simulationContext({ parcel, draft, strategies: templates, comparisonIds: ["A", "B", "C"] });
+  const run = { status: "done", request: context.request, strategyMap: context.strategyMap, response: exampleResponse, error: null, executedAt: "2026-11-15T12:00:00.000Z" };
+  const executed = { ...context, run, response: exampleResponse, status: "current" };
+  const demoResults = rotations.map((rotation) => ({ ...rotation, ...referenceParcel.scenarios[rotation.id] }));
+  const actions = { onRun: () => {}, onLoadDemo: () => {}, onCheckService: () => {} };
+  const props = (simulation) => ({ draft, patch: () => {}, parcel, scenario: "Histórico · demo", parcelRotations: demoResults, selectedId: "A",
+    strategies: templates, strategyBook: { strategies: templates }, engine: { simulation, ...actions } });
+  const economy = (section, simulation) => renderToStaticMarkup(<EconomyWorkspace section={section} {...props(simulation)} />);
+  const interpretation = (section, simulation) => renderToStaticMarkup(<InterpretationWorkspace section={section} {...props(simulation)} />);
+  const stale = /requiere[n]? cálculo|FastAPI|[Pp]endiente de integración|pendientes de cálculo|no disponibles|PROTOTIPO/;
+
+  it("asks to run the simulation, with the quick access, before there are results", () => {
+    for (const html of [economy("comparacion", context), interpretation("resultados", context), interpretation("advertencias", context), interpretation("procedencia", context)]) {
+      expect(html).toContain(RUN_PROMPT);
+      expect(html).toContain("Ejecutar simulación (NASA POWER)");
+      expect(html).toContain("Cargar entradas de demostración");
+      expect(html).not.toMatch(stale);
+    }
+    expect(economy("comparacion", context)).toContain(DEMO_LABEL);
+  });
+
+  it("shows income, direct costs, margins, ranges and differences returned by the backend", () => {
+    const html = economy("comparacion", executed);
+    expect(html).not.toContain(RUN_PROMPT);
+    expect(html).not.toContain(DEMO_LABEL);
+    expect(html).not.toContain("600.000");
+    for (const caption of ["Rango del margen bruto por rotación (USD/ha)", "Economía por rotación y escenario histórico (USD/ha)",
+      "Economía por cultivo y escenario histórico (USD/ha)", "Diferencias de margen bruto entre rotaciones (USD/ha)"]) expect(html).toContain(caption);
+    expect(html).toContain(exampleResponse.comparisons[0].label);
+    expect(html).toContain("1 costo(s) declarado(s) no entran al cálculo");
+    expect(html).toContain("Unidad distinta de por hectárea (USD/lote)");
+    expect(html).not.toMatch(stale);
+  });
+
+  it("reports a margin that the backend did not compute, with its note", () => {
+    const response = structuredClone(exampleResponse);
+    const [result] = response.results;
+    Object.assign(result.rotation_economics, { status: "not_computed", income_per_ha: null, direct_costs_per_ha: null, gross_margin_per_ha: null,
+      crops_missing_economics: [{ position: 1, crop_code: result.crops[0].crop_code, missing_fields: ["price_per_t"], reason: "Falta el precio del cultivo." }] });
+    result.crops[0].economics = { status: "not_computed", income_per_ha: null, direct_costs_per_ha: null, gross_margin_per_ha: null,
+      missing_fields: ["price_per_t"], reason: "missing_economic_data", note: "Falta el precio del cultivo." };
+    const html = economy("comparacion", { ...executed, run: { ...run, response }, response });
+    expect(html).toContain("No calculado (not_computed)");
+    expect(html).toContain("Falta el precio del cultivo.");
+    expect(html).toContain("price_per_t");
+  });
+
+  it("warns that the results are stale and offers to recalculate", () => {
+    const html = economy("comparacion", { ...executed, status: "stale" });
+    expect(html).toContain("Desactualizada (pendiente de recalcular)");
+    expect(html).toContain("Ejecutar simulación (NASA POWER)");
+    expect(html).toContain("Economía por rotación y escenario histórico (USD/ha)");
+  });
+
+  it("lists the cost assignment next to the cost entries and in the explorer", () => {
+    expect(economy("costos", context)).toContain("Costos fuera del cálculo");
+    const explorer = renderToStaticMarkup(<EconomicExplorer parcel={parcel} scenario="Histórico · demo" selected={templates[0]} strategies={templates} draft={draft}
+      baseline={{ prices: draft.prices, costs: draft.costs }} patch={() => {}} onClose={() => {}} engine={{ simulation: executed, ...actions }} />);
+    expect(explorer).toContain("Rango del margen bruto por rotación (USD/ha)");
+    expect(explorer).toContain("Unidad distinta de por hectárea (USD/lote)");
+    expect(explorer).not.toMatch(stale);
+  });
+
+  it("shows the findings of the engine: water balance, stress, wind exposure, warnings, assumptions and provenance", () => {
+    const findings = interpretation("resultados", executed);
+    for (const caption of ["Balance hídrico del perfil por rotación y escenario (mm)", "Agua y estrés hídrico por cultivo", "Días con estrés",
+      "Exposición del suelo al viento por rotación y escenario (días)"]) expect(findings).toContain(caption);
+    expect(findings).toContain(exampleResponse.results[0].soil_exposure.threshold_source);
+    for (const { code } of exampleResponse.warnings) expect(findings).toContain(code);
+    expect(findings).not.toContain(RUN_PROMPT);
+    const warnings = interpretation("advertencias", executed);
+    for (const { code } of [...exampleResponse.warnings, ...exampleResponse.assumptions]) expect(warnings).toContain(code);
+    const provenance = interpretation("procedencia", executed);
+    expect(provenance).toContain(exampleResponse.provenance.label);
+    expect(provenance).toContain(`${exampleResponse.assumptions.length} supuestos informados por el motor`);
+    for (const html of [findings, warnings, provenance]) expect(html).not.toMatch(stale);
   });
 });
 

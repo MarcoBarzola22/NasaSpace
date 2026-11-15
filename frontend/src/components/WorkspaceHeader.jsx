@@ -1,4 +1,4 @@
-export default function WorkspaceHeader({ parcels, activeParcel, onSelectParcel, rotations, activeStrategy, onSelectStrategy, localStrategyControls, scenario, periodLabel }) {
+export default function WorkspaceHeader({ parcels, activeParcel, onSelectParcel, rotations, activeStrategy, onSelectStrategy, localStrategyControls, scenario, periodLabel, engineStatus }) {
   return (
     <header className="workspace-top" id="overview">
       <a className="workspace-brand" href="#overview" aria-label="AgroDSS, inicio">
@@ -17,7 +17,7 @@ export default function WorkspaceHeader({ parcels, activeParcel, onSelectParcel,
           </select>
         </label>
         <div className="workspace-control scenario-control">
-          <span>Escenario</span><strong>{scenario}</strong>
+          <span>Escenario</span><strong>{engineStatus ? "Histórico · NASA POWER" : scenario}</strong>
         </div>
         {localStrategyControls ? <div className="workspace-control">
           <span>Rotación activa</span><strong>{activeStrategy.name}</strong>
@@ -32,7 +32,7 @@ export default function WorkspaceHeader({ parcels, activeParcel, onSelectParcel,
         </div>
       </div>
       <div className="top-actions">
-        <span className="demo-tag">DATOS FICTICIOS · DEMO</span>
+        <span className="demo-tag">{engineStatus === "current" ? "MOTOR EJECUTADO · NASA POWER" : engineStatus ? "RESULTADOS POR RECALCULAR" : "DATOS FICTICIOS · DEMO"}</span>
         <button className="print-button" onClick={() => window.print()} type="button">
           <svg aria-hidden="true" className="ico" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4V9h16v9h-2M6 15h12v6H6z" /></svg>
           Imprimir vista

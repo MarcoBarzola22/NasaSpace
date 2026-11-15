@@ -68,7 +68,7 @@ function ParcelCompleteness({ draft }) {
   </Panel>;
 }
 
-export default function ParcelWorkspace({ section, parcels, parcel, onSelectParcel, draft, patch }) {
+export default function ParcelWorkspace({ section, parcels, parcel, onSelectParcel, draft, patch, engine }) {
   if (section === "mapa") return (
     <Panel title="Mapa de parcelas" description="Imagen aérea ilustrativa. Los contornos permiten identificar las parcelas ficticias.">
       <ParcelMap parcels={parcels} activeParcelId={parcel.id} onSelect={onSelectParcel} />
@@ -89,7 +89,7 @@ export default function ParcelWorkspace({ section, parcels, parcel, onSelectParc
   );
   return (
     <>
-    <PreparationReview draft={draft} /><ParcelCompleteness draft={draft} />
+    <PreparationReview draft={draft} economy={engine?.simulation.economy} /><ParcelCompleteness draft={draft} />
     <Panel title="Identificación del lote" description="Datos declarados para la parcela activa. Podés dejar campos sin informar mientras preparás el análisis.">
       <FieldGrid fields={identityFields} values={draft.identity} errors={validateIdentity(draft.identity)}
         onChange={(key, value) => patch({ identity: { ...draft.identity, [key]: value } })} />

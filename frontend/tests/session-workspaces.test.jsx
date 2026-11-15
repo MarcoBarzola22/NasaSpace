@@ -72,7 +72,7 @@ describe("Session data integrity", () => {
     const warnings = getWarnings({ ...emptyDraft, identity: { production: "Con riego" },
       costs: [{ amount: "-1" }], soil: { moisture: { value: "99", basis: "Supuesto" } } });
     expect(warnings.map(([label]) => label)).toEqual(expect.arrayContaining([
-      "Dato faltante", "Unidad por revisar", "Importe inválido", "Resultado no calculable", "Parámetro supuesto", "Fuera del alcance actual",
+      "Dato faltante", "Unidad por revisar", "Importe inválido", "Estado del cálculo", "Parámetro supuesto", "Fuera del alcance actual",
     ]));
   });
 
@@ -80,7 +80,7 @@ describe("Session data integrity", () => {
     const declared = { prices: [{ amount: "321" }], costs: [{ amount: "234" }] };
     const results = rotations.map((rotation) => ({ ...rotation, ...parcels[1].scenarios[rotation.id] }));
     const html = renderToStaticMarkup(<EconomicComparison rotations={results} selectedId="B" draft={declared} />);
-    expect(html).toContain("Economía ficticia · ARS/ha · Dos campañas");
+    expect(html).toContain("Referencia de demostración · ARS/ha · Dos campañas");
     expect(html).toContain("600.000");
     expect(html).not.toContain("321");
   });

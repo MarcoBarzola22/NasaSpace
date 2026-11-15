@@ -15,6 +15,6 @@ export default [
   },
   {
     files: ["tests/**/*.{js,jsx}"],
-    languageOptions: { globals: { URL: "readonly" } },
+    languageOptions: { globals: { URL: "readonly", structuredClone: "readonly" } },
   },
 ];
