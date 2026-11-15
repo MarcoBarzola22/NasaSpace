@@ -7,7 +7,7 @@
 | Fecha | 2026-11-15 |
 | Base | Constitución del proyecto; reglas de AGENTS; documento de investigación (leído por orden humana explícita para la revisión 1); documento de producto «Agro DSS — Sistema de apoyo para comparar rotaciones agrícolas» («Nasa agronomia»), según los puntos que indicó el equipo en la revisión 2; decisiones de clarificación y de revisión (§1.3) |
 | Alcance | Qué debe hacer el backend y por qué. La arquitectura, los módulos y los nombres de archivos se definen en el plan. |
-| Historial | **Rev. 1:** versión inicial con seis decisiones de clarificación. **Rev. 2:** consulta en vivo a NASA POWER sin almacenamiento local; perfil de profundidad fija con raíces que crecen dentro de él; barbecho con Kc base y reducción por rastrojo; excedente de lluvia perdido; viento fuerte con WS2M > 8 m/s; alineación con el documento de producto. **Rev. 3:** viento fuerte con el máximo diario WS2M_MAX > 8 m/s; principio 5 de la constitución enmendado (consulta en vivo, sin base de datos ni caché); CA-6.10 (Tmáx < Tmín bloquea el escenario). |
+| Historial | **Rev. 1:** versión inicial con seis decisiones de clarificación. **Rev. 2:** consulta en vivo a NASA POWER sin almacenamiento local; perfil de profundidad fija con raíces que crecen dentro de él; barbecho con Kc base y reducción por rastrojo; excedente de lluvia perdido; viento fuerte con WS2M > 8 m/s; alineación con el documento de producto. **Rev. 3:** viento fuerte con el máximo diario WS2M_MAX > 8 m/s; principio 5 de la constitución enmendado (consulta en vivo, sin base de datos ni caché); CA-6.10 (Tmáx < Tmín bloquea el escenario); CA-1.12 (latitud entre −60° y 60°). |
 
 ---
 
@@ -152,6 +152,7 @@ Las referencias **[NECESITA ACLARACIÓN: D-x]** remiten a las dudas abiertas de 
 - **CA-1.9** Cuando se omita el Kc base de barbecho, el sistema deberá usar 0,20 y registrar el supuesto «Kc base de barbecho definido por el equipo AgroDSS (rango 0,15–0,20); no es un valor tabulado único de FAO-56».
 - **CA-1.10** Si el Kc base de barbecho ingresado es menor o igual a 0 o supera el máximo plausible que fije el plan, entonces el sistema deberá rechazar la solicitud.
 - **CA-1.11** Donde las coordenadas queden fuera de la provincia de San Luis, el sistema deberá comportarse según lo que resuelva la D-9 [NECESITA ACLARACIÓN: D-9].
+- **CA-1.12** Si la latitud está fuera de [−60°, 60°], entonces el sistema deberá rechazar la solicitud indicando que el MVP está pensado para San Luis. (Aprobado por el equipo el 2026-11-15; evita las latitudes polares, donde la radiación de cielo despejado puede ser 0 y la ET₀ no se define.)
 
 ### RF-2 — Catálogo de cultivos y valores de referencia
 

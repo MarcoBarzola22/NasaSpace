@@ -180,7 +180,7 @@
     - `test_clamp_negative_et0`: −0,2 da (0,0; True) y 1,5 da (1,5; False);
     - el ejemplo de Hargreaves de V-3, si existe.
 
-- [ ] **T013 — Calendario: ventanas, fechas de siembra y fin de ciclo**
+- [x] **T013 — Calendario: ventanas, fechas de siembra y fin de ciclo**
   - **Depende de:** T008
   - **RF:** RF-3 (CA-3.5, CA-3.8), RF-4 (CA-4.2, CA-4.3)
   - **Archivos:** `app/domain/calendar.py`, `tests/unit/test_calendar.py`
@@ -190,7 +190,7 @@
     - siembra 2008-10-15 con 150 días → fin 2009-03-13;
     - `is_feb_29` detecta el 29 de febrero.
 
-- [ ] **T014 — Calendario: línea de tiempo y problemas de calendario por escenario**
+- [x] **T014 — Calendario: línea de tiempo y problemas de calendario por escenario**
   - **Depende de:** T013
   - **RF:** RF-3 (CA-3.6, CA-3.7, CA-3.11), RF-8 (CA-8.2)
   - **Archivos:** `app/domain/calendar.py`, `tests/unit/test_calendar.py`
@@ -201,7 +201,7 @@
     - una superposición que solo ocurre en escenarios sin 29 de febrero se informa solo para esos años (CL-4);
     - un ciclo que solo excede la ventana en un escenario se informa solo para ese año (CL-5).
 
-- [ ] **T015 — Curva de Kc por etapas y crecimiento radicular**
+- [x] **T015 — Curva de Kc por etapas y crecimiento radicular**
   - **Depende de:** T006, T008
   - **RF:** RF-8 (CA-8.4, CA-8.8), RF-3 (CA-3.10)
   - **Archivos:** `app/domain/kc_curve.py`, `app/domain/root_growth.py`, `tests/unit/test_kc_curve.py`, `tests/unit/test_root_growth.py`
@@ -421,9 +421,10 @@
 
 - [ ] **T036 — Validación semántica (2/2): años, fechas y calendario por escenario**
   - **Depende de:** T035, T014
-  - **RF:** RF-3 (CA-3.6–CA-3.8), RF-4 (CA-4.3, CA-4.4), CA-5.3
-  - **Archivos:** `app/services/validation.py`, `tests/unit/test_validation.py`
-  - **Hecho cuando:** `pytest tests/unit/test_validation.py -k "window or calendar"` pasa, con el reloj fijado en 2026-11-15, verificando que dan error:
+  - **RF:** RF-1 (CA-1.12), RF-3 (CA-3.6–CA-3.8), RF-4 (CA-4.3, CA-4.4), CA-5.3
+  - **Archivos:** `app/services/validation.py`, `tests/unit/test_validation.py`; agrega `MAX_ABS_LATITUDE_DEG = 60.0` a `app/core/constants.py` y su aserción a `tests/unit/test_constants.py`
+  - **Hecho cuando:** `pytest tests/unit/test_validation.py -k "window or calendar or latitude"` pasa, con el reloj fijado en 2026-11-15, verificando que dan error:
+    - una latitud fuera de [−60, 60] (por ejemplo −61 y 75), mientras que −33,68 y los extremos −60 y 60 son válidos (CA-1.12; decisión del equipo del 2026-11-15);
     - el año 2025 (su ventana termina el 2027-06-30);
     - años repetidos;
     - una fecha de inicio o de siembra el 29 de febrero;

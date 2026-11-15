@@ -180,7 +180,7 @@ Python 3.11 o superior. Las versiones exactas se fijan en `requirements.txt` al 
 | Campo | Tipo | Unidad | Obligatorio | Por defecto | Validación | RF / CA |
 |---|---|---|---|---|---|---|
 | `parcel.name` | texto ≤ 100 | — | no | `null` | — | RF-1 |
-| `parcel.latitude_deg` | número | grados | sí | — | [−90, 90] | CA-1.2 |
+| `parcel.latitude_deg` | número | grados | sí | — | [−90, 90] (estructural); [−60, 60] (semántica, T036) | CA-1.2, CA-1.12 |
 | `parcel.longitude_deg` | número | grados | sí | — | [−180, 180] | CA-1.2 |
 | `parcel.theta_fc_m3_m3` | número | m³/m³ | sí | — | (0, 1] y > θPMP | CA-1.3 |
 | `parcel.theta_wp_m3_m3` | número | m³/m³ | sí | — | [0, 1) y < θCC | CA-1.3 |
