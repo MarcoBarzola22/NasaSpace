@@ -210,7 +210,7 @@
     - Zr el día 1 es la Zr inicial; el día L_ini + L_dev es la Zr máxima; después se mantiene constante;
     - Zr nunca supera D cuando la Zr máxima es mayor que D.
 
-- [ ] **T016 — Redistribución entre compartimentos y factor de rastrojo**
+- [x] **T016 — Redistribución entre compartimentos y factor de rastrojo**
   - **Depende de:** T006
   - **RF:** RF-8 (CA-8.7, CA-8.10)
   - **Archivos:** `app/domain/water_balance.py` (funciones auxiliares), `tests/unit/test_redistribution.py`
@@ -220,7 +220,7 @@
     - con `z_old == D`, profundizar no mueve agua;
     - `residue_factor` de 0, 50 y 100 % vale 1,0; 0,75 y 0,5.
 
-- [ ] **T017 — Balance diario (1/4): estado inicial, lluvia en cascada y barbecho**
+- [x] **T017 — Balance diario (1/4): estado inicial, lluvia en cascada y barbecho**
   - **Depende de:** T014, T015, T016
   - **RF:** RF-8 (CA-8.1, CA-8.3, CA-8.10, CA-8.12, CA-8.13, CA-8.14)
   - **Archivos:** `app/domain/water_balance.py`, `tests/unit/test_water_balance.py`
@@ -231,7 +231,7 @@
     - con 120 días secos, W_low no cambia y la evaporación total no supera 24 mm (la capacidad de la capa de 0,15 m);
     - `0 ≤ almacenamiento ≤ 192` todos los días.
 
-- [ ] **T018 — Balance diario (2/4): días con cultivo (Kc, Ks, ETc, ETa)**
+- [x] **T018 — Balance diario (2/4): días con cultivo (Kc, Ks, ETc, ETa)**
   - **Depende de:** T017
   - **RF:** RF-8 (CA-8.8, CA-8.9, CA-8.15), RF-9 (CA-9.6: días con estrés)
   - **Archivos:** `app/domain/water_balance.py`, `tests/unit/test_water_balance.py`
@@ -241,7 +241,7 @@
     - `ETa ≤ ETc` todos los días;
     - `stress_days` es exactamente la cantidad de días con Ks < 1.
 
-- [ ] **T019 — Balance diario (3/4): transferencia entre segmentos y crecimiento radicular**
+- [x] **T019 — Balance diario (3/4): transferencia entre segmentos y crecimiento radicular**
   - **Depende de:** T018
   - **RF:** RF-8 (CA-8.4, CA-8.5, CA-8.6, CA-8.7), RF-9 (CA-9.6: almacenamiento al sembrar y al terminar)
   - **Archivos:** `app/domain/water_balance.py`, `tests/unit/test_water_balance.py`
@@ -251,7 +251,7 @@
     - CL-16: con la capa superficial en PMP y agua debajo, el cultivo tiene Ks < 1 los primeros días y W_low baja a medida que crece Zr;
     - CL-17: un barbecho de 0 días también cumple la igualdad.
 
-- [ ] **T020 — Balance diario (4/4): cierre de masa y error de integridad**
+- [x] **T020 — Balance diario (4/4): cierre de masa y error de integridad**
   - **Depende de:** T019
   - **RF:** RF-8 (CA-8.16, CA-8.17), RF-16 (CA-16.5)
   - **Archivos:** `app/domain/water_balance.py`, `tests/unit/test_water_balance.py`
@@ -259,7 +259,8 @@
     - una corrida sintética de 731 días que cierra con |error| ≤ 0,01 mm, donde `BalanceRun` expone `initial_storage_mm`, `final_storage_mm`, lluvia, ETa de cultivos, evaporación de barbecho, excedente y `closure_mm`;
     - `test_integrity_error_on_forced_violation`: una perturbación inyectada con `monkeypatch` lanza `CalculationIntegrityError`.
 
-- [ ] **T021 — Generador de clima sintético y pruebas de invariantes**
+- [x] **T021 — Generador de clima sintético y pruebas de invariantes**
+  - **Nota de ejecución:** `pyproject.toml` pasó a `addopts = "-m 'not live and not slow'"`, de modo que `pytest` a secas excluye la matriz completa de 50 semillas y `pytest -m slow` la ejecuta (6,5 s). Antes solo excluía `live`.
   - **Depende de:** T020
   - **RF:** RF-8 (CA-8.2, CA-8.6, CA-8.14, CA-8.15, CA-8.16), C4
   - **Archivos:** `tests/builders/weather.py`, `tests/invariants/test_balance_invariants.py`

@@ -7,7 +7,7 @@ requires-python = ">=3.11"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = "-m 'not live'"
+addopts = "-m 'not live and not slow'"
 markers = [
     "live: consulta la API real de NASA POWER (requiere internet; excluida por defecto)",
     "slow: matriz completa de invariantes y pruebas de rendimiento",
