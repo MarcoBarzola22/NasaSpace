@@ -98,7 +98,7 @@
     - `ruff check .` y `ruff format --check .` terminan con código 0;
     - `pyproject.toml` declara Python ≥ 3.11, `addopts` con `-m "not live"` y los marcadores `live` y `slow`.
 
-- [ ] **T005 — Configuración desde variables de entorno**
+- [x] **T005 — Configuración desde variables de entorno**
   - **Depende de:** T004, T001
   - **RF:** RF-5 (CA-5.6), RF-4 (CA-4.5)
   - **Archivos:** `app/core/config.py`, `tests/unit/test_config.py`
@@ -106,7 +106,7 @@
     - `test_settings_defaults`: URL base de POWER, timeout de conexión 10 s, timeout de lectura 60 s, CORS `http://localhost:5173` y fechas de inicio de cobertura de las 7 variables iguales a las de `research.md` §V-1;
     - `test_settings_env_override`: las variables `AGRODSS_POWER_BASE_URL`, `AGRODSS_POWER_CONNECT_TIMEOUT_S`, `AGRODSS_POWER_READ_TIMEOUT_S` y `AGRODSS_CORS_ORIGINS` cambian los valores.
 
-- [ ] **T006 — Constantes del modelo y jerarquía de excepciones**
+- [x] **T006 — Constantes del modelo y jerarquía de excepciones**
   - **Depende de:** T004
   - **RF:** RF-6, RF-8, RF-11, RF-16 (CA-1.9, CA-8.10, CA-8.16, CA-11.1, CA-16.4)
   - **Archivos:** `app/core/constants.py`, `app/core/exceptions.py`, `tests/unit/test_constants.py`
@@ -131,7 +131,7 @@
       - `GET /docs` → 200;
     - `uvicorn app.main:app` arranca y `curl http://localhost:8000/api/v1/health` responde 200 (verificación manual anotada en el PR).
 
-- [ ] **T008 — Tipos del dominio (dataclasses inmutables)**
+- [x] **T008 — Tipos del dominio (dataclasses inmutables)**
   - **Depende de:** T004
   - **RF:** RF-3, RF-4, RF-8
   - **Archivos:** `app/domain/types.py`, `tests/unit/test_types.py`
@@ -141,7 +141,7 @@
     - que `Stages.total_days` es la suma de las 4 etapas;
     - que `DailyClimate` acepta `None` en cada una de las 7 variables.
 
-- [ ] **T009 — Prueba de la regla de arquitectura del dominio**
+- [x] **T009 — Prueba de la regla de arquitectura del dominio**
   - **Depende de:** T006, T008
   - **RF:** RNF-7 (plan §3, decisión T-5)
   - **Archivos:** `tests/nonfunctional/test_architecture.py`
