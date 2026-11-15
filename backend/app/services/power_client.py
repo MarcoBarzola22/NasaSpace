@@ -21,6 +21,7 @@ son de ``climate_parser`` (T040).
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 
@@ -91,14 +92,20 @@ def build_timeout(settings: Settings) -> httpx.Timeout:
 class PowerClient:
     """Consulta en vivo a NASA POWER. ``transport`` permite simularla en las pruebas."""
 
-    def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
+    def __init__(
+        self,
+        settings: Settings,
+        transport: httpx.AsyncBaseTransport | None = None,
+        clock: Callable[[], datetime] | None = None,
+    ):
         self._settings = settings
         self._transport = transport
+        self._clock = clock or (lambda: datetime.now(UTC))
 
     async def fetch_daily(self, query: PowerQuery) -> PowerRawResponse:
         """Una consulta, sin reintentos. Lanza ``PowerError`` si no se obtiene un 200."""
         settings = self._settings
-        requested_at = datetime.now(UTC)
+        requested_at = self._clock()
         try:
             async with httpx.AsyncClient(
                 base_url=settings.power_base_url,

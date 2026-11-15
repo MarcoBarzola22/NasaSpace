@@ -212,7 +212,7 @@ BLOCK_REASONS: Final[dict[str, str]] = {
 # --- Errores de la API (plan §6.4) ---
 
 INPUT_INVALID: Final = (
-    "La solicitud tiene datos inválidos. Corrija los campos indicados y vuelva a enviarla."
+    "La solicitud tiene datos inválidos. Corrija los campos indicados; no se consultó a NASA POWER."
 )
 IRRIGATION_NOT_SUPPORTED: Final = "El MVP solo evalúa secano; no se admiten datos de riego."
 POWER_UNREACHABLE: Final = (
@@ -387,3 +387,39 @@ WIND_RULE: Final = (
     "días sin cultivo vivo."
 )
 WIND_NOTE: Final = "«Días sin cultivo vivo» no equivale a suelo desnudo."
+
+# --- Errores estructurales de la solicitud y de HTTP (core/error_handlers.py) ---
+
+BODY_FIELD: Final = "(cuerpo de la solicitud)"
+BODY_NOT_JSON: Final = "El cuerpo de la solicitud no es un JSON válido."
+VALUE_INVALID: Final = "Valor inválido."
+FIELD_MISSING: Final = "Falta este campo obligatorio."
+FIELD_UNKNOWN: Final = "Campo no permitido: «{name}»."
+IRRIGATION_FIELD: Final = "Dato de riego no admitido: «{name}». El MVP solo evalúa secano."
+MUST_BE_INTEGER: Final = "Debe ser un número entero."
+MUST_BE_NUMBER: Final = "Debe ser un número."
+MUST_BE_FINITE: Final = "Debe ser un número finito."
+MUST_BE_TEXT: Final = "Debe ser un texto."
+MUST_BE_OBJECT: Final = "Debe ser un objeto."
+MUST_BE_LIST: Final = "Debe ser una lista."
+MUST_BE_BOOLEAN: Final = "Debe ser verdadero o falso."
+MUST_BE_GREATER: Final = "Debe ser mayor que {gt:g}."
+MUST_BE_GREATER_EQUAL: Final = "Debe ser mayor o igual que {ge:g}."
+MUST_BE_LESS: Final = "Debe ser menor que {lt:g}."
+MUST_BE_LESS_EQUAL: Final = "Debe ser menor o igual que {le:g}."
+LIST_TOO_SHORT: Final = "Debe tener al menos {min_length} elemento(s)."
+LIST_TOO_LONG: Final = "Debe tener como máximo {max_length} elemento(s)."
+TEXT_TOO_SHORT: Final = "Debe tener al menos {min_length} caracter(es)."
+TEXT_TOO_LONG: Final = "Debe tener como máximo {max_length} caracteres."
+PATTERN_MISMATCH: Final = "Formato inválido: debe cumplir {pattern}."
+LITERAL_MISMATCH: Final = "Valor no permitido; opciones: {expected}."
+NOT_FOUND: Final = "No existe el recurso solicitado."
+METHOD_NOT_ALLOWED: Final = "Método no permitido para este recurso."
+HTTP_ERROR: Final = "La solicitud no se pudo atender."
+
+# --- Catálogo (services/catalog_response.py) ---
+
+CATALOG_LABEL_REFERENCE: Final = "Valor tabulado FAO, no calibrado para el lote."
+CATALOG_LABEL_MISSING: Final = "Los valores «sin referencia» deben ingresarse."
+RESIDUE_RULE: Final = "Factor de rastrojo = 1 − 0,05 × (cobertura % / 10); 0 % → 1,0; 100 % → 0,5."
+RESIDUE_RULE_SOURCE: Final = "FAO-56, cap. 11 (acolchados orgánicos)"

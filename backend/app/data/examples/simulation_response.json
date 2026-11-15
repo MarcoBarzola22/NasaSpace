@@ -1,0 +1,513 @@
+{
+  "contract_version": "1.0",
+  "model_version": "0.1.0",
+  "request_id": "3f2b8c1e-7d4a-4f6b-9a2e-5c8d1b0e7f43",
+  "computed_at": "2026-11-15T14:03:22Z",
+  "currency": "USD",
+  "resolved_input": {
+    "parcel": {
+      "latitude_deg": -33.68,
+      "longitude_deg": -65.47,
+      "theta_fc_m3_m3": 0.28,
+      "theta_wp_m3_m3": 0.12,
+      "effective_depth_m": 1.2,
+      "profile_capacity_mm": 192.0,
+      "initial_available_water_pct": 50,
+      "initial_storage_mm": 96.0,
+      "fallow_kc_base": {
+        "value": 0.2,
+        "origin": "team_default",
+        "source": "Decisión del equipo AgroDSS (rango 0,15–0,20); no es un valor tabulado único de FAO-56",
+        "note": null
+      },
+      "fallow_evaporation_layer_m": {
+        "value": 0.15,
+        "origin": "system_default",
+        "source": "FAO-56, cap. 7 (capa evaporable Ze 0,10–0,15 m)",
+        "note": null
+      }
+    },
+    "window": {
+      "start_day": 1,
+      "start_month": 7,
+      "start_years": [
+        2008,
+        2011,
+        2017
+      ]
+    },
+    "rotations": [
+      {
+        "id": "A",
+        "name": "Maíz → centeno de cobertura → soja",
+        "initial_residue_cover_pct": {
+          "value": 30,
+          "origin": "user",
+          "source": null,
+          "note": null
+        },
+        "crops": [
+          {
+            "position": 1,
+            "crop_code": "maize",
+            "crop_name": "Maíz",
+            "crop_type": "grain",
+            "calibrated": false,
+            "parameters": {
+              "kc_initial": {
+                "value": 0.3,
+                "origin": "user",
+                "source": null,
+                "note": null
+              },
+              "kc_mid": {
+                "value": 1.2,
+                "origin": "user",
+                "source": null,
+                "note": null
+              },
+              "kc_end": {
+                "value": 0.35,
+                "origin": "user",
+                "source": null,
+                "note": null
+              },
+              "stage_lengths_days": {
+                "value": {
+                  "initial": 30,
+                  "development": 40,
+                  "mid": 50,
+                  "late": 30
+                },
+                "origin": "user",
+                "source": null,
+                "note": null
+              },
+              "root_depth_initial_m": {
+                "value": 0.15,
+                "origin": "user",
+                "source": null,
+                "note": null
+              },
+              "root_depth_max_m": {
+                "value": 1.2,
+                "origin": "user",
+                "source": null,
+                "note": "Limitada a la profundidad efectiva (valor ingresado: 1,5 m)."
+              },
+              "depletion_fraction_p": {
+                "value": 0.55,
+                "origin": "fao_reference",
+                "source": "FAO-56, Tabla 22",
+                "note": "Valor tabulado FAO, no calibrado para el lote."
+              },
+              "ky": {
+                "value": 1.25,
+                "origin": "fao_reference",
+                "source": "FAO-33 (Ky del ciclo completo)",
+                "note": "Valor tabulado FAO, no calibrado para el lote."
+              },
+              "ym_t_ha": {
+                "value": 9.0,
+                "origin": "user",
+                "source": null,
+                "note": null
+              },
+              "residue_cover_after_pct": {
+                "value": 60,
+                "origin": "user",
+                "source": null,
+                "note": null
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "provenance": {
+    "source": "NASA POWER",
+    "service": "API diaria de punto, comunidad AG",
+    "retrieval": "Consulta en vivo",
+    "queried_at": "2026-11-15T14:03:19Z",
+    "source_version": "v2.x.x",
+    "requested_location": {
+      "latitude_deg": -33.68,
+      "longitude_deg": -65.47
+    },
+    "source_location": {
+      "latitude_deg": -33.68,
+      "longitude_deg": -65.47,
+      "elevation_m": 512.4
+    },
+    "spatial_note": "El dato representa una celda de varios kilómetros (resolución nativa según la documentación de POWER), no el lote.",
+    "date_range": {
+      "start": "2008-07-01",
+      "end": "2019-06-30"
+    },
+    "variables": [
+      {
+        "code": "PRECTOTCORR",
+        "name": "Precipitación corregida",
+        "unit": "mm/día",
+        "use": "Balance hídrico",
+        "missing_days": 1
+      },
+      {
+        "code": "T2M_MAX",
+        "name": "Temperatura máxima a 2 m",
+        "unit": "°C",
+        "use": "ET₀",
+        "missing_days": 0
+      },
+      {
+        "code": "T2M_MIN",
+        "name": "Temperatura mínima a 2 m",
+        "unit": "°C",
+        "use": "ET₀",
+        "missing_days": 0
+      },
+      {
+        "code": "T2MDEW",
+        "name": "Punto de rocío a 2 m",
+        "unit": "°C",
+        "use": "ET₀",
+        "missing_days": 0
+      },
+      {
+        "code": "WS2M",
+        "name": "Velocidad media diaria del viento a 2 m",
+        "unit": "m/s",
+        "use": "ET₀",
+        "missing_days": 0
+      },
+      {
+        "code": "WS2M_MAX",
+        "name": "Velocidad máxima diaria del viento a 2 m",
+        "unit": "m/s",
+        "use": "Proxy de viento fuerte",
+        "missing_days": 0
+      },
+      {
+        "code": "ALLSKY_SFC_SW_DWN",
+        "name": "Radiación solar global en superficie",
+        "unit": "MJ/m²/día",
+        "use": "ET₀",
+        "missing_days": 2
+      }
+    ],
+    "label": "Dato de modelo/reanálisis de NASA POWER a escala de celda; no es una medición del lote."
+  },
+  "scenarios": [
+    {
+      "start_year": 2008,
+      "window_start": "2008-07-01",
+      "window_end": "2010-06-30",
+      "days": 730,
+      "status": "computed",
+      "blocked_reasons": [],
+      "substituted_days": [
+        {
+          "variable": "ALLSKY_SFC_SW_DWN",
+          "method": "Hargreaves (FAO-56, ec. 50), kRs = 0,16",
+          "count": 2,
+          "dates": [
+            "2009-01-17",
+            "2009-01-18"
+          ]
+        }
+      ],
+      "precipitation_total_mm": 1185.4,
+      "et0_total_mm": 2650.2
+    },
+    {
+      "start_year": 2011,
+      "window_start": "2011-07-01",
+      "window_end": "2013-06-30",
+      "days": 731,
+      "status": "computed",
+      "blocked_reasons": [],
+      "substituted_days": [],
+      "precipitation_total_mm": 1402.7,
+      "et0_total_mm": 2588.9
+    },
+    {
+      "start_year": 2017,
+      "window_start": "2017-07-01",
+      "window_end": "2019-06-30",
+      "days": 730,
+      "status": "blocked",
+      "blocked_reasons": [
+        {
+          "code": "MISSING_PRECIPITATION",
+          "variable": "PRECTOTCORR",
+          "dates": [
+            "2018-03-04"
+          ],
+          "message": "Falta la precipitación de NASA POWER en 1 día (2018-03-04). La lluvia no se sustituye: el escenario no se calcula."
+        }
+      ],
+      "substituted_days": [],
+      "precipitation_total_mm": null,
+      "et0_total_mm": null
+    }
+  ],
+  "results": [
+    {
+      "rotation_id": "A",
+      "start_year": 2008,
+      "water_balance": {
+        "initial_storage_mm": 96.0,
+        "final_storage_mm": 75.4,
+        "precipitation_mm": 1185.4,
+        "et0_mm": 2650.2,
+        "crop_eta_mm": 790.6,
+        "fallow_evaporation_mm": 255.3,
+        "excess_lost_mm": 160.1,
+        "mass_balance_error_mm": 0.0
+      },
+      "crops": [
+        {
+          "position": 1,
+          "crop_code": "maize",
+          "crop_type": "grain",
+          "sowing_date": "2008-10-15",
+          "cycle_end_date": "2009-03-13",
+          "storage_at_sowing_mm": 88.4,
+          "storage_at_end_mm": 31.2,
+          "etm_mm": 642.5,
+          "eta_mm": 418.9,
+          "eta_etm_ratio": 0.652,
+          "stress_days": 71,
+          "yield_t_ha": 5.08,
+          "relative_yield": 0.565,
+          "yield_note": null,
+          "economics": {
+            "income_per_ha": 915.26,
+            "direct_costs_per_ha": 620.0,
+            "gross_margin_per_ha": 295.26,
+            "gross_margin_label": null
+          }
+        },
+        {
+          "position": 2,
+          "crop_code": "rye_cover",
+          "crop_type": "cover",
+          "sowing_date": "2009-04-01",
+          "cycle_end_date": "2009-07-29",
+          "storage_at_sowing_mm": 70.5,
+          "storage_at_end_mm": 41.0,
+          "etm_mm": 160.2,
+          "eta_mm": 121.7,
+          "eta_etm_ratio": 0.76,
+          "stress_days": 18,
+          "yield_t_ha": null,
+          "relative_yield": null,
+          "yield_note": "No aplica (cultivo de cobertura).",
+          "economics": {
+            "income_per_ha": 0.0,
+            "direct_costs_per_ha": 95.0,
+            "gross_margin_per_ha": -95.0,
+            "gross_margin_label": "Margen bruto negativo"
+          }
+        },
+        {
+          "position": 3,
+          "crop_code": "soybean_first",
+          "crop_type": "grain",
+          "sowing_date": "2009-11-15",
+          "cycle_end_date": "2010-03-29",
+          "storage_at_sowing_mm": 95.6,
+          "storage_at_end_mm": 52.3,
+          "etm_mm": 571.0,
+          "eta_mm": 250.0,
+          "eta_etm_ratio": 0.438,
+          "stress_days": 64,
+          "yield_t_ha": 1.67,
+          "relative_yield": 0.522,
+          "yield_note": null,
+          "economics": {
+            "income_per_ha": 501.24,
+            "direct_costs_per_ha": 380.0,
+            "gross_margin_per_ha": 121.24,
+            "gross_margin_label": null
+          }
+        }
+      ],
+      "rotation_economics": {
+        "status": "computed",
+        "income_per_ha": 1416.5,
+        "direct_costs_per_ha": 1095.0,
+        "gross_margin_per_ha": 321.5,
+        "gross_margin_label": null,
+        "crops_missing_economics": []
+      },
+      "soil_exposure": {
+        "window_days": 730,
+        "live_crop_days": 405,
+        "no_live_crop_days": 325,
+        "strong_wind_days_without_live_crop": 9,
+        "no_wind_data_days_without_live_crop": 0,
+        "wind_variable": "WS2M_MAX",
+        "threshold_ms": 8.0,
+        "rule": "Velocidad máxima diaria del viento a 2 m estrictamente mayor que 8,0 m/s, solo en días sin cultivo vivo.",
+        "threshold_source": "Decisión del equipo AgroDSS (revisión 3); no calibrado para erosión local.",
+        "note": "«Días sin cultivo vivo» no equivale a suelo desnudo."
+      }
+    }
+  ],
+  "ranges": [
+    {
+      "rotation_id": "A",
+      "n_scenarios": 2,
+      "scenarios_included": [
+        2008,
+        2011
+      ],
+      "scenarios_excluded": [
+        2017
+      ],
+      "crops": [
+        {
+          "position": 1,
+          "crop_code": "maize",
+          "yield_t_ha": {
+            "min": 5.08,
+            "median": 6.31,
+            "max": 7.54
+          },
+          "eta_etm_ratio": {
+            "min": 0.652,
+            "median": 0.761,
+            "max": 0.87
+          }
+        }
+      ],
+      "gross_margin_per_ha": {
+        "min": 321.5,
+        "median": 465.8,
+        "max": 610.1
+      },
+      "strong_wind_days_without_live_crop": {
+        "min": 4,
+        "median": 6.5,
+        "max": 9
+      },
+      "label": "Rango descriptivo de los años elegidos; no es una probabilidad ni un pronóstico."
+    }
+  ],
+  "comparisons": [
+    {
+      "start_year": 2008,
+      "minuend_rotation_id": "B",
+      "subtrahend_rotation_id": "A",
+      "gross_margin_difference_per_ha": 142.3,
+      "label": "Diferencia descriptiva de margen bruto (B − A); no indica qué rotación conviene."
+    }
+  ],
+  "assumptions": [
+    {
+      "code": "RAINFED_NO_IRRIGATION",
+      "scope": {
+        "level": "request"
+      },
+      "description": "Secano: riego = 0 todos los días.",
+      "value": 0,
+      "unit": "mm/día",
+      "origin": "system_default",
+      "source": null,
+      "count": null,
+      "dates": null
+    },
+    {
+      "code": "FAO_REFERENCE_VALUE",
+      "scope": {
+        "level": "crop",
+        "rotation_id": "A",
+        "position": 1,
+        "parameter": "ky"
+      },
+      "description": "Valor tabulado FAO, no calibrado para el lote.",
+      "value": 1.25,
+      "unit": "adimensional",
+      "origin": "fao_reference",
+      "source": "FAO-33",
+      "count": null,
+      "dates": null
+    },
+    {
+      "code": "ROOT_DEPTH_LIMITED",
+      "scope": {
+        "level": "crop",
+        "rotation_id": "A",
+        "position": 1,
+        "parameter": "root_depth_max_m"
+      },
+      "description": "La profundidad radicular máxima se limitó a la profundidad efectiva del perfil.",
+      "value": 1.2,
+      "unit": "m",
+      "origin": "system_default",
+      "source": null,
+      "count": null,
+      "dates": null
+    },
+    {
+      "code": "SUBST_RADIATION_HARGREAVES",
+      "scope": {
+        "level": "scenario",
+        "start_year": 2008
+      },
+      "description": "Radiación solar faltante estimada con Hargreaves (FAO-56, ec. 50), kRs = 0,16; usada solo para la ET₀.",
+      "value": null,
+      "unit": null,
+      "origin": "system_default",
+      "source": "FAO-56, cap. 3",
+      "count": 2,
+      "dates": [
+        "2009-01-17",
+        "2009-01-18"
+      ]
+    },
+    {
+      "code": "NO_RESIDUE_DECLARED",
+      "scope": {
+        "level": "fallow",
+        "rotation_id": "B",
+        "after_position": 3
+      },
+      "description": "Sin rastrojo declarado: suelo desnudo, sin reducción de la evaporación.",
+      "value": 0,
+      "unit": "%",
+      "origin": "system_default",
+      "source": null,
+      "count": null,
+      "dates": null
+    }
+  ],
+  "warnings": [
+    {
+      "code": "HISTORICAL_DESCRIPTIVE",
+      "message": "Escenarios históricos descriptivos: muestran cómo se habría comportado cada rotación con el clima de los años elegidos; no son pronósticos."
+    },
+    {
+      "code": "UNCALIBRATED_PARAMETERS",
+      "message": "Kc, Ky, Ym y los parámetros de suelo son entradas o referencias no calibradas para el lote."
+    },
+    {
+      "code": "CELL_SCALE_DATA",
+      "message": "Los datos climáticos de NASA POWER representan una celda, no el lote."
+    },
+    {
+      "code": "NOT_A_RECOMMENDATION",
+      "message": "AgroDSS compara rotaciones para apoyar la decisión del agrónomo; no recomienda ninguna."
+    },
+    {
+      "code": "SUBSTITUTIONS_PRESENT",
+      "message": "Se estimaron datos faltantes con métodos FAO-56 en 2 días del escenario 2008; ver supuestos."
+    },
+    {
+      "code": "SCENARIOS_BLOCKED",
+      "message": "1 escenario no se calculó (2017); ver motivos."
+    }
+  ]
+}

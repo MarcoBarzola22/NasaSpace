@@ -119,8 +119,8 @@
       - inicio de ventana por defecto (1, 7) y caja aproximada de San Luis (latitud −36,0 a −31,8; longitud −67,6 a −64,8);
     - `test_exception_hierarchy`: existen `InputValidationError`, `PowerUnreachableError`, `PowerTimeoutError`, `PowerRateLimitedError`, `PowerBadResponseError` y `CalculationIntegrityError`, y las 4 de NASA heredan de `PowerError`.
 
-- [ ] **T007 — Aplicación FastAPI, endpoint de salud, CORS e identificador de solicitud**
-  - **Nota de ejecución:** infraestructura (no es del dominio); se deja pendiente hasta armar los routers y la API. La necesitan T032, T034 y T041, que dependen de ella.
+- [x] **T007 — Aplicación FastAPI, endpoint de salud, CORS e identificador de solicitud**
+  - **Nota de ejecución:** hecha junto con la capa API. El identificador de solicitud lo asigna un middleware ASGI propio (`core/request_context.py`) y nunca se acepta el que mande el cliente. `uvicorn app.main:app` se arrancó y `GET /api/v1/health` respondió 200 (verificación manual hecha el 2026-11-15).
   - **Depende de:** T005, T006
   - **RF:** RNF-13, RF-16 (CA-16.4: `request_id`)
   - **Archivos:** `app/main.py`, `app/routers/health.py`, `tests/api/test_health.py`
@@ -386,7 +386,7 @@
       - un catálogo con un valor sin `source` hace fallar la carga con un error explícito;
     - `research.md` §V-2 incluye la línea «Catálogo cargado y cotejado: ‹nombre›, ‹fecha›».
 
-- [ ] **T032 — Endpoint `GET /api/v1/catalog`**
+- [x] **T032 — Endpoint `GET /api/v1/catalog`**
   - **Depende de:** T031, T007
   - **RF:** RF-2 (CA-2.1, CA-2.6), RF-11 (CA-11.5)
   - **Archivos:** `app/models/catalog.py`, `app/routers/catalog.py`, `tests/api/test_catalog_endpoint.py`
@@ -408,7 +408,7 @@
     - un campo desconocido falla;
     - `stage_lengths_days` con 3 de sus 4 claves falla.
 
-- [ ] **T034 — Errores 422 en español y regla de riego**
+- [x] **T034 — Errores 422 en español y regla de riego**
   - **Depende de:** T033, T029
   - **RF:** RF-16 (CA-16.1, CA-16.6), RF-1 (CA-1.8)
   - **Archivos:** `app/models/errors.py`, `app/core/error_handlers.py`, `tests/api/test_validation_errors.py`
@@ -494,7 +494,7 @@
     - la procedencia contiene los campos de CA-13.1 y el rótulo exacto de CA-13.2;
     - con `open` en modo escritura bloqueado mediante `monkeypatch`, el parseo termina sin error.
 
-- [ ] **T041 — Manejadores HTTP de errores de NASA, integridad e inesperados**
+- [x] **T041 — Manejadores HTTP de errores de NASA, integridad e inesperados**
   - **Depende de:** T007, T029, T006
   - **RF:** RF-16 (CA-16.4, CA-16.5), RF-5 (CA-5.4)
   - **Archivos:** `app/core/error_handlers.py`, `tests/api/test_error_handlers.py`
@@ -558,7 +558,8 @@
     - `OUTSIDE_SAN_LUIS` aparece para (−31,42; −64,18) y no para (−33,68; −65,47);
     - `mass_balance_error_mm` se calcula con valores sin redondear.
 
-- [ ] **T046 — Endpoint `POST /api/v1/simulations` (caso exitoso)**
+- [x] **T046 — Endpoint `POST /api/v1/simulations` (caso exitoso)**
+  - **Nota de ejecución:** el instante de la consulta a NASA (`provenance.queried_at`) sale del reloj que recibe `PowerClient` (parámetro `clock`), de modo que con el reloj fijado la respuesta es idéntica salvo `request_id` (insumo de T049).
   - **Depende de:** T045, T041, T034, T039
   - **RF:** RF-1 a RF-17 (flujo completo), CA-15.1
   - **Archivos:** `app/routers/simulations.py`, `app/main.py`, `tests/api/test_simulations_endpoint.py`
@@ -568,7 +569,7 @@
     - la respuesta valida contra `response_model`;
     - todo `mass_balance_error_mm` cumple |valor| ≤ 0,01.
 
-- [ ] **T047 — Pruebas de errores de punta a punta del endpoint**
+- [x] **T047 — Pruebas de errores de punta a punta del endpoint**
   - **Depende de:** T046
   - **RF:** RF-16 (CA-16.1–CA-16.5), RF-5 (CA-5.3–CA-5.5)
   - **Archivos:** `tests/api/test_simulations_endpoint.py`
@@ -580,7 +581,8 @@
     - una falla de integridad forzada da 500 sin la clave `results`;
     - con todos los escenarios bloqueados da 200 con `results == []` y la advertencia `SCENARIOS_BLOCKED`.
 
-- [ ] **T048 — Ejemplos en OpenAPI e instantánea del contrato**
+- [x] **T048 — Ejemplos en OpenAPI e instantánea del contrato**
+  - **Nota de ejecución:** los ejemplos del plan §5.2 y §5.3 están como JSON en `app/data/examples/` y se cargan desde `app/models/examples.py`. FastAPI descarta los `null` al generar el esquema; `main.py` los restituye en los ejemplos porque en este contrato un `null` explícito significa «no aplica». La instantánea se regenera con `UPDATE_SNAPSHOTS=1 pytest tests/api/test_contract.py`.
   - **Depende de:** T046
   - **RF:** RF-15 (CA-15.6), RNF-13
   - **Archivos:** `app/models/request.py`, `app/models/response.py` (ejemplos), `tests/api/test_contract.py`, `tests/snapshots/openapi_v1.json`

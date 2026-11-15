@@ -1,0 +1,3210 @@
+{
+  "components": {
+    "schemas": {
+      "AssumptionOut": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          },
+          "dates": {
+            "anyOf": [
+              {
+                "items": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dates"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "user",
+              "fao_reference",
+              "team_default",
+              "system_default"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/AssumptionScopeOut"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "code",
+          "scope",
+          "description",
+          "origin"
+        ],
+        "title": "AssumptionOut",
+        "type": "object"
+      },
+      "AssumptionScopeOut": {
+        "additionalProperties": false,
+        "properties": {
+          "after_position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After Position"
+          },
+          "level": {
+            "enum": [
+              "request",
+              "rotation",
+              "crop",
+              "fallow",
+              "scenario",
+              "date"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "parameter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameter"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "rotation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rotation Id"
+          },
+          "start_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Year"
+          }
+        },
+        "required": [
+          "level"
+        ],
+        "title": "AssumptionScopeOut",
+        "type": "object"
+      },
+      "BlockedReasonOut": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "dates": {
+            "items": {
+              "format": "date",
+              "type": "string"
+            },
+            "title": "Dates",
+            "type": "array"
+          },
+          "first_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Date"
+          },
+          "last_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Date"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "variable": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variable"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "BlockedReasonOut",
+        "type": "object"
+      },
+      "CatalogCropOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_code": {
+            "title": "Crop Code",
+            "type": "string"
+          },
+          "crop_type": {
+            "enum": [
+              "grain",
+              "cover"
+            ],
+            "title": "Crop Type",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "reference_values": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ReferenceValueOut"
+            },
+            "title": "Reference Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "crop_code",
+          "name",
+          "crop_type",
+          "reference_values",
+          "label"
+        ],
+        "title": "CatalogCropOut",
+        "type": "object"
+      },
+      "CatalogResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "catalog_label": {
+            "title": "Catalog Label",
+            "type": "string"
+          },
+          "catalog_version": {
+            "title": "Catalog Version",
+            "type": "string"
+          },
+          "contract_version": {
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "crops": {
+            "items": {
+              "$ref": "#/components/schemas/CatalogCropOut"
+            },
+            "title": "Crops",
+            "type": "array"
+          },
+          "fallow": {
+            "$ref": "#/components/schemas/FallowOut"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/LimitsOut"
+          },
+          "wind_proxy": {
+            "$ref": "#/components/schemas/WindProxyOut"
+          },
+          "window_defaults": {
+            "$ref": "#/components/schemas/WindowDefaultsOut"
+          }
+        },
+        "required": [
+          "contract_version",
+          "catalog_version",
+          "catalog_label",
+          "crops",
+          "fallow",
+          "wind_proxy",
+          "window_defaults",
+          "limits"
+        ],
+        "title": "CatalogResponse",
+        "type": "object"
+      },
+      "ComparisonOut": {
+        "additionalProperties": false,
+        "properties": {
+          "gross_margin_difference_per_ha": {
+            "title": "Gross Margin Difference Per Ha",
+            "type": "number"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "minuend_rotation_id": {
+            "title": "Minuend Rotation Id",
+            "type": "string"
+          },
+          "start_year": {
+            "title": "Start Year",
+            "type": "integer"
+          },
+          "subtrahend_rotation_id": {
+            "title": "Subtrahend Rotation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_year",
+          "minuend_rotation_id",
+          "subtrahend_rotation_id",
+          "gross_margin_difference_per_ha",
+          "label"
+        ],
+        "title": "ComparisonOut",
+        "type": "object"
+      },
+      "CropEconomicsOut": {
+        "additionalProperties": false,
+        "properties": {
+          "direct_costs_per_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direct Costs Per Ha"
+          },
+          "gross_margin_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Margin Label"
+          },
+          "gross_margin_per_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Margin Per Ha"
+          },
+          "income_per_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Income Per Ha"
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Fields",
+            "type": "array"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "default": "computed",
+            "enum": [
+              "computed",
+              "not_computed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "CropEconomicsOut",
+        "type": "object"
+      },
+      "CropIn": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_code": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Crop Code",
+            "type": "string"
+          },
+          "depletion_fraction_p": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 1.0,
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depletion Fraction P"
+          },
+          "economics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EconomicsIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kc_end": {
+            "anyOf": [
+              {
+                "maximum": 2.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kc End"
+          },
+          "kc_initial": {
+            "anyOf": [
+              {
+                "maximum": 2.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kc Initial"
+          },
+          "kc_mid": {
+            "anyOf": [
+              {
+                "maximum": 2.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kc Mid"
+          },
+          "ky": {
+            "anyOf": [
+              {
+                "maximum": 2.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ky"
+          },
+          "residue_cover_after_pct": {
+            "default": 0.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Residue Cover After Pct",
+            "type": "number"
+          },
+          "root_depth_initial_m": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Root Depth Initial M"
+          },
+          "root_depth_max_m": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Root Depth Max M"
+          },
+          "sowing": {
+            "$ref": "#/components/schemas/SowingIn"
+          },
+          "stage_lengths_days": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StageLengthsIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ym_t_ha": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 30.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ym T Ha"
+          }
+        },
+        "required": [
+          "crop_code",
+          "sowing"
+        ],
+        "title": "CropIn",
+        "type": "object"
+      },
+      "CropInputOut": {
+        "additionalProperties": false,
+        "properties": {
+          "calibrated": {
+            "default": false,
+            "title": "Calibrated",
+            "type": "boolean"
+          },
+          "crop_code": {
+            "title": "Crop Code",
+            "type": "string"
+          },
+          "crop_name": {
+            "title": "Crop Name",
+            "type": "string"
+          },
+          "crop_type": {
+            "enum": [
+              "grain",
+              "cover"
+            ],
+            "title": "Crop Type",
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ParameterOut"
+            },
+            "title": "Parameters",
+            "type": "object"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "position",
+          "crop_code",
+          "crop_name",
+          "crop_type",
+          "parameters"
+        ],
+        "title": "CropInputOut",
+        "type": "object"
+      },
+      "CropRangesOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_code": {
+            "title": "Crop Code",
+            "type": "string"
+          },
+          "eta_etm_ratio": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RangeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "yield_t_ha": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RangeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "position",
+          "crop_code"
+        ],
+        "title": "CropRangesOut",
+        "type": "object"
+      },
+      "CropResultOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_code": {
+            "title": "Crop Code",
+            "type": "string"
+          },
+          "crop_type": {
+            "enum": [
+              "grain",
+              "cover"
+            ],
+            "title": "Crop Type",
+            "type": "string"
+          },
+          "cycle_end_date": {
+            "format": "date",
+            "title": "Cycle End Date",
+            "type": "string"
+          },
+          "economics": {
+            "$ref": "#/components/schemas/CropEconomicsOut"
+          },
+          "eta_etm_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eta Etm Ratio"
+          },
+          "eta_mm": {
+            "title": "Eta Mm",
+            "type": "number"
+          },
+          "etm_mm": {
+            "title": "Etm Mm",
+            "type": "number"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "relative_yield": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relative Yield"
+          },
+          "sowing_date": {
+            "format": "date",
+            "title": "Sowing Date",
+            "type": "string"
+          },
+          "storage_at_end_mm": {
+            "title": "Storage At End Mm",
+            "type": "number"
+          },
+          "storage_at_sowing_mm": {
+            "title": "Storage At Sowing Mm",
+            "type": "number"
+          },
+          "stress_days": {
+            "title": "Stress Days",
+            "type": "integer"
+          },
+          "yield_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yield Note"
+          },
+          "yield_t_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yield T Ha"
+          }
+        },
+        "required": [
+          "position",
+          "crop_code",
+          "crop_type",
+          "sowing_date",
+          "cycle_end_date",
+          "storage_at_sowing_mm",
+          "storage_at_end_mm",
+          "etm_mm",
+          "eta_mm",
+          "stress_days",
+          "economics"
+        ],
+        "title": "CropResultOut",
+        "type": "object"
+      },
+      "DateRangeOut": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "DateRangeOut",
+        "type": "object"
+      },
+      "EconomicsIn": {
+        "additionalProperties": false,
+        "properties": {
+          "direct_costs_per_ha": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direct Costs Per Ha"
+          },
+          "price_per_t": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Per T"
+          }
+        },
+        "title": "EconomicsIn",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "enum": [
+              "input",
+              "nasa_power",
+              "internal"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ErrorDetail"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "category",
+          "code",
+          "message",
+          "retryable",
+          "request_id"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "ErrorDetail": {
+        "additionalProperties": false,
+        "description": "Un defecto puntual: ruta del campo (``rotations[0].crops[1].ym_t_ha``) y su motivo.",
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "message"
+        ],
+        "title": "ErrorDetail",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "FallowOut": {
+        "additionalProperties": false,
+        "properties": {
+          "evaporation_layer_m": {
+            "title": "Evaporation Layer M",
+            "type": "number"
+          },
+          "kc_base_default": {
+            "title": "Kc Base Default",
+            "type": "number"
+          },
+          "kc_base_source": {
+            "title": "Kc Base Source",
+            "type": "string"
+          },
+          "residue_rule": {
+            "title": "Residue Rule",
+            "type": "string"
+          },
+          "residue_rule_source": {
+            "title": "Residue Rule Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kc_base_default",
+          "kc_base_source",
+          "residue_rule",
+          "residue_rule_source",
+          "evaporation_layer_m"
+        ],
+        "title": "FallowOut",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "model_version",
+          "contract_version"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "LimitsOut": {
+        "additionalProperties": false,
+        "properties": {
+          "max_effective_depth_m": {
+            "title": "Max Effective Depth M",
+            "type": "number"
+          },
+          "max_rotations": {
+            "title": "Max Rotations",
+            "type": "integer"
+          },
+          "max_start_years": {
+            "title": "Max Start Years",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "max_rotations",
+          "max_start_years",
+          "max_effective_depth_m"
+        ],
+        "title": "LimitsOut",
+        "type": "object"
+      },
+      "LocationOut": {
+        "additionalProperties": false,
+        "properties": {
+          "latitude_deg": {
+            "title": "Latitude Deg",
+            "type": "number"
+          },
+          "longitude_deg": {
+            "title": "Longitude Deg",
+            "type": "number"
+          }
+        },
+        "required": [
+          "latitude_deg",
+          "longitude_deg"
+        ],
+        "title": "LocationOut",
+        "type": "object"
+      },
+      "MissingEconomicsOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_code": {
+            "title": "Crop Code",
+            "type": "string"
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Fields",
+            "type": "array"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "position",
+          "crop_code",
+          "reason"
+        ],
+        "title": "MissingEconomicsOut",
+        "type": "object"
+      },
+      "ParameterOut": {
+        "additionalProperties": false,
+        "description": "Parámetro resuelto: valor efectivo, origen, cita y nota (plan §5.1).",
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "origin": {
+            "enum": [
+              "user",
+              "fao_reference",
+              "team_default",
+              "system_default"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "value",
+          "origin"
+        ],
+        "title": "ParameterOut",
+        "type": "object"
+      },
+      "ParcelIn": {
+        "additionalProperties": false,
+        "properties": {
+          "effective_depth_m": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 3.0,
+            "title": "Effective Depth M",
+            "type": "number"
+          },
+          "fallow_kc_base": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fallow Kc Base"
+          },
+          "initial_available_water_pct": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Initial Available Water Pct",
+            "type": "number"
+          },
+          "latitude_deg": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude Deg",
+            "type": "number"
+          },
+          "longitude_deg": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude Deg",
+            "type": "number"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "theta_fc_m3_m3": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1.0,
+            "title": "Theta Fc M3 M3",
+            "type": "number"
+          },
+          "theta_wp_m3_m3": {
+            "exclusiveMaximum": 1.0,
+            "minimum": 0.0,
+            "title": "Theta Wp M3 M3",
+            "type": "number"
+          }
+        },
+        "required": [
+          "latitude_deg",
+          "longitude_deg",
+          "theta_fc_m3_m3",
+          "theta_wp_m3_m3",
+          "effective_depth_m",
+          "initial_available_water_pct"
+        ],
+        "title": "ParcelIn",
+        "type": "object"
+      },
+      "ParcelOut": {
+        "additionalProperties": false,
+        "properties": {
+          "effective_depth_m": {
+            "title": "Effective Depth M",
+            "type": "number"
+          },
+          "fallow_evaporation_layer_m": {
+            "$ref": "#/components/schemas/ParameterOut"
+          },
+          "fallow_kc_base": {
+            "$ref": "#/components/schemas/ParameterOut"
+          },
+          "initial_available_water_pct": {
+            "title": "Initial Available Water Pct",
+            "type": "number"
+          },
+          "initial_storage_mm": {
+            "title": "Initial Storage Mm",
+            "type": "number"
+          },
+          "latitude_deg": {
+            "title": "Latitude Deg",
+            "type": "number"
+          },
+          "longitude_deg": {
+            "title": "Longitude Deg",
+            "type": "number"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "profile_capacity_mm": {
+            "title": "Profile Capacity Mm",
+            "type": "number"
+          },
+          "theta_fc_m3_m3": {
+            "title": "Theta Fc M3 M3",
+            "type": "number"
+          },
+          "theta_wp_m3_m3": {
+            "title": "Theta Wp M3 M3",
+            "type": "number"
+          }
+        },
+        "required": [
+          "latitude_deg",
+          "longitude_deg",
+          "theta_fc_m3_m3",
+          "theta_wp_m3_m3",
+          "effective_depth_m",
+          "profile_capacity_mm",
+          "initial_available_water_pct",
+          "initial_storage_mm",
+          "fallow_kc_base",
+          "fallow_evaporation_layer_m"
+        ],
+        "title": "ParcelOut",
+        "type": "object"
+      },
+      "ProvenanceOut": {
+        "additionalProperties": false,
+        "properties": {
+          "date_range": {
+            "$ref": "#/components/schemas/DateRangeOut"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "queried_at": {
+            "format": "date-time",
+            "title": "Queried At",
+            "type": "string"
+          },
+          "requested_location": {
+            "$ref": "#/components/schemas/LocationOut"
+          },
+          "retrieval": {
+            "title": "Retrieval",
+            "type": "string"
+          },
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "source_location": {
+            "$ref": "#/components/schemas/SourceLocationOut"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version"
+          },
+          "spatial_note": {
+            "title": "Spatial Note",
+            "type": "string"
+          },
+          "variables": {
+            "items": {
+              "$ref": "#/components/schemas/VariableProvenanceOut"
+            },
+            "title": "Variables",
+            "type": "array"
+          }
+        },
+        "required": [
+          "source",
+          "service",
+          "retrieval",
+          "queried_at",
+          "requested_location",
+          "source_location",
+          "spatial_note",
+          "date_range",
+          "variables",
+          "label"
+        ],
+        "title": "ProvenanceOut",
+        "type": "object"
+      },
+      "RangeOut": {
+        "additionalProperties": false,
+        "description": "Mínimo, mediana y máximo; la unidad la da el campo que lo contiene.",
+        "properties": {
+          "max": {
+            "title": "Max",
+            "type": "number"
+          },
+          "median": {
+            "title": "Median",
+            "type": "number"
+          },
+          "min": {
+            "title": "Min",
+            "type": "number"
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N"
+          },
+          "no_range": {
+            "default": false,
+            "title": "No Range",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "min",
+          "median",
+          "max"
+        ],
+        "title": "RangeOut",
+        "type": "object"
+      },
+      "ReferenceValueOut": {
+        "additionalProperties": false,
+        "description": "Un valor de referencia con su cita, o ``status`` «sin referencia» o «no aplica».",
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ReferenceValueOut",
+        "type": "object"
+      },
+      "ResolvedInputOut": {
+        "additionalProperties": false,
+        "properties": {
+          "parcel": {
+            "$ref": "#/components/schemas/ParcelOut"
+          },
+          "rotations": {
+            "items": {
+              "$ref": "#/components/schemas/RotationInputOut"
+            },
+            "title": "Rotations",
+            "type": "array"
+          },
+          "window": {
+            "$ref": "#/components/schemas/WindowOut"
+          }
+        },
+        "required": [
+          "parcel",
+          "window",
+          "rotations"
+        ],
+        "title": "ResolvedInputOut",
+        "type": "object"
+      },
+      "ResultOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crops": {
+            "items": {
+              "$ref": "#/components/schemas/CropResultOut"
+            },
+            "title": "Crops",
+            "type": "array"
+          },
+          "rotation_economics": {
+            "$ref": "#/components/schemas/RotationEconomicsOut"
+          },
+          "rotation_id": {
+            "title": "Rotation Id",
+            "type": "string"
+          },
+          "soil_exposure": {
+            "$ref": "#/components/schemas/SoilExposureOut"
+          },
+          "start_year": {
+            "title": "Start Year",
+            "type": "integer"
+          },
+          "water_balance": {
+            "$ref": "#/components/schemas/WaterBalanceOut"
+          }
+        },
+        "required": [
+          "rotation_id",
+          "start_year",
+          "water_balance",
+          "crops",
+          "rotation_economics",
+          "soil_exposure"
+        ],
+        "title": "ResultOut",
+        "type": "object"
+      },
+      "RotationEconomicsOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crops_missing_economics": {
+            "items": {
+              "$ref": "#/components/schemas/MissingEconomicsOut"
+            },
+            "title": "Crops Missing Economics",
+            "type": "array"
+          },
+          "direct_costs_per_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direct Costs Per Ha"
+          },
+          "gross_margin_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Margin Label"
+          },
+          "gross_margin_per_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Margin Per Ha"
+          },
+          "income_per_ha": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Income Per Ha"
+          },
+          "status": {
+            "enum": [
+              "computed",
+              "not_computed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "RotationEconomicsOut",
+        "type": "object"
+      },
+      "RotationIn": {
+        "additionalProperties": false,
+        "properties": {
+          "crops": {
+            "items": {
+              "$ref": "#/components/schemas/CropIn"
+            },
+            "minItems": 1,
+            "title": "Crops",
+            "type": "array"
+          },
+          "id": {
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "initial_residue_cover_pct": {
+            "default": 0.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Initial Residue Cover Pct",
+            "type": "number"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "id",
+          "crops"
+        ],
+        "title": "RotationIn",
+        "type": "object"
+      },
+      "RotationInputOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crops": {
+            "items": {
+              "$ref": "#/components/schemas/CropInputOut"
+            },
+            "title": "Crops",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "initial_residue_cover_pct": {
+            "$ref": "#/components/schemas/ParameterOut"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "id",
+          "initial_residue_cover_pct",
+          "crops"
+        ],
+        "title": "RotationInputOut",
+        "type": "object"
+      },
+      "RotationRangesOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crops": {
+            "items": {
+              "$ref": "#/components/schemas/CropRangesOut"
+            },
+            "title": "Crops",
+            "type": "array"
+          },
+          "gross_margin_per_ha": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RangeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "margin_not_computed_years": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Margin Not Computed Years",
+            "type": "array"
+          },
+          "n_scenarios": {
+            "title": "N Scenarios",
+            "type": "integer"
+          },
+          "rotation_id": {
+            "title": "Rotation Id",
+            "type": "string"
+          },
+          "scenarios_excluded": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Scenarios Excluded",
+            "type": "array"
+          },
+          "scenarios_included": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Scenarios Included",
+            "type": "array"
+          },
+          "strong_wind_days_without_live_crop": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RangeOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "rotation_id",
+          "n_scenarios",
+          "scenarios_included",
+          "scenarios_excluded",
+          "crops",
+          "label"
+        ],
+        "title": "RotationRangesOut",
+        "type": "object"
+      },
+      "ScenarioOut": {
+        "additionalProperties": false,
+        "properties": {
+          "blocked_reasons": {
+            "items": {
+              "$ref": "#/components/schemas/BlockedReasonOut"
+            },
+            "title": "Blocked Reasons",
+            "type": "array"
+          },
+          "days": {
+            "title": "Days",
+            "type": "integer"
+          },
+          "et0_total_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Et0 Total Mm"
+          },
+          "precipitation_total_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precipitation Total Mm"
+          },
+          "start_year": {
+            "title": "Start Year",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "computed",
+              "blocked"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "substituted_days": {
+            "items": {
+              "$ref": "#/components/schemas/SubstitutionOut"
+            },
+            "title": "Substituted Days",
+            "type": "array"
+          },
+          "window_end": {
+            "format": "date",
+            "title": "Window End",
+            "type": "string"
+          },
+          "window_start": {
+            "format": "date",
+            "title": "Window Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_year",
+          "window_start",
+          "window_end",
+          "days",
+          "status"
+        ],
+        "title": "ScenarioOut",
+        "type": "object"
+      },
+      "SimulationRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "parcel": {
+            "$ref": "#/components/schemas/ParcelIn"
+          },
+          "rotations": {
+            "items": {
+              "$ref": "#/components/schemas/RotationIn"
+            },
+            "maxItems": 3,
+            "minItems": 1,
+            "title": "Rotations",
+            "type": "array"
+          },
+          "window": {
+            "$ref": "#/components/schemas/WindowIn"
+          }
+        },
+        "required": [
+          "parcel",
+          "window",
+          "rotations"
+        ],
+        "title": "SimulationRequest",
+        "type": "object"
+      },
+      "SimulationResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/AssumptionOut"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "comparisons": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonOut"
+            },
+            "title": "Comparisons",
+            "type": "array"
+          },
+          "computed_at": {
+            "format": "date-time",
+            "title": "Computed At",
+            "type": "string"
+          },
+          "contract_version": {
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProvenanceOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ranges": {
+            "items": {
+              "$ref": "#/components/schemas/RotationRangesOut"
+            },
+            "title": "Ranges",
+            "type": "array"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "resolved_input": {
+            "$ref": "#/components/schemas/ResolvedInputOut"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ResultOut"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioOut"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/WarningOut"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "contract_version",
+          "model_version",
+          "request_id",
+          "computed_at",
+          "resolved_input",
+          "scenarios",
+          "results",
+          "ranges",
+          "comparisons",
+          "assumptions",
+          "warnings"
+        ],
+        "title": "SimulationResponse",
+        "type": "object"
+      },
+      "SoilExposureOut": {
+        "additionalProperties": false,
+        "properties": {
+          "live_crop_days": {
+            "title": "Live Crop Days",
+            "type": "integer"
+          },
+          "no_live_crop_days": {
+            "title": "No Live Crop Days",
+            "type": "integer"
+          },
+          "no_wind_data_days_without_live_crop": {
+            "title": "No Wind Data Days Without Live Crop",
+            "type": "integer"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "strong_wind_days_without_live_crop": {
+            "title": "Strong Wind Days Without Live Crop",
+            "type": "integer"
+          },
+          "threshold_ms": {
+            "title": "Threshold Ms",
+            "type": "number"
+          },
+          "threshold_source": {
+            "title": "Threshold Source",
+            "type": "string"
+          },
+          "wind_variable": {
+            "title": "Wind Variable",
+            "type": "string"
+          },
+          "window_days": {
+            "title": "Window Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "window_days",
+          "live_crop_days",
+          "no_live_crop_days",
+          "strong_wind_days_without_live_crop",
+          "no_wind_data_days_without_live_crop",
+          "wind_variable",
+          "threshold_ms",
+          "rule",
+          "threshold_source",
+          "note"
+        ],
+        "title": "SoilExposureOut",
+        "type": "object"
+      },
+      "SourceLocationOut": {
+        "additionalProperties": false,
+        "properties": {
+          "elevation_m": {
+            "title": "Elevation M",
+            "type": "number"
+          },
+          "latitude_deg": {
+            "title": "Latitude Deg",
+            "type": "number"
+          },
+          "longitude_deg": {
+            "title": "Longitude Deg",
+            "type": "number"
+          }
+        },
+        "required": [
+          "latitude_deg",
+          "longitude_deg",
+          "elevation_m"
+        ],
+        "title": "SourceLocationOut",
+        "type": "object"
+      },
+      "SowingIn": {
+        "additionalProperties": false,
+        "properties": {
+          "day": {
+            "maximum": 31.0,
+            "minimum": 1.0,
+            "title": "Day",
+            "type": "integer"
+          },
+          "month": {
+            "maximum": 12.0,
+            "minimum": 1.0,
+            "title": "Month",
+            "type": "integer"
+          },
+          "window_year": {
+            "maximum": 2.0,
+            "minimum": 1.0,
+            "title": "Window Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "window_year",
+          "day",
+          "month"
+        ],
+        "title": "SowingIn",
+        "type": "object"
+      },
+      "StageLengthsIn": {
+        "additionalProperties": false,
+        "description": "Las cuatro duraciones o ninguna (CA-3.9): las cuatro claves son obligatorias.",
+        "properties": {
+          "development": {
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Development",
+            "type": "integer"
+          },
+          "initial": {
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Initial",
+            "type": "integer"
+          },
+          "late": {
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Late",
+            "type": "integer"
+          },
+          "mid": {
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Mid",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "initial",
+          "development",
+          "mid",
+          "late"
+        ],
+        "title": "StageLengthsIn",
+        "type": "object"
+      },
+      "SubstitutionOut": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "dates": {
+            "items": {
+              "format": "date",
+              "type": "string"
+            },
+            "title": "Dates",
+            "type": "array"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "variable": {
+            "title": "Variable",
+            "type": "string"
+          }
+        },
+        "required": [
+          "variable",
+          "method",
+          "count",
+          "dates"
+        ],
+        "title": "SubstitutionOut",
+        "type": "object"
+      },
+      "VariableProvenanceOut": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "missing_days": {
+            "title": "Missing Days",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "use": {
+            "title": "Use",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "unit",
+          "use",
+          "missing_days"
+        ],
+        "title": "VariableProvenanceOut",
+        "type": "object"
+      },
+      "WarningOut": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "WarningOut",
+        "type": "object"
+      },
+      "WaterBalanceOut": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_eta_mm": {
+            "title": "Crop Eta Mm",
+            "type": "number"
+          },
+          "et0_mm": {
+            "title": "Et0 Mm",
+            "type": "number"
+          },
+          "excess_lost_mm": {
+            "title": "Excess Lost Mm",
+            "type": "number"
+          },
+          "fallow_evaporation_mm": {
+            "title": "Fallow Evaporation Mm",
+            "type": "number"
+          },
+          "final_storage_mm": {
+            "title": "Final Storage Mm",
+            "type": "number"
+          },
+          "initial_storage_mm": {
+            "title": "Initial Storage Mm",
+            "type": "number"
+          },
+          "mass_balance_error_mm": {
+            "title": "Mass Balance Error Mm",
+            "type": "number"
+          },
+          "precipitation_mm": {
+            "title": "Precipitation Mm",
+            "type": "number"
+          }
+        },
+        "required": [
+          "initial_storage_mm",
+          "final_storage_mm",
+          "precipitation_mm",
+          "et0_mm",
+          "crop_eta_mm",
+          "fallow_evaporation_mm",
+          "excess_lost_mm",
+          "mass_balance_error_mm"
+        ],
+        "title": "WaterBalanceOut",
+        "type": "object"
+      },
+      "WindProxyOut": {
+        "additionalProperties": false,
+        "properties": {
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "threshold_ms": {
+            "title": "Threshold Ms",
+            "type": "number"
+          },
+          "variable": {
+            "title": "Variable",
+            "type": "string"
+          }
+        },
+        "required": [
+          "variable",
+          "threshold_ms",
+          "rule",
+          "source"
+        ],
+        "title": "WindProxyOut",
+        "type": "object"
+      },
+      "WindowDefaultsOut": {
+        "additionalProperties": false,
+        "properties": {
+          "start_day": {
+            "title": "Start Day",
+            "type": "integer"
+          },
+          "start_month": {
+            "title": "Start Month",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "start_day",
+          "start_month"
+        ],
+        "title": "WindowDefaultsOut",
+        "type": "object"
+      },
+      "WindowIn": {
+        "additionalProperties": false,
+        "properties": {
+          "start_day": {
+            "default": 1,
+            "maximum": 31.0,
+            "minimum": 1.0,
+            "title": "Start Day",
+            "type": "integer"
+          },
+          "start_month": {
+            "default": 7,
+            "maximum": 12.0,
+            "minimum": 1.0,
+            "title": "Start Month",
+            "type": "integer"
+          },
+          "start_years": {
+            "items": {
+              "maximum": 2200.0,
+              "minimum": 1900.0,
+              "type": "integer"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Start Years",
+            "type": "array"
+          }
+        },
+        "required": [
+          "start_years"
+        ],
+        "title": "WindowIn",
+        "type": "object"
+      },
+      "WindowOut": {
+        "additionalProperties": false,
+        "properties": {
+          "start_day": {
+            "title": "Start Day",
+            "type": "integer"
+          },
+          "start_month": {
+            "title": "Start Month",
+            "type": "integer"
+          },
+          "start_years": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Start Years",
+            "type": "array"
+          }
+        },
+        "required": [
+          "start_day",
+          "start_month",
+          "start_years"
+        ],
+        "title": "WindowOut",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "AgroDSS compara rotaciones de cultivos de secano con escenarios históricos descriptivos: balance hídrico FAO-56, respuesta del rendimiento FAO-33 y series diarias de NASA POWER. No emite pronósticos ni recomendaciones.",
+    "summary": "Contrato 1.0",
+    "title": "AgroDSS",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/catalog": {
+      "get": {
+        "operationId": "read_catalog_api_v1_catalog_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Catálogo de cultivos y reglas del modelo",
+        "tags": [
+          "catálogo"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Estado del servicio",
+        "tags": [
+          "salud"
+        ]
+      }
+    },
+    "/api/v1/simulations": {
+      "post": {
+        "operationId": "create_simulation_api_v1_simulations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "plan": {
+                  "summary": "Dos rotaciones de tres cultivos, tres escenarios",
+                  "value": {
+                    "currency": "USD",
+                    "parcel": {
+                      "effective_depth_m": 1.2,
+                      "fallow_kc_base": null,
+                      "initial_available_water_pct": 50,
+                      "latitude_deg": -33.68,
+                      "longitude_deg": -65.47,
+                      "name": "Lote 7 — Villa Mercedes",
+                      "theta_fc_m3_m3": 0.28,
+                      "theta_wp_m3_m3": 0.12
+                    },
+                    "rotations": [
+                      {
+                        "crops": [
+                          {
+                            "crop_code": "maize",
+                            "depletion_fraction_p": null,
+                            "economics": {
+                              "direct_costs_per_ha": 620,
+                              "price_per_t": 180
+                            },
+                            "kc_end": 0.35,
+                            "kc_initial": 0.3,
+                            "kc_mid": 1.2,
+                            "ky": null,
+                            "residue_cover_after_pct": 60,
+                            "root_depth_initial_m": 0.15,
+                            "root_depth_max_m": 1.5,
+                            "sowing": {
+                              "day": 15,
+                              "month": 10,
+                              "window_year": 1
+                            },
+                            "stage_lengths_days": {
+                              "development": 40,
+                              "initial": 30,
+                              "late": 30,
+                              "mid": 50
+                            },
+                            "ym_t_ha": 9.0
+                          },
+                          {
+                            "crop_code": "rye_cover",
+                            "depletion_fraction_p": 0.55,
+                            "economics": {
+                              "direct_costs_per_ha": 95
+                            },
+                            "kc_end": 0.8,
+                            "kc_initial": 0.3,
+                            "kc_mid": 1.0,
+                            "residue_cover_after_pct": 80,
+                            "root_depth_initial_m": 0.15,
+                            "root_depth_max_m": 0.8,
+                            "sowing": {
+                              "day": 1,
+                              "month": 4,
+                              "window_year": 1
+                            },
+                            "stage_lengths_days": {
+                              "development": 40,
+                              "initial": 20,
+                              "late": 20,
+                              "mid": 40
+                            }
+                          },
+                          {
+                            "crop_code": "soybean_first",
+                            "economics": {
+                              "direct_costs_per_ha": 380,
+                              "price_per_t": 300
+                            },
+                            "residue_cover_after_pct": 30,
+                            "root_depth_initial_m": 0.15,
+                            "sowing": {
+                              "day": 15,
+                              "month": 11,
+                              "window_year": 2
+                            },
+                            "stage_lengths_days": {
+                              "development": 30,
+                              "initial": 20,
+                              "late": 25,
+                              "mid": 60
+                            },
+                            "ym_t_ha": 3.2
+                          }
+                        ],
+                        "id": "A",
+                        "initial_residue_cover_pct": 30,
+                        "name": "Maíz → centeno de cobertura → soja"
+                      },
+                      {
+                        "crops": [
+                          {
+                            "crop_code": "maize",
+                            "economics": {
+                              "direct_costs_per_ha": 620,
+                              "price_per_t": 180
+                            },
+                            "residue_cover_after_pct": 60,
+                            "sowing": {
+                              "day": 15,
+                              "month": 10,
+                              "window_year": 1
+                            },
+                            "stage_lengths_days": {
+                              "development": 40,
+                              "initial": 30,
+                              "late": 30,
+                              "mid": 50
+                            },
+                            "ym_t_ha": 9.0
+                          },
+                          {
+                            "crop_code": "wheat",
+                            "economics": {
+                              "direct_costs_per_ha": 420,
+                              "price_per_t": 200
+                            },
+                            "sowing": {
+                              "day": 1,
+                              "month": 6,
+                              "window_year": 1
+                            },
+                            "stage_lengths_days": {
+                              "development": 55,
+                              "initial": 25,
+                              "late": 35,
+                              "mid": 70
+                            },
+                            "ym_t_ha": 3.5
+                          },
+                          {
+                            "crop_code": "soybean_second",
+                            "economics": {
+                              "direct_costs_per_ha": 300,
+                              "price_per_t": 300
+                            },
+                            "sowing": {
+                              "day": 3,
+                              "month": 12,
+                              "window_year": 2
+                            },
+                            "stage_lengths_days": {
+                              "development": 25,
+                              "initial": 15,
+                              "late": 20,
+                              "mid": 50
+                            },
+                            "ym_t_ha": 2.0
+                          }
+                        ],
+                        "id": "B",
+                        "name": "Maíz → trigo → soja de segunda"
+                      }
+                    ],
+                    "window": {
+                      "start_day": 1,
+                      "start_month": 7,
+                      "start_years": [
+                        2008,
+                        2011,
+                        2017
+                      ]
+                    }
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/SimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "assumptions": [
+                    {
+                      "code": "RAINFED_NO_IRRIGATION",
+                      "count": null,
+                      "dates": null,
+                      "description": "Secano: riego = 0 todos los días.",
+                      "origin": "system_default",
+                      "scope": {
+                        "level": "request"
+                      },
+                      "source": null,
+                      "unit": "mm/día",
+                      "value": 0
+                    },
+                    {
+                      "code": "FAO_REFERENCE_VALUE",
+                      "count": null,
+                      "dates": null,
+                      "description": "Valor tabulado FAO, no calibrado para el lote.",
+                      "origin": "fao_reference",
+                      "scope": {
+                        "level": "crop",
+                        "parameter": "ky",
+                        "position": 1,
+                        "rotation_id": "A"
+                      },
+                      "source": "FAO-33",
+                      "unit": "adimensional",
+                      "value": 1.25
+                    },
+                    {
+                      "code": "ROOT_DEPTH_LIMITED",
+                      "count": null,
+                      "dates": null,
+                      "description": "La profundidad radicular máxima se limitó a la profundidad efectiva del perfil.",
+                      "origin": "system_default",
+                      "scope": {
+                        "level": "crop",
+                        "parameter": "root_depth_max_m",
+                        "position": 1,
+                        "rotation_id": "A"
+                      },
+                      "source": null,
+                      "unit": "m",
+                      "value": 1.2
+                    },
+                    {
+                      "code": "SUBST_RADIATION_HARGREAVES",
+                      "count": 2,
+                      "dates": [
+                        "2009-01-17",
+                        "2009-01-18"
+                      ],
+                      "description": "Radiación solar faltante estimada con Hargreaves (FAO-56, ec. 50), kRs = 0,16; usada solo para la ET₀.",
+                      "origin": "system_default",
+                      "scope": {
+                        "level": "scenario",
+                        "start_year": 2008
+                      },
+                      "source": "FAO-56, cap. 3",
+                      "unit": null,
+                      "value": null
+                    },
+                    {
+                      "code": "NO_RESIDUE_DECLARED",
+                      "count": null,
+                      "dates": null,
+                      "description": "Sin rastrojo declarado: suelo desnudo, sin reducción de la evaporación.",
+                      "origin": "system_default",
+                      "scope": {
+                        "after_position": 3,
+                        "level": "fallow",
+                        "rotation_id": "B"
+                      },
+                      "source": null,
+                      "unit": "%",
+                      "value": 0
+                    }
+                  ],
+                  "comparisons": [
+                    {
+                      "gross_margin_difference_per_ha": 142.3,
+                      "label": "Diferencia descriptiva de margen bruto (B − A); no indica qué rotación conviene.",
+                      "minuend_rotation_id": "B",
+                      "start_year": 2008,
+                      "subtrahend_rotation_id": "A"
+                    }
+                  ],
+                  "computed_at": "2026-11-15T14:03:22Z",
+                  "contract_version": "1.0",
+                  "currency": "USD",
+                  "model_version": "0.1.0",
+                  "provenance": {
+                    "date_range": {
+                      "end": "2019-06-30",
+                      "start": "2008-07-01"
+                    },
+                    "label": "Dato de modelo/reanálisis de NASA POWER a escala de celda; no es una medición del lote.",
+                    "queried_at": "2026-11-15T14:03:19Z",
+                    "requested_location": {
+                      "latitude_deg": -33.68,
+                      "longitude_deg": -65.47
+                    },
+                    "retrieval": "Consulta en vivo",
+                    "service": "API diaria de punto, comunidad AG",
+                    "source": "NASA POWER",
+                    "source_location": {
+                      "elevation_m": 512.4,
+                      "latitude_deg": -33.68,
+                      "longitude_deg": -65.47
+                    },
+                    "source_version": "v2.x.x",
+                    "spatial_note": "El dato representa una celda de varios kilómetros (resolución nativa según la documentación de POWER), no el lote.",
+                    "variables": [
+                      {
+                        "code": "PRECTOTCORR",
+                        "missing_days": 1,
+                        "name": "Precipitación corregida",
+                        "unit": "mm/día",
+                        "use": "Balance hídrico"
+                      },
+                      {
+                        "code": "T2M_MAX",
+                        "missing_days": 0,
+                        "name": "Temperatura máxima a 2 m",
+                        "unit": "°C",
+                        "use": "ET₀"
+                      },
+                      {
+                        "code": "T2M_MIN",
+                        "missing_days": 0,
+                        "name": "Temperatura mínima a 2 m",
+                        "unit": "°C",
+                        "use": "ET₀"
+                      },
+                      {
+                        "code": "T2MDEW",
+                        "missing_days": 0,
+                        "name": "Punto de rocío a 2 m",
+                        "unit": "°C",
+                        "use": "ET₀"
+                      },
+                      {
+                        "code": "WS2M",
+                        "missing_days": 0,
+                        "name": "Velocidad media diaria del viento a 2 m",
+                        "unit": "m/s",
+                        "use": "ET₀"
+                      },
+                      {
+                        "code": "WS2M_MAX",
+                        "missing_days": 0,
+                        "name": "Velocidad máxima diaria del viento a 2 m",
+                        "unit": "m/s",
+                        "use": "Proxy de viento fuerte"
+                      },
+                      {
+                        "code": "ALLSKY_SFC_SW_DWN",
+                        "missing_days": 2,
+                        "name": "Radiación solar global en superficie",
+                        "unit": "MJ/m²/día",
+                        "use": "ET₀"
+                      }
+                    ]
+                  },
+                  "ranges": [
+                    {
+                      "crops": [
+                        {
+                          "crop_code": "maize",
+                          "eta_etm_ratio": {
+                            "max": 0.87,
+                            "median": 0.761,
+                            "min": 0.652
+                          },
+                          "position": 1,
+                          "yield_t_ha": {
+                            "max": 7.54,
+                            "median": 6.31,
+                            "min": 5.08
+                          }
+                        }
+                      ],
+                      "gross_margin_per_ha": {
+                        "max": 610.1,
+                        "median": 465.8,
+                        "min": 321.5
+                      },
+                      "label": "Rango descriptivo de los años elegidos; no es una probabilidad ni un pronóstico.",
+                      "n_scenarios": 2,
+                      "rotation_id": "A",
+                      "scenarios_excluded": [
+                        2017
+                      ],
+                      "scenarios_included": [
+                        2008,
+                        2011
+                      ],
+                      "strong_wind_days_without_live_crop": {
+                        "max": 9,
+                        "median": 6.5,
+                        "min": 4
+                      }
+                    }
+                  ],
+                  "request_id": "3f2b8c1e-7d4a-4f6b-9a2e-5c8d1b0e7f43",
+                  "resolved_input": {
+                    "parcel": {
+                      "effective_depth_m": 1.2,
+                      "fallow_evaporation_layer_m": {
+                        "note": null,
+                        "origin": "system_default",
+                        "source": "FAO-56, cap. 7 (capa evaporable Ze 0,10–0,15 m)",
+                        "value": 0.15
+                      },
+                      "fallow_kc_base": {
+                        "note": null,
+                        "origin": "team_default",
+                        "source": "Decisión del equipo AgroDSS (rango 0,15–0,20); no es un valor tabulado único de FAO-56",
+                        "value": 0.2
+                      },
+                      "initial_available_water_pct": 50,
+                      "initial_storage_mm": 96.0,
+                      "latitude_deg": -33.68,
+                      "longitude_deg": -65.47,
+                      "profile_capacity_mm": 192.0,
+                      "theta_fc_m3_m3": 0.28,
+                      "theta_wp_m3_m3": 0.12
+                    },
+                    "rotations": [
+                      {
+                        "crops": [
+                          {
+                            "calibrated": false,
+                            "crop_code": "maize",
+                            "crop_name": "Maíz",
+                            "crop_type": "grain",
+                            "parameters": {
+                              "depletion_fraction_p": {
+                                "note": "Valor tabulado FAO, no calibrado para el lote.",
+                                "origin": "fao_reference",
+                                "source": "FAO-56, Tabla 22",
+                                "value": 0.55
+                              },
+                              "kc_end": {
+                                "note": null,
+                                "origin": "user",
+                                "source": null,
+                                "value": 0.35
+                              },
+                              "kc_initial": {
+                                "note": null,
+                                "origin": "user",
+                                "source": null,
+                                "value": 0.3
+                              },
+                              "kc_mid": {
+                                "note": null,
+                                "origin": "user",
+                                "source": null,
+                                "value": 1.2
+                              },
+                              "ky": {
+                                "note": "Valor tabulado FAO, no calibrado para el lote.",
+                                "origin": "fao_reference",
+                                "source": "FAO-33 (Ky del ciclo completo)",
+                                "value": 1.25
+                              },
+                              "residue_cover_after_pct": {
+                                "note": null,
+                                "origin": "user",
+                                "source": null,
+                                "value": 60
+                              },
+                              "root_depth_initial_m": {
+                                "note": null,
+                                "origin": "user",
+                                "source": null,
+                                "value": 0.15
+                              },
+                              "root_depth_max_m": {
+                                "note": "Limitada a la profundidad efectiva (valor ingresado: 1,5 m).",
+                                "origin": "user",
+                                "source": null,
+                                "value": 1.2
+                              },
+                              "stage_lengths_days": {
+                                "note": null,
+                                "origin": "user",
+                                "source": null,
+                                "value": {
+                                  "development": 40,
+                                  "initial": 30,
+                                  "late": 30,
+                                  "mid": 50
+                                }
+                              },
+                              "ym_t_ha": {
+                                "note": null,
+                                "origin": "user",
+                                "source": null,
+                                "value": 9.0
+                              }
+                            },
+                            "position": 1
+                          }
+                        ],
+                        "id": "A",
+                        "initial_residue_cover_pct": {
+                          "note": null,
+                          "origin": "user",
+                          "source": null,
+                          "value": 30
+                        },
+                        "name": "Maíz → centeno de cobertura → soja"
+                      }
+                    ],
+                    "window": {
+                      "start_day": 1,
+                      "start_month": 7,
+                      "start_years": [
+                        2008,
+                        2011,
+                        2017
+                      ]
+                    }
+                  },
+                  "results": [
+                    {
+                      "crops": [
+                        {
+                          "crop_code": "maize",
+                          "crop_type": "grain",
+                          "cycle_end_date": "2009-03-13",
+                          "economics": {
+                            "direct_costs_per_ha": 620.0,
+                            "gross_margin_label": null,
+                            "gross_margin_per_ha": 295.26,
+                            "income_per_ha": 915.26
+                          },
+                          "eta_etm_ratio": 0.652,
+                          "eta_mm": 418.9,
+                          "etm_mm": 642.5,
+                          "position": 1,
+                          "relative_yield": 0.565,
+                          "sowing_date": "2008-10-15",
+                          "storage_at_end_mm": 31.2,
+                          "storage_at_sowing_mm": 88.4,
+                          "stress_days": 71,
+                          "yield_note": null,
+                          "yield_t_ha": 5.08
+                        },
+                        {
+                          "crop_code": "rye_cover",
+                          "crop_type": "cover",
+                          "cycle_end_date": "2009-07-29",
+                          "economics": {
+                            "direct_costs_per_ha": 95.0,
+                            "gross_margin_label": "Margen bruto negativo",
+                            "gross_margin_per_ha": -95.0,
+                            "income_per_ha": 0.0
+                          },
+                          "eta_etm_ratio": 0.76,
+                          "eta_mm": 121.7,
+                          "etm_mm": 160.2,
+                          "position": 2,
+                          "relative_yield": null,
+                          "sowing_date": "2009-04-01",
+                          "storage_at_end_mm": 41.0,
+                          "storage_at_sowing_mm": 70.5,
+                          "stress_days": 18,
+                          "yield_note": "No aplica (cultivo de cobertura).",
+                          "yield_t_ha": null
+                        },
+                        {
+                          "crop_code": "soybean_first",
+                          "crop_type": "grain",
+                          "cycle_end_date": "2010-03-29",
+                          "economics": {
+                            "direct_costs_per_ha": 380.0,
+                            "gross_margin_label": null,
+                            "gross_margin_per_ha": 121.24,
+                            "income_per_ha": 501.24
+                          },
+                          "eta_etm_ratio": 0.438,
+                          "eta_mm": 250.0,
+                          "etm_mm": 571.0,
+                          "position": 3,
+                          "relative_yield": 0.522,
+                          "sowing_date": "2009-11-15",
+                          "storage_at_end_mm": 52.3,
+                          "storage_at_sowing_mm": 95.6,
+                          "stress_days": 64,
+                          "yield_note": null,
+                          "yield_t_ha": 1.67
+                        }
+                      ],
+                      "rotation_economics": {
+                        "crops_missing_economics": [],
+                        "direct_costs_per_ha": 1095.0,
+                        "gross_margin_label": null,
+                        "gross_margin_per_ha": 321.5,
+                        "income_per_ha": 1416.5,
+                        "status": "computed"
+                      },
+                      "rotation_id": "A",
+                      "soil_exposure": {
+                        "live_crop_days": 405,
+                        "no_live_crop_days": 325,
+                        "no_wind_data_days_without_live_crop": 0,
+                        "note": "«Días sin cultivo vivo» no equivale a suelo desnudo.",
+                        "rule": "Velocidad máxima diaria del viento a 2 m estrictamente mayor que 8,0 m/s, solo en días sin cultivo vivo.",
+                        "strong_wind_days_without_live_crop": 9,
+                        "threshold_ms": 8.0,
+                        "threshold_source": "Decisión del equipo AgroDSS (revisión 3); no calibrado para erosión local.",
+                        "wind_variable": "WS2M_MAX",
+                        "window_days": 730
+                      },
+                      "start_year": 2008,
+                      "water_balance": {
+                        "crop_eta_mm": 790.6,
+                        "et0_mm": 2650.2,
+                        "excess_lost_mm": 160.1,
+                        "fallow_evaporation_mm": 255.3,
+                        "final_storage_mm": 75.4,
+                        "initial_storage_mm": 96.0,
+                        "mass_balance_error_mm": 0.0,
+                        "precipitation_mm": 1185.4
+                      }
+                    }
+                  ],
+                  "scenarios": [
+                    {
+                      "blocked_reasons": [],
+                      "days": 730,
+                      "et0_total_mm": 2650.2,
+                      "precipitation_total_mm": 1185.4,
+                      "start_year": 2008,
+                      "status": "computed",
+                      "substituted_days": [
+                        {
+                          "count": 2,
+                          "dates": [
+                            "2009-01-17",
+                            "2009-01-18"
+                          ],
+                          "method": "Hargreaves (FAO-56, ec. 50), kRs = 0,16",
+                          "variable": "ALLSKY_SFC_SW_DWN"
+                        }
+                      ],
+                      "window_end": "2010-06-30",
+                      "window_start": "2008-07-01"
+                    },
+                    {
+                      "blocked_reasons": [],
+                      "days": 731,
+                      "et0_total_mm": 2588.9,
+                      "precipitation_total_mm": 1402.7,
+                      "start_year": 2011,
+                      "status": "computed",
+                      "substituted_days": [],
+                      "window_end": "2013-06-30",
+                      "window_start": "2011-07-01"
+                    },
+                    {
+                      "blocked_reasons": [
+                        {
+                          "code": "MISSING_PRECIPITATION",
+                          "dates": [
+                            "2018-03-04"
+                          ],
+                          "message": "Falta la precipitación de NASA POWER en 1 día (2018-03-04). La lluvia no se sustituye: el escenario no se calcula.",
+                          "variable": "PRECTOTCORR"
+                        }
+                      ],
+                      "days": 730,
+                      "et0_total_mm": null,
+                      "precipitation_total_mm": null,
+                      "start_year": 2017,
+                      "status": "blocked",
+                      "substituted_days": [],
+                      "window_end": "2019-06-30",
+                      "window_start": "2017-07-01"
+                    }
+                  ],
+                  "warnings": [
+                    {
+                      "code": "HISTORICAL_DESCRIPTIVE",
+                      "message": "Escenarios históricos descriptivos: muestran cómo se habría comportado cada rotación con el clima de los años elegidos; no son pronósticos."
+                    },
+                    {
+                      "code": "UNCALIBRATED_PARAMETERS",
+                      "message": "Kc, Ky, Ym y los parámetros de suelo son entradas o referencias no calibradas para el lote."
+                    },
+                    {
+                      "code": "CELL_SCALE_DATA",
+                      "message": "Los datos climáticos de NASA POWER representan una celda, no el lote."
+                    },
+                    {
+                      "code": "NOT_A_RECOMMENDATION",
+                      "message": "AgroDSS compara rotaciones para apoyar la decisión del agrónomo; no recomienda ninguna."
+                    },
+                    {
+                      "code": "SUBSTITUTIONS_PRESENT",
+                      "message": "Se estimaron datos faltantes con métodos FAO-56 en 2 días del escenario 2008; ver supuestos."
+                    },
+                    {
+                      "code": "SCENARIOS_BLOCKED",
+                      "message": "1 escenario no se calculó (2017); ver motivos."
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationResponse"
+                }
+              }
+            },
+            "description": "Comparación calculada (puede traer escenarios bloqueados)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Solicitud con datos inválidos."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error interno de cálculo o inesperado."
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "NASA POWER devolvió un error o un formato inesperado."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "NASA POWER no disponible o limitando consultas."
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "NASA POWER no respondió a tiempo."
+          }
+        },
+        "summary": "Comparar rotaciones con series históricas de NASA POWER",
+        "tags": [
+          "simulaciones"
+        ]
+      }
+    }
+  }
+}
