@@ -1,9 +1,9 @@
 
 import { ContextualInspector } from "../workspaces/strategies/StrategyComparison.jsx";
 
-export default function Inspector({ parcel, parcelFacts, strategy, inspection, onStage, parcelMode, fullParcel, outsideComparison, onReview, onClose }) {
+export default function Inspector({ parcel, parcelFacts, strategy, inspection, simulation, strategies, onStage, parcelMode, fullParcel, outsideComparison, onReview, onClose }) {
   if (!parcelMode) return <ContextualInspector parcel={parcel} strategy={strategy}
-    inspection={inspection} onStage={onStage} outsideComparison={outsideComparison} onClose={onClose} />;
+    inspection={inspection} simulation={simulation} strategies={strategies} onStage={onStage} outsideComparison={outsideComparison} onClose={onClose} />;
 
   return <aside className="inspector" id="parcel-inspector" tabIndex={-1} aria-label="Inspector de parcela">
     <div className="sticky">
@@ -16,7 +16,7 @@ export default function Inspector({ parcel, parcelFacts, strategy, inspection, o
         <dl className="work-readout">{parcelFacts.map(([label, value]) => (
           <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
         ))}</dl>
-        <button type="button" className="review-btn" onClick={onReview}>Consultar referencia de demostración</button>
+        <button type="button" className="review-btn" onClick={onReview}>{simulation?.response ? "Consultar supuestos y procedencia del motor" : "Consultar referencia de demostración"}</button>
       </> : <a className="work-button" href="#parcela/identificacion">Ver ficha en Mi parcela</a>}
     </div>
   </aside>;

@@ -16,6 +16,10 @@ import { duplicateStrategy, initialComparison, sequenceText, strategyTemplates, 
 import EconomyWorkspace from "./workspaces/EconomyWorkspace.jsx";
 import InterpretationWorkspace from "./workspaces/InterpretationWorkspace.jsx";
 import ReportWorkspace, { ReportContent } from "./workspaces/ReportWorkspace.jsx";
+import { demoPreparation } from "./workspaces/preparation.js";
+import { simulationContext } from "./workspaces/simulation.js";
+import { errorSummary, getCatalog, getHealth, postSimulation } from "./services/api.js";
+import cropReference from "./data/crop-reference.json";
 
 const panels = { parcela: ParcelWorkspace, estrategias: ExploreWorkspace, economia: EconomyWorkspace,
   interpretacion: InterpretationWorkspace, informe: ReportWorkspace };
@@ -33,6 +37,7 @@ export default function App() {
   const [isReviewOpen, setReviewOpen] = useState(false);
   const [metricId, setMetricId] = useState("water");
   const [strategyNotice, setStrategyNotice] = useState(null);
+  const [serviceNotice, setServiceNotice] = useState("");
 
   const { workspace, section } = route;
   const Workspace = panels[workspace.id];
@@ -54,6 +59,7 @@ export default function App() {
   const inspection = { ...selection, strategyId: selected.id,
     result: selection.resultSection === sectionKey ? selection.result : undefined };
   const comparisonIds = draft.comparisonIds ?? initialComparison;
+  const simulation = simulationContext({ parcel, draft, strategies, comparisonIds });
   const showParcelContext = workspace.id === "parcela" && !inspectorOpen;
   const localStrategyControls = workspace.id === "estrategias" && ["biblioteca", "editor", "comparar", "cronologia"].includes(section);
   const group = workspace.id === "estrategias" ? strategyGroups.find(([, ids]) => ids.includes(section)) : undefined;
@@ -126,6 +132,34 @@ export default function App() {
     }
   }, [explorerOpen]);
 
+  async function runSimulation() {
+    const parcelId = activeParcelId;
+    const { request, strategyMap, issues } = simulation;
+    if (issues.length || simulation.status === "running") return;
+    const store = (run) => setDrafts((previous) => updateParcelDraft(previous, parcelId, () => ({
+      simulationRun: { request, strategyMap, response: null, error: null, executedAt: null, ...run } })));
+    store({ status: "running" });
+    try {
+      const response = await postSimulation(request);
+      store({ status: "done", response, executedAt: new Date().toISOString() });
+    } catch (error) {
+      store({ status: "error", error: errorSummary(error), executedAt: new Date().toISOString() });
+    }
+  }
+
+  async function checkService() {
+    setServiceNotice("Comprobando el servicio de cálculo…");
+    try {
+      const [health, catalog] = await Promise.all([getHealth(), getCatalog()]);
+      const sameCatalog = catalog.catalog_version === cropReference.catalog_version;
+      setServiceNotice(`Servicio disponible (${health.status}) · Catálogo ${catalog.catalog_version} con ${catalog.crops.length} cultivos` +
+        (sameCatalog ? "." : ` · Distinto del catálogo local ${cropReference.catalog_version}: revisá las referencias.`));
+    } catch (error) {
+      const { message, requestId } = errorSummary(error);
+      setServiceNotice(message + (requestId ? ` · request_id ${requestId}` : ""));
+    }
+  }
+
   function storeStrategy(strategy) {
     patch({ strategies: draft.strategies.some(({ id }) => id === strategy.id)
       ? draft.strategies.map((entry) => entry.id === strategy.id ? strategy : entry)
@@ -163,6 +197,8 @@ export default function App() {
       window.location.hash = "#estrategias/biblioteca";
     },
     inspect: inspectStrategy,
+    simulation, serviceNotice, onRunSimulation: runSimulation, onCheckService: checkService,
+    onLoadDemo: () => patch(demoPreparation(draft)),
   };
 
   const report = { parcel, referenceParcel, draft, strategies, comparisonIds, parcelRotations, selected, scenario, periodLabel };
@@ -209,7 +245,7 @@ export default function App() {
             baseline={economicBaselines[activeParcelId]} patch={patch} onClose={closeExplorer} />
 
           : inspectorOpen && <Inspector parcel={parcel} parcelFacts={parcelFacts}
-              strategy={selected} inspection={inspection} onStage={(stageId) => inspectStrategy(selected.id, { stageId })} parcelMode={workspace.id === "parcela" || parcelInspection}
+              strategy={selected} inspection={inspection} simulation={simulation} strategies={strategies} onStage={(stageId) => inspectStrategy(selected.id, { stageId })} parcelMode={workspace.id === "parcela" || parcelInspection}
               fullParcel={workspace.id === "parcela"} outsideComparison={!comparisonIds.includes(selected.id)}
               onReview={() => setReviewOpen(true)} onClose={() => {
                 setInspectorOpen(false);
@@ -218,7 +254,7 @@ export default function App() {
 
       </div>
       <div className="print-only workspace-print"><ReportContent {...report} /></div>
-      <AssumptionsDialog parcel={referenceParcel} isOpen={isReviewOpen} onClose={() => setReviewOpen(false)} />
+      <AssumptionsDialog parcel={referenceParcel} simulation={simulation} isOpen={isReviewOpen} onClose={() => setReviewOpen(false)} />
     </>
   );
 }

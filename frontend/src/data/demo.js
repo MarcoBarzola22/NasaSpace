@@ -13,13 +13,13 @@ export const rotations = [
     ],
   },
   {
-    id: "B", sequence: "Maíz → Centeno de cobertura → Soja", shortSequence: "Maíz – Centeno – Soja", label: "Centeno", caption: "De cobertura",
+    id: "B", sequence: "Maíz → Centeno de cobertura → Soja de primera", shortSequence: "Maíz – Centeno – Soja 1.ª", label: "Centeno", caption: "De cobertura",
     name: "B · Centeno de cobertura",
     yields: [7.2, null, 3.4],
     phases: [
       maize,
       { tone: "rye", name: "Centeno", note: "Sin venta de grano" },
-      { tone: "soy", name: "Soja", note: "Cultivo comercial" },
+      { tone: "soy", name: "Soja de primera", note: "Cultivo comercial" },
     ],
   },
   {

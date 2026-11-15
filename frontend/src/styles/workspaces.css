@@ -131,3 +131,9 @@ object.file-preview { height: 420px; }
 .study-overview p { margin: 3px 0; overflow-wrap: anywhere; }
 .study-overview button { flex: 0 0 auto; }
 @media (max-width: 430px) { .study-overview li { flex-wrap: wrap; } }
+
+/* Engine run and results */
+.simulation-run { margin: 10px 0; }
+.simulation-error p { margin: 4px 0; }
+.simulation-error code { font-size: 12px; }
+.dialog.dialog-wide { width: min(960px, 94vw); max-height: 88vh; overflow: auto; }

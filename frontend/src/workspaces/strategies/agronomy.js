@@ -1,6 +1,6 @@
 import catalog from "../../data/crop-reference.json";
-import { numberValue, rangeError, recurringDate } from "../preparation.js";
-export const cropCodes = {maize:"maize","soy-first":"soybean_first","soy-second":"soybean_second",wheat:"wheat",rye:"rye_cover"};
+import { CROP_MODEL_MAP, numberValue, rangeError, recurringDate } from "../preparation.js";
+export const cropCodes = CROP_MODEL_MAP;
 export const durationKeys = ["initial","development","mid","late"];
 export const advancedFields = [
  ["kc_initial","Kc inicial","adimensional",0,2],["kc_mid","Kc medio","adimensional",0,2],["kc_end","Kc final","adimensional",0,2],

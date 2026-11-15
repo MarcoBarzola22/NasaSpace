@@ -5,6 +5,7 @@ import { formatMoney, formatNumber, metrics } from "../../data/presentation.js";
 import { comparisonRows, selectedStrategies, yieldColumns, yieldValues } from "../comparison.js";
 import { economicResultNotice } from "../economics.js";
 import { DataTable, Panel, Status } from "../Controls.jsx";
+import SimulationResults, { DemoNotice, SimulationRunPanel, StrategyEngineSummary } from "../SimulationResults.jsx";
 import { calculationLabel, comparisonContext, dateTime, reviewLabel, sequenceText, stageName, strategyHorizon, validateStrategy } from "./model.js";
 
 const indicatorViews = [["economy", "Economía"], ["water", "Agua"], ["soil", "Cobertura"], ["production", "Producción"]];
@@ -140,7 +141,8 @@ export function Results({ strategies, demoResults, metric, setMetric, inspect, s
   </Panel>;
 }
 
-export default function StrategyComparison({ strategies, comparisonIds, onToggle, inspection, inspect, demoResults, scenario, parcelName, draft, onOpenExplorer, explorerOpen }) {
+export default function StrategyComparison({ strategies, comparisonIds, onToggle, inspection, inspect, demoResults, scenario, parcelName, draft, onOpenExplorer, explorerOpen,
+  simulation, serviceNotice, onRunSimulation, onCheckService, onLoadDemo }) {
   const [metric, setMetric] = useState("economy");
   const selected = selectedStrategies(strategies, comparisonIds);
   const context = comparisonContext(selected);
@@ -157,6 +159,8 @@ export default function StrategyComparison({ strategies, comparisonIds, onToggle
         })}
       </div>
       <p className="work-note" role="status">{selected.length} de 3 seleccionadas{selected.length === 3 ? " · Retirá una para agregar otra." : "."}</p>
+      {simulation && <SimulationRunPanel simulation={simulation} service={serviceNotice} onRun={onRunSimulation}
+        onCheckService={onCheckService} onLoadDemo={onLoadDemo} />}
       {selected.length < 2 && <Status tone="warning">Seleccioná al menos dos estrategias para compararlas.</Status>}
       <DataTable caption="Alternativas seleccionadas" columns={["Estrategia", "Secuencia", "Horizonte", "Revisión y resultados"]}
         rows={selected.map((strategy) => ({ id: strategy.id, selected: inspection.strategyId === strategy.id, cells: [
@@ -167,13 +171,16 @@ export default function StrategyComparison({ strategies, comparisonIds, onToggle
     </Panel>
     {selected.length > 0 && <>
       <Timeline strategies={selected} inspection={inspection} inspect={inspect} context={context} />
-      <Results strategies={selected} demoResults={demoResults} metric={metric} setMetric={setMetric} inspect={inspect}
-        selectedId={inspection.strategyId} scenario={scenario} context={context} draft={draft} />
+      {simulation?.response ? <SimulationResults run={simulation.run} status={simulation.status} strategies={strategies} /> : <>
+        <DemoNotice>Las cifras siguientes son referencias precargadas, independientes de las entradas declaradas.</DemoNotice>
+        <Results strategies={selected} demoResults={demoResults} metric={metric} setMetric={setMetric} inspect={inspect}
+          selectedId={inspection.strategyId} scenario={scenario} context={context} draft={draft} />
+      </>}
     </>}
   </>;
 }
 
-export function ContextualInspector({ strategy, inspection, onStage, outsideComparison, onClose }) {
+export function ContextualInspector({ strategy, inspection, simulation, onStage, outsideComparison, onClose }) {
   const stage = strategy?.stages.find(({ id }) => id === inspection.stageId);
   const result = inspection.result;
   const duration = stage && stage.startDate && stage.endDate ? Math.round((dateTime(stage.endDate) - dateTime(stage.startDate)) / day) : null;
@@ -190,6 +197,7 @@ export function ContextualInspector({ strategy, inspection, onStage, outsideComp
           <div><dt>Revisión</dt><dd>{reviewLabel(strategy)}</dd></div>
           <div><dt>Resultados</dt><dd>{calculationLabel(strategy)}</dd></div>
         </dl>
+        {simulation && <StrategyEngineSummary simulation={simulation} strategy={strategy} />}
         {inspection.referenceDate ? <>
           <h3>Fecha de referencia</h3><p>{inspection.referenceDate} · Escala del calendario.</p>
           <p className="work-note">{strategy.stages.filter(({ startDate, endDate }) => startDate && endDate && startDate <= inspection.referenceDate && endDate >= inspection.referenceDate).map(stageName).join(" · ") || "Sin etapas registradas para esta fecha."}</p>

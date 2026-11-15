@@ -1,4 +1,5 @@
 import { updateRecord } from "./session.js";
+import { crops, stageName } from "./strategies/model.js";
 
 export const saleCrops = ["Maíz", "Soja", "Trigo"];
 export const priceSources = ["Ingresado por el usuario", "Referencia BCR declarada", "Otra fuente declarada"];
@@ -93,3 +94,60 @@ export function marginAxis(values) {
   return { minimum, maximum, zero, position: (value) => ((value - minimum) / range) * 100 };
 }
 
+
+// --- Normalised economic inputs for the contract 1.0 (no result is calculated here) ---
+
+const soyGeneric = "Soja";
+const normal = (text) => String(text ?? "").trim().toLowerCase();
+
+function stageLabels(stage) {
+  const label = crops.find(([id]) => id === stage.cropId)?.[1];
+  const generic = stage.cropId?.startsWith("soy") ? soyGeneric : stage.cropId === "rye" ? "Centeno" : undefined;
+  return [...new Set([label, stageName(stage), generic].filter(Boolean))];
+}
+
+/** Single declared price per tonne of the crop of a stage; `null` when missing or ambiguous. */
+function stagePrice(prices, stage) {
+  for (const label of stageLabels(stage)) {
+    const rows = priceRowsForCrop(prices, label).filter((row) => !economicEntryIssue(row));
+    const options = new Set(rows.map((row) => `${amountValue(row.amount)} ${row.currency}`));
+    if (options.size === 1) return { amount: amountValue(rows[0].amount), currency: rows[0].currency };
+    if (options.size > 1) return null;
+  }
+  return null;
+}
+
+/**
+ * Declared prices and direct costs per crop stage, with one common currency.
+ * `costPerHa` adds the valid cost rows (per hectare) assigned to the stage, either through a
+ * linked operation or through the declared crop. A missing value stays `null`: the backend then
+ * reports the margin as not computed. Mixed currencies leave every value in `null`.
+ */
+export function economicSummary(draft, strategies) {
+  const stages = {};
+  const currencies = new Set();
+  const unassignedCostIds = [];
+  for (const strategy of strategies) {
+    const cropStages = strategy.stages.filter(({ kind }) => kind === "commercial" || kind === "cover");
+    const costs = Object.fromEntries(cropStages.map(({ id }) => [id, null]));
+    for (const row of draft.costs.filter((cost) => cost.strategy === strategy.id)) {
+      const amount = amountValue(row.amount);
+      const targets = cropStages.filter((stage) => stage.operations.some(({ id }) => id === row.operationId));
+      const byCrop = targets.length ? targets : cropStages.filter((stage) => stageLabels(stage).some((label) => normal(label) === normal(row.crop)));
+      if (economicEntryIssue(row) || amount === null || comparableUnit(row) !== "ha" || byCrop.length !== 1) {
+        unassignedCostIds.push(row.id);
+        continue;
+      }
+      costs[byCrop[0].id] = (costs[byCrop[0].id] ?? 0) + amount;
+      currencies.add(row.currency);
+    }
+    stages[strategy.id] = Object.fromEntries(cropStages.map((stage) => {
+      const price = stage.kind === "commercial" ? stagePrice(draft.prices, stage) : null;
+      if (price) currencies.add(price.currency);
+      return [stage.id, { pricePerT: price?.amount ?? null, costPerHa: costs[stage.id] }];
+    }));
+  }
+  const incompatible = currencies.size > 1;
+  if (incompatible) for (const entries of Object.values(stages)) for (const entry of Object.values(entries)) Object.assign(entry, { pricePerT: null, costPerHa: null });
+  return { currency: currencies.size === 1 ? [...currencies][0] : null, currencies: [...currencies].sort(), incompatible, stages, unassignedCostIds };
+}

@@ -11,6 +11,10 @@ export default [
   },
   {
     files: ["src/**/*.{js,jsx}"],
-    languageOptions: { globals: { document: "readonly", window: "readonly", URLSearchParams: "readonly", URL: "readonly", Blob: "readonly", crypto: "readonly" } },
+    languageOptions: { globals: { document: "readonly", window: "readonly", URLSearchParams: "readonly", URL: "readonly", Blob: "readonly", crypto: "readonly", fetch: "readonly", globalThis: "readonly" } },
+  },
+  {
+    files: ["tests/**/*.{js,jsx}"],
+    languageOptions: { globals: { URL: "readonly" } },
   },
 ];

@@ -68,7 +68,8 @@ export function studyReviewLabel(study) {
 
 export function exportDraft(draft) {
   const fileInfo = (file) => ({ name: file.name, size: file.size, type: file.type });
-  return { ...draft, identity: validIdentity(draft.identity),
+  const { simulationRun: _run, ...declared } = draft;
+  return { ...declared, identity: validIdentity(draft.identity),
     historyFiles: draft.historyFiles.map(fileInfo),
     studies: draft.studies.map(({ files, analysisDate, ...study }) => ({ ...study,
       ...(!study.sampleDate || !analysisDate || analysisDate >= study.sampleDate ? { analysisDate } : {}),

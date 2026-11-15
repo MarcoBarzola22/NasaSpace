@@ -15,6 +15,21 @@ const templateKinds = { maize: "commercial", fallow: "fallow", rye: "cover", whe
 const templateCrop = { maize: "maize", rye: "rye", wheat: "wheat" };
 export const initialComparison = ["A", "B", "C"];
 
+// Demonstration declarations of the three templates. They reproduce the documented example of the
+// contract 1.0 (backend/app/data/examples/simulation_request.json): inputs to run the demo, not
+// calibrated values. Every other parameter is left empty so the backend applies its reference.
+export const DEMO_SOURCE = "Ejemplo del contrato 1.0 · demostración, no calibrado";
+const declared = (value, unit) => ({ value, unit, source: DEMO_SOURCE, basis: "Supuesto del usuario" });
+const sowing = (window_year, day, month) => ({ window_year, day, month });
+const durations = (initial, development, mid, late) => ({ initial, development, mid, late });
+const templateAgronomy = {
+  maize: { sowing: sowing("1", "15", "10"), ym: declared("9", "t/ha"), residue: declared("60", "%") },
+  rye: { sowing: sowing("1", "1", "4"), durations: durations("20", "40", "40", "20"), durationSource: DEMO_SOURCE, residue: declared("80", "%") },
+  "soy-first": { sowing: sowing("2", "15", "11"), ym: declared("3.2", "t/ha"), residue: declared("30", "%") },
+  wheat: { sowing: sowing("1", "1", "6"), durations: durations("25", "55", "70", "35"), durationSource: DEMO_SOURCE, ym: declared("3.5", "t/ha") },
+  "soy-second": { sowing: sowing("2", "3", "12"), durations: durations("15", "25", "50", "20"), durationSource: DEMO_SOURCE, ym: declared("2", "t/ha") },
+};
+
 export function strategyTemplates(rotations, parcel) {
   return rotations.map((rotation) => ({
     id: rotation.id,
@@ -24,11 +39,11 @@ export function strategyTemplates(rotations, parcel) {
     isTemplate: true,
     reviewStatus: "template",
     calculationStatus: "demonstration",
-    stages: rotation.phases.map(({ tone, name, note }, index) => ({
-      id: `${rotation.id}-${index}`, kind: templateKinds[tone], name,
-      cropId: tone === "soy" ? ({ A: "soy-first", B: "soy", C: "soy-second" })[rotation.id] : templateCrop[tone] || "",
-      operations: [], notes: note,
-    })),
+    stages: rotation.phases.map(({ tone, name, note }, index) => {
+      const cropId = tone === "soy" ? ({ A: "soy-first", B: "soy-first", C: "soy-second" })[rotation.id] : templateCrop[tone] || "";
+      return { id: `${rotation.id}-${index}`, kind: templateKinds[tone], name, cropId, operations: [], notes: note,
+        ...(templateAgronomy[cropId] ? { agronomy: templateAgronomy[cropId] } : {}) };
+    }),
   }));
 }
 
