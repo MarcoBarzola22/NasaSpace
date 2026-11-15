@@ -1,0 +1,262 @@
+.parcel-workspace-header {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.map-surface {
+  position: relative;
+  min-height: 580px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #2a4031;
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.map-surface.dragging {
+  cursor: grabbing;
+}
+
+.map-stage,
+.map-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-stage {
+  transform-origin: center;
+}
+
+.map-cover image {
+  pointer-events: none;
+}
+
+.map-field {
+  stroke: #d1e7ce;
+  stroke-width: 2.4;
+  fill: #b5d995;
+  fill-opacity: .045;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+  transition: fill .15s, fill-opacity .15s, stroke-width .15s;
+}
+
+.map-field:hover,
+.map-field:focus-visible {
+  fill: #d8eaa4;
+  fill-opacity: .2;
+  stroke: #e8f7ce;
+  stroke-width: 4;
+}
+
+.map-field.selected {
+  fill: #acdb77;
+  fill-opacity: .29;
+  stroke: #d9ff9c;
+  stroke-width: 5;
+  filter: drop-shadow(0 0 5px #b3f46b);
+}
+
+/* SVG's native outline follows the bounding box. Use the polygon stroke for keyboard focus. */
+.map-field:focus {
+  outline: none;
+}
+
+.map-field:focus-visible {
+  stroke-dasharray: 8 4;
+}
+
+.map-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  padding: 5px 8px;
+  gap: 1px;
+  border: 1px solid #66836b;
+  border-radius: 7px;
+  background: #101d18e6;
+  color: #edf8df;
+  font-size: 13px;
+  line-height: 1.25;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.map-label span {
+  color: #bcd2bc;
+  font-size: 10px;
+}
+
+.map-caption,
+.map-legend {
+  position: absolute;
+  left: 16px;
+  margin: 0;
+  border: 1px solid #63826a;
+  border-radius: 8px;
+  background: #0b1817e8;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.map-caption {
+  top: 14px;
+  max-width: calc(100% - 72px);
+  padding: 8px 11px;
+  color: #eecb8b;
+  border-color: #846f4d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.map-tools {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  display: grid;
+  gap: 7px;
+}
+
+.map-tools button {
+  height: 38px;
+  min-width: 40px;
+  border: 1px solid #637969;
+  background: #12221fdc;
+  color: #f1f4e9;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.map-tools button:last-child {
+  font-size: 13px;
+}
+
+.map-tools button:hover {
+  background: #2a4835;
+}
+
+.map-legend {
+  bottom: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: #d4e3d4;
+}
+
+.map-swatch,
+.map-line {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.map-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: #a8dc74;
+  border: 1px solid #e0faad;
+  vertical-align: -1px;
+}
+
+.map-line {
+  height: 4px;
+  width: 36px;
+  background: linear-gradient(90deg, #f8f3db, #b5ddb1);
+  vertical-align: 3px;
+}
+
+.map-status {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.map-status a {
+  color: var(--lime);
+  text-decoration: underline;
+}
+
+.inspector-parcel-facts {
+  margin: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.inspector-parcel-facts dt {
+  color: var(--muted);
+}
+
+.inspector-parcel-facts dd {
+  margin: 0;
+  font-weight: 650;
+  text-align: right;
+}
+
+.inspector-parcel-facts + .small-label + .inspector-tabs {
+  margin-top: 8px;
+}
+
+.parcel-water-meter > div {
+  background: linear-gradient(90deg, #77aaa7, #c2dfaa);
+}
+
+.inspector .stat-kv strong {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1100px) {
+  .map-surface {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 700px) {
+  .map-surface {
+    min-height: 340px;
+  }
+
+  .map-legend {
+    bottom: 8px;
+    left: 8px;
+    gap: 7px;
+    font-size: 9px;
+    padding: 8px;
+  }
+
+  .map-caption {
+    top: 8px;
+    left: 8px;
+    font-size: 10px;
+    padding: 6px;
+  }
+
+  .map-label {
+    font-size: 11px;
+    padding: 4px 5px;
+  }
+
+  .map-label span {
+    font-size: 9px;
+  }
+
+  .map-tools {
+    top: 8px;
+    right: 8px;
+  }
+
+  .map-tools button {
+    height: 32px;
+    min-width: 34px;
+  }
+}

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { assumptions } from "../data/demo.js";
+import { getParcelFacts } from "../data/parcels.js";
 
-export default function AssumptionsDialog({ isOpen, onClose }) {
+export default function AssumptionsDialog({ parcel, isOpen, onClose }) {
   const dialogRef = useRef(null);
 
   useEffect(() => {
@@ -23,7 +23,14 @@ export default function AssumptionsDialog({ isOpen, onClose }) {
       <h2 id="modalTitle">Datos del lote de muestra</h2>
       <p>Esta ventana demuestra cómo consultaríamos las entradas y la procedencia. Los datos son completamente ficticios. El prototipo no envía ni guarda información.</p>
       <div className="modal-list">
-        {assumptions.map(([label, value]) => (
+        {[
+          ["Parcela", `${parcel.name} · ${parcel.id}`],
+          ["Ubicación", "San Luis (ejemplo)"],
+          ["Modalidad", "Secano"],
+          ...getParcelFacts(parcel),
+          ["Datos NASA POWER", "No conectados"],
+          ["Modelo de rendimientos", "No ejecutado"],
+        ].map(([label, value]) => (
           <div key={label}><span>{label}</span><strong>{value}</strong></div>
         ))}
       </div>
