@@ -312,6 +312,7 @@ Las referencias **[NECESITA ACLARACIÓN: D-x]** remiten a las dudas abiertas de 
 - **CA-10.6** El sistema deberá usar una única moneda por solicitud, declarada por el usuario, sin conversiones.
 - **CA-10.7** El sistema no deberá llamar «pérdida» ni «pérdida neta» a un margen bruto negativo. Lo rotulará como «margen bruto negativo».
 - **CA-10.8** El sistema deberá registrar como supuestos visibles que los precios y costos ingresados se aplican sin cambios a todos los escenarios históricos, que no son precios históricos ni pronosticados, y que no se descuentan entre el año 1 y el año 2.
+- **CA-10.9** Si el rendimiento de un cultivo de grano no se pudo calcular (ETm = 0, CA-9.5), entonces el sistema deberá informar el ingreso y el margen de ese cultivo como «no calculado», con la nota «No se pudo calcular el margen porque hubo un fallo en la estimación de rendimiento (ETm = 0)», y el margen de la rotación como «no calculado». No deberá tomar el ingreso como 0. (Aprobado por el equipo el 2026-11-15.)
 
 ### RF-11 — Proxy de exposición del suelo (viento fuerte sin cultivo vivo)
 

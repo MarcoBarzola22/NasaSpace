@@ -282,6 +282,7 @@
     - `0 ≤ Ya ≤ Ym` en 100 combinaciones parametrizadas.
 
 - [x] **T023 — Ingreso y margen bruto**
+  - **Nota de ejecución:** ajustado el 2026-11-15 (CA-10.9): con ETm = 0 el cultivo de grano queda «no calculado» y el margen de la rotación también; no se toma el ingreso como 0.
   - **Depende de:** T022
   - **RF:** RF-10 (CA-10.1–CA-10.4, CA-10.7)
   - **Archivos:** `app/domain/economics.py`, `tests/unit/test_economics.py`
@@ -301,7 +302,7 @@
     - `live_crop_days + no_live_crop_days == window_days`;
     - la función solo recibe la serie cruda de WS2M_MAX (en su firma no hay parámetro para WS2M).
 
-- [ ] **T025 — Rangos descriptivos y diferencias de margen entre rotaciones**
+- [x] **T025 — Rangos descriptivos y diferencias de margen entre rotaciones**
   - **Depende de:** T008
   - **RF:** RF-12 (CA-12.1–CA-12.3), RF-15 (CA-15.4), D-15
   - **Archivos:** `app/domain/stats.py`, `tests/unit/test_stats.py`

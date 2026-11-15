@@ -5,10 +5,13 @@
 - Un margen bruto negativo se rotula «Margen bruto negativo»; nunca «pérdida» (CA-10.7), porque el
   margen bruto no incluye estructura, administración ni arrendamiento.
 - Un cultivo de cobertura no genera ingreso por grano: ingreso 0 y margen igual a menos sus costos
-  (CA-10.2). También se toma ingreso 0 cuando el rendimiento no se pudo calcular (Ya = ``None``);
-  en ese caso se deja una nota visible, porque el 0 no es un rendimiento estimado.
-- Si a algún cultivo de la rotación le faltan datos económicos, el margen de la rotación no se
-  calcula y se listan los cultivos sin datos: nunca se suponen valores en cero (CA-10.4).
+  (CA-10.2).
+- Si el rendimiento de un cultivo de grano no se pudo calcular (Ya = ``None``, porque ETm = 0), el
+  ingreso no se toma como 0: el cultivo queda «no calculado» con una nota visible. Un 0 inventado
+  se leería como un margen negativo que nunca se estimó.
+- Si a algún cultivo de la rotación le faltan datos económicos o su rendimiento no se calculó, el
+  margen de la rotación no se calcula y se listan esos cultivos con su motivo: nunca se suponen
+  valores en cero (CA-10.4).
 - Los precios y costos son entradas del usuario; no son históricos ni pronosticados (CA-10.8).
 """
 
@@ -25,15 +28,20 @@ STATUS_NOT_COMPUTED = "not_computed"
 
 LABEL_NEGATIVE_MARGIN = "Margen bruto negativo"
 NOTE_COVER_CROP = "Cultivo de cobertura: no genera ingreso por grano."
-NOTE_NO_YIELD = "Sin rendimiento calculado: el ingreso se toma como 0."
+NOTE_YIELD_FAILED = (
+    "No se pudo calcular el margen porque hubo un fallo en la estimación de rendimiento (ETm = 0)"
+)
 
 FIELD_PRICE = "price_per_t"
 FIELD_COSTS = "direct_costs_per_ha"
 
+REASON_MISSING_DATA = "missing_economic_data"
+REASON_YIELD_NOT_COMPUTED = "yield_not_computed"
+
 
 @dataclass(frozen=True, slots=True)
 class CropEconomics:
-    """Economía de un cultivo; los valores son ``None`` si faltan datos (``not_computed``)."""
+    """Economía de un cultivo; los valores son ``None`` si no se pudo calcular."""
 
     status: str
     income_per_ha: float | None
@@ -42,13 +50,17 @@ class CropEconomics:
     gross_margin_label: str | None
     missing_fields: tuple[str, ...] = ()
     note: str | None = None
+    reason: str | None = None  # por qué no se calculó (solo si ``not_computed``)
 
 
 @dataclass(frozen=True, slots=True)
 class MissingEconomics:
+    """Cultivo que impide calcular el margen de la rotación."""
+
     position: int  # posición del cultivo en la rotación, desde 1
     crop_code: str
     missing_fields: tuple[str, ...]
+    reason: str = REASON_MISSING_DATA
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,7 +95,13 @@ def crop_economics(crop: CropSpec, yield_result: YieldResult) -> CropEconomics:
         missing.append(FIELD_COSTS)
     if missing:
         return CropEconomics(
-            STATUS_NOT_COMPUTED, None, None, None, None, missing_fields=tuple(missing)
+            STATUS_NOT_COMPUTED,
+            None,
+            None,
+            None,
+            None,
+            missing_fields=tuple(missing),
+            reason=REASON_MISSING_DATA,
         )
     assert crop.direct_costs_per_ha is not None  # garantizado por la comprobación anterior
 
@@ -91,7 +109,16 @@ def crop_economics(crop: CropSpec, yield_result: YieldResult) -> CropEconomics:
     if is_cover:
         income, note = 0.0, NOTE_COVER_CROP
     elif yield_result.yield_t_ha is None:
-        income, note = 0.0, NOTE_NO_YIELD
+        # No hay rendimiento estimado: no se inventa un ingreso de 0 ni un margen negativo.
+        return CropEconomics(
+            STATUS_NOT_COMPUTED,
+            None,
+            None,
+            None,
+            None,
+            note=NOTE_YIELD_FAILED,
+            reason=REASON_YIELD_NOT_COMPUTED,
+        )
     else:
         assert crop.price_per_t is not None
         income = yield_result.yield_t_ha * crop.price_per_t
@@ -116,7 +143,9 @@ def rotation_economics(
         crop_economics(crop, yield_result) for crop, yield_result in zip(crops, yields, strict=True)
     )
     missing = tuple(
-        MissingEconomics(position, crop.crop_code, result.missing_fields)
+        MissingEconomics(
+            position, crop.crop_code, result.missing_fields, result.reason or REASON_MISSING_DATA
+        )
         for position, (crop, result) in enumerate(zip(crops, results, strict=True), start=1)
         if result.status == STATUS_NOT_COMPUTED
     )

@@ -2,7 +2,8 @@
 
 Criterios que verifica: CA-10.1 (ingreso y margen de un cultivo de grano), CA-10.2 (cultivo de
 cobertura), CA-10.3 (totales de la rotación), CA-10.4 (datos faltantes: margen no calculado),
-CA-10.5 (precios y costos no negativos) y CA-10.7 (rótulo «Margen bruto negativo», nunca «pérdida»).
+CA-10.5 (precios y costos no negativos), CA-10.7 (rótulo «Margen bruto negativo», nunca «pérdida»)
+y CA-10.9 (rendimiento no calculado: el margen queda «no calculado», no 0).
 """
 
 from __future__ import annotations
@@ -108,14 +109,51 @@ def test_economics_cover_crop_with_a_price_is_rejected() -> None:
         eco.crop_economics(replace(RYE, price_per_t=100.0), COVER_YIELD)
 
 
-def test_economics_grain_without_computed_yield_has_zero_income_and_a_visible_note() -> None:
+def test_economics_grain_without_computed_yield_is_not_computed_and_never_zero() -> None:
+    """ETm = 0: ni ingreso 0 ni margen negativo inventados; queda «no calculado» con su nota."""
     no_yield = crop_yield(MAIZE, etm_mm=0.0, eta_mm=0.0)
     assert no_yield.yield_t_ha is None
     result = eco.crop_economics(MAIZE, no_yield)
-    assert result.income_per_ha == 0.0
-    assert result.gross_margin_per_ha == -620.0
-    assert result.note == eco.NOTE_NO_YIELD
-    assert "rendimiento" in result.note
+    assert result.status == "not_computed"
+    assert result.income_per_ha is None
+    assert result.direct_costs_per_ha is None
+    assert result.gross_margin_per_ha is None
+    assert result.gross_margin_label is None
+    assert result.reason == "yield_not_computed"
+    assert result.missing_fields == ()  # no faltan datos del usuario: falló la estimación
+    assert result.note == (
+        "No se pudo calcular el margen porque hubo un fallo en la estimación de "
+        "rendimiento (ETm = 0)"
+    )
+
+
+def test_economics_missing_user_data_takes_precedence_over_the_yield_failure() -> None:
+    no_yield = crop_yield(MAIZE, etm_mm=0.0, eta_mm=0.0)
+    result = eco.crop_economics(replace(MAIZE, price_per_t=None), no_yield)
+    assert result.reason == "missing_economic_data"
+    assert result.missing_fields == ("price_per_t",)
+
+
+def test_economics_cover_crop_with_etm_zero_still_has_a_computed_margin() -> None:
+    """El cultivo de cobertura no depende del rendimiento: su margen es −costos igualmente."""
+    result = eco.crop_economics(RYE, crop_yield(RYE, etm_mm=0.0, eta_mm=0.0))
+    assert result.status == "computed"
+    assert result.gross_margin_per_ha == -95.0
+    assert result.reason is None
+
+
+def test_economics_rotation_with_a_yield_failure_is_not_computed_with_its_reason() -> None:
+    crops, yields = rotation_inputs()
+    yields[0] = crop_yield(MAIZE, etm_mm=0.0, eta_mm=0.0)
+    rotation = eco.rotation_economics(crops, yields)
+    assert rotation.status == "not_computed"
+    assert rotation.income_per_ha is None and rotation.gross_margin_per_ha is None
+    assert rotation.gross_margin_label is None
+    assert rotation.crops_missing_economics == (
+        eco.MissingEconomics(1, "maize", (), "yield_not_computed"),
+    )
+    assert rotation.crops[1].gross_margin_per_ha == -95.0  # el resto conserva su economía
+    assert rotation.crops[2].status == "computed"
 
 
 # --- Datos faltantes (CA-10.4) ---
@@ -219,7 +257,7 @@ def test_economics_no_text_says_loss() -> None:
     crops, yields = rotation_inputs()
     yields[0] = with_yield(0.1)
     rotation = eco.rotation_economics(crops, yields)
-    texts = [eco.LABEL_NEGATIVE_MARGIN, eco.NOTE_COVER_CROP, eco.NOTE_NO_YIELD]
+    texts = [eco.LABEL_NEGATIVE_MARGIN, eco.NOTE_COVER_CROP, eco.NOTE_YIELD_FAILED]
     texts += [rotation.gross_margin_label or ""]
     for crop_result in rotation.crops:
         texts += [crop_result.gross_margin_label or "", crop_result.note or ""]
