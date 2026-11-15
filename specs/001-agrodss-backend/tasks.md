@@ -625,8 +625,8 @@
     - cada uno aparece en al menos un docstring de `tests/` o en la lista `NOT_AUTOMATABLE` del propio test, con su justificación escrita;
     - `NOT_AUTOMATABLE` tiene como máximo 3 entradas (se prevé solo CA-6.9, inactivo por D-12).
 
-- [ ] **T052 — Verificación final y preparación del PR**
-  - **Estado:** verificaciones técnicas hechas el 2026-11-15 (`pytest` 1447 pruebas, `pytest -m slow` 39, `ruff check`, `ruff format --check` y arranque de `uvicorn` con `GET /api/v1/health` 200). Casillas del spec §8: quedan **dos sin marcar porque requieren una decisión humana**: la aprobación de la enmienda del principio 5 en el PR y la resolución o aplazamiento de cada [NECESITA ACLARACIÓN] (§9.1), más el informe al equipo, que es la descripción del PR (`pr-description.md`). La tarea se cierra cuando el equipo las marque.
+- [x] **T052 — Verificación final y preparación del PR**
+  - **Estado:** cerrada el 2026-11-15. Verificaciones técnicas: `pytest`, `pytest -m slow`, `ruff check` y `ruff format --check` con código 0, y `uvicorn app.main:app` con `GET /api/v1/health` 200. Las tres casillas del spec §8 que dependían de una decisión humana (enmienda del principio 5, dudas D-1 a D-16 e informe al equipo) las confirmó el equipo ese día; el código `USER_VALUE`, sin uso, se eliminó.
   - **Depende de:** T051
   - **RF:** criterios de finalización del spec §8, checklist de AGENTS
   - **Archivos:** `specs/001-agrodss-backend/spec.md` (§8 marcado), descripción del PR

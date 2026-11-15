@@ -498,7 +498,7 @@ Las referencias **[NECESITA ACLARACIÓN: D-x]** remiten a las dudas abiertas de 
 
 La funcionalidad se considera terminada cuando se cumple todo lo siguiente:
 
-- [ ] **Gobierno:** la enmienda del principio 5 de la constitución está commiteada y aprobada en el PR. *Commit hecho por el equipo; falta la aprobación en el PR.*
+- [x] **Gobierno:** la enmienda del principio 5 de la constitución está commiteada y aprobada en el PR. *Commit `df619e3`, confirmado por el equipo el 2026-11-15.*
 - [x] Cada criterio de aceptación de RF-1 a RF-17 tiene al menos una prueba automática que lo verifica, o una justificación escrita de por qué no se puede probar automáticamente. *`tests/nonfunctional/test_traceability.py::test_every_acceptance_criterion_is_covered_or_justified`; único criterio justificado: CA-6.9 (inactivo por D-12).*
 - [x] **Conservación de masa:** error de cierre de 0,01 mm o menos en todas las corridas de prueba (rotación × escenario), incluidas las de lluvias extremas, suelo seco, barbechos largos y transiciones sin barbecho. *`tests/invariants/test_balance_invariants.py::test_balance_invariants_reduced_matrix` (180 corridas) y `::test_balance_invariants_full_matrix` (1 800, `-m slow`); `test_water_balance.py::test_closure_of_a_731_day_run_is_within_tolerance`.*
 - [x] **Límites:** pruebas que verifican cada día `0 ≤ almacenamiento ≤ capacidad del perfil`, `ETa ≤ ETc`, evaporación de barbecho ≤ demandada, consumo ≤ agua disponible y `0 ≤ Ya ≤ Ym`. *Mismas matrices de invariantes; `test_yield_response.py` (Ya en [0, Ym]) y `test_response_builder.py::test_a_yield_above_ym_or_negative_raises_an_integrity_error`.*
@@ -515,8 +515,8 @@ La funcionalidad se considera terminada cuando se cumple todo lo siguiente:
 - [x] **Lenguaje:** una prueba verifica que los mensajes y rótulos no contienen «pérdida neta», «probabilidad», «precisión», «recomendada», «óptima» ni «mejor» aplicados a resultados o rotaciones. *`tests/nonfunctional/test_language.py` (mensajes, notas del dominio y respuesta completa del endpoint).*
 - [x] El contrato de entrada y salida está documentado y el frontend puede consultarlo. *`/docs`, `/openapi.json` con ejemplos y `tests/snapshots/openapi_v1.json` (`tests/api/test_contract.py`).*
 - [x] Linter, formato y pruebas del backend en verde. El servidor arranca sin errores de importación. *Verificado en T052.*
-- [ ] Cada [NECESITA ACLARACIÓN] de esta especificación está resuelto o diferido explícitamente por un humano. *Pendiente de decisión humana: el plan adoptó la propuesta por defecto de cada duda de la §9.1 (ver plan §2); falta que el equipo las confirme o las difiera.*
-- [ ] Informe al equipo: qué cambió, qué pruebas corrieron y qué supuestos nuevos se introdujeron. *Se entrega en la descripción del PR (T052).*
+- [x] Cada [NECESITA ACLARACIÓN] de esta especificación está resuelto o diferido explícitamente por un humano. *D-1 a D-16 confirmadas por el equipo el 2026-11-15 tal como están implementadas (plan §2).*
+- [x] Informe al equipo: qué cambió, qué pruebas corrieron y qué supuestos nuevos se introdujeron. *`specs/001-agrodss-backend/pr-description.md`, aprobado por el equipo el 2026-11-15.*
 
 ---
 

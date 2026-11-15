@@ -13,7 +13,7 @@ Backend completo del MVP en `backend/` (FastAPI + Python): balance hídrico diar
 ## Gobierno
 
 - **Aprobación de `httpx`** (única dependencia nueva respecto de FastAPI/uvicorn/pytest/ruff): 2026-11-15. `requirements.txt` tiene exactamente 5 líneas con versión fija.
-- **Enmienda del principio 5 de la constitución** (consulta en vivo a NASA POWER, sin base de datos ni caché, la demo requiere internet): commiteada por el equipo en `docs/constitution.md` (último commit que la modifica: `df619e3`; confirmar). Pendiente su aprobación en este PR.
+- **Enmienda del principio 5 de la constitución** (consulta en vivo a NASA POWER, sin base de datos ni caché, la demo requiere internet): commiteada por el equipo en `docs/constitution.md` (commit `df619e3`, confirmado por el equipo). Su aprobación es parte de la revisión de este PR.
 - Decisiones del equipo del 2026-11-15 incorporadas al spec: CA-1.12 (latitud en [−60°, 60°]), CA-6.10 (Tmáx < Tmín bloquea) y CA-10.9 (rendimiento no calculado ⇒ margen «no calculado», nunca ingreso 0).
 
 ## Supuestos del plan §11 y agregados al implementar
@@ -22,7 +22,7 @@ Siempre presentes: `RAINFED_NO_IRRIGATION`, `TOP_DOWN_INFILTRATION`, `EXCESS_LOS
 
 Cuando ocurren: `FALLOW_EVAPORATION_LAYER`, `INITIAL_ROOT_DEPTH_TEAM`, `SUBST_HUMIDITY_TMIN`, `SUBST_RADIATION_HARGREAVES`, `WINDOW_START_DEFAULT`, `UNPUBLISHED_DATA_BLOCK`, `FAO_REFERENCE_VALUE`, `ROOT_DEPTH_LIMITED`, `NO_RESIDUE_DECLARED`, `FALLOW_KC_BASE_DEFAULT`, `RESIDUE_NO_DECOMPOSITION`, `ET0_NEGATIVE_CLAMPED`, `YIELD_CLIPPED_TO_ZERO`.
 
-**Nuevos al implementar (a confirmar):** `SUBST_WIND_FAO56_DEFAULT` (viento medio faltante ⇒ 2 m/s, CA-6.6), `TEAM_REFERENCE_VALUE` (valores del catálogo con estado «decisión del equipo» distintos de la Zr inicial) y `USER_VALUE` (definido, aún sin uso).
+**Nuevos al implementar (confirmados por el equipo):** `SUBST_WIND_FAO56_DEFAULT` (viento medio faltante ⇒ 2 m/s, CA-6.6) y `TEAM_REFERENCE_VALUE` (valores del catálogo con estado «decisión del equipo» distintos de la Zr inicial).
 
 ## Pruebas
 
@@ -45,5 +45,5 @@ Punto −33,68; −65,47, años de inicio 2010, 2015 y 2020, rotaciones A, B y C
 ## Para revisar
 
 - Condición humana de T040: contrastar con una consulta propia las unidades y rutas JSON de V-1 (el contraste automático del 2026-11-15 no mostró diferencias).
-- Las dudas D-1 a D-16 del spec §9.1 se resolvieron con las propuestas por defecto del plan §2; faltan su confirmación o aplazamiento explícitos.
+- Las dudas D-1 a D-16 del spec §9.1 quedaron confirmadas por el equipo tal como están implementadas (propuestas por defecto del plan §2).
 - Quedan fuera de la API los modos «últimos N años» y «todo el registro» (el servicio existe, T053; exponerlos requiere un campo nuevo del contrato).

@@ -154,7 +154,6 @@ ASSUMPTION_DESCRIPTIONS: Final[dict[str, str]] = {
     "TEAM_REFERENCE_VALUE": (
         "Valor de referencia definido por el equipo AgroDSS, no calibrado para el lote."
     ),
-    "USER_VALUE": "Valor ingresado por el usuario; no está calibrado para el lote.",
     "ROOT_DEPTH_LIMITED": "La profundidad radicular se limitó a la profundidad efectiva.",
     "NO_RESIDUE_DECLARED": (
         "No se declaró rastrojo: se usa 0 % (sin reducción de la evaporación del barbecho)."
