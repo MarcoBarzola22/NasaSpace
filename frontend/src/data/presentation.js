@@ -16,10 +16,10 @@ export const metrics = [
     format: (value) => `${value / 1000} mil`,
   },
   {
-    id: "water", label: "Agua", valueKey: "water", widthKey: "waterWidth",
-    description: "Agua ficticia al inicio de la soja en cada alternativa; no proviene del balance hídrico ni de sensores.",
-    title: "Agua al inicio de soja — ejemplo",
-    axis: "agua estimada de ejemplo (mm)",
+    id: "water", label: "Agua", valueKey: "deficit", widthKey: "deficitWidth",
+    description: "Déficit hídrico ficticio por estrategia. Los valores son de demostración.",
+    title: "Déficit hídrico por alternativa — ejemplo",
+    axis: "déficit hídrico ilustrativo (mm)",
     ticks: ["0 mm", "40 mm", "80 mm", "120 mm", "160 mm"],
     format: (value) => `${formatNumber(value)} mm`,
   },
@@ -33,8 +33,7 @@ export const metrics = [
   },
   {
     id: "production", label: "Producción",
-    description: "Rendimientos ficticios por cultivo en t/ha. No sumamos producción de especies distintas ni consideramos centeno como grano comercial.",
-    title: "Rendimientos por cultivo (t/ha) · datos de muestra",
+    description: "Rendimientos ficticios de la maqueta original, sin datos por parcela. El centeno es un cultivo de cobertura.",
+    title: "Rendimientos por cultivo (t/ha) · muestra general",
   },
 ];
-

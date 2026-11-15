@@ -4,14 +4,14 @@ const rows = [
   ["income", "Ingresos ($/ha, 2 años)"],
   ["cost", "Costos directos ($/ha, 2 años)"],
   ["margin", "Margen bruto ($/ha, 2 años)"],
-  ["water", "Agua ilustrativa al inicio de soja (mm)"],
+  ["deficit", "Déficit hídrico ficticio (mm)"],
 ];
 
-export default function PrintSummary({ rotations }) {
+export default function PrintSummary({ rotations, parcel }) {
   return (
     <div className="print-only">
       <table className="print-table">
-        <caption>Valores ficticios de prueba — resumen de las tres alternativas</caption>
+        <caption>Valores ficticios de prueba — {parcel.name} · {parcel.id}</caption>
         <thead>
           <tr>
             <th scope="col">Indicador</th>
@@ -30,4 +30,3 @@ export default function PrintSummary({ rotations }) {
     </div>
   );
 }
-
