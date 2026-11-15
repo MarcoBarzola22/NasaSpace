@@ -153,7 +153,7 @@
 
 ## Fase 2 — Dominio científico (sin red)
 
-- [ ] **T010 — ET₀: funciones psicrométricas (FAO-56, ec. 7, 8, 11–14)**
+- [x] **T010 — ET₀: funciones psicrométricas (FAO-56, ec. 7, 8, 11–14)**
   - **Depende de:** T003, T006, T009
   - **RF:** RF-7
   - **Archivos:** `app/domain/et0.py`, `tests/unit/test_et0.py`
@@ -162,7 +162,7 @@
     - e°(20 °C) y Δ(20 °C) iguales a los del anexo 2 transcritos en V-3, con ±0,001;
     - `ea(Tdew) == e°(Tdew)`.
 
-- [ ] **T011 — ET₀: radiación (FAO-56, ec. 21–25 y 37–40)**
+- [x] **T011 — ET₀: radiación (FAO-56, ec. 21–25 y 37–40)**
   - **Depende de:** T010
   - **RF:** RF-7
   - **Archivos:** `app/domain/et0.py`, `tests/unit/test_et0.py`
@@ -170,7 +170,7 @@
     - `test_radiation_fao56_example_8`: Ra igual al valor de V-3, con ±0,1 MJ/m²/día;
     - `test_radiation_polar_latitude_no_error`: con latitud 70° S en junio devuelve Ra ≥ 0 sin excepción.
 
-- [ ] **T012 — ET₀ Penman–Monteith, radiación de Hargreaves y ET₀ negativa**
+- [x] **T012 — ET₀ Penman–Monteith, radiación de Hargreaves y ET₀ negativa**
   - **Depende de:** T011
   - **RF:** RF-7 (CA-7.1, CA-7.2, CA-7.3), RF-6 (CA-6.4)
   - **Archivos:** `app/domain/et0.py`, `tests/unit/test_et0.py`
