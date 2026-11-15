@@ -14,11 +14,11 @@ import { initialParcelId, parcels } from "../src/data/parcels.js";
 const onSelect = () => {};
 
 describe("AgroDSS workspace", () => {
-  it("starts with the map visible, Parcela Central and rotation B selected", () => {
+  it("starts with comparison, with Parcela Central and three strategies selected", () => {
     const html = renderToStaticMarkup(<App />);
 
-    expect(html).toContain("Explorador de parcelas");
-    expect(html).toContain('class="map-surface"');
+    expect(html).toContain("Mesa comparativa");
+    expect(html).not.toContain('class="map-surface"');
     expect(html).not.toContain("Dos campañas, tres estrategias");
     expect(html).not.toContain('id="parcel-tab-sequence"');
     expect(html).toContain("Cronología agrícola");
@@ -26,9 +26,9 @@ describe("AgroDSS workspace", () => {
     expect(html).not.toContain('id="parcel-context"');
     expect(html).toContain("Abrir inspector");
     expect(html).toContain("DATOS FICTICIOS");
-    expect(html).toContain("Rotaciones a comparar");
-    expect(html.match(/<input(?=[^>]*type="radio")(?=[^>]*name="comparison-rotation")[^>]*>/g)).toHaveLength(3);
-    expect(html).toMatch(/<input(?=[^>]*name="comparison-rotation")(?=[^>]*checked="")(?=[^>]*value="B")/);
+    expect(html).toContain("Horizonte de indicadores");
+    expect(html).not.toContain("Primera campaña</option>");
+    expect(html).toContain("3 de 3 seleccionadas");
   });
 
   it.each(parcels)("renders $name's selected strategy and matching comparison values", (parcel) => {
@@ -59,9 +59,9 @@ describe("AgroDSS workspace", () => {
     }
 
     expect(indicators).toContain('role="tabpanel" aria-labelledby="tab-economy"');
-    expect(html).toContain("Referencia económica de las plantillas");
+    expect(html).toContain("Estrategias seleccionadas en la mesa");
     expect(html).toContain('aria-labelledby="modalTitle"');
-    expect(html).toContain("Economía ficticia · ARS/ha · Dos campañas");
+    expect(html).toContain("Indicadores disponibles · Referencia de demostración · Dos campañas");
   });
 });
 

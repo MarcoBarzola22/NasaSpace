@@ -107,7 +107,8 @@ object.file-preview { height: 420px; }
 
 /* Independent columns keep the analysis wide when context is closed. */
 .inspector-toggle { margin-top: 8px; }
-.strategy-inspector-jump { display: inline-flex; }
+.strategy-inspector-jump { display: inline-flex; margin-bottom: 10px; }
+.workspace-shell .inspector:focus-visible { outline: 2px solid var(--lime); outline-offset: -3px; }
 @media screen and (min-width: 701px) {
   .workspace-shell:not(.economy-editing) { grid-template-columns: clamp(134px, 10vw, 192px) minmax(0, 1fr); grid-template-rows: auto; }
   .workspace-shell:not(.economy-editing).with-parcel-context { grid-template-columns: clamp(134px, 10vw, 192px) clamp(160px, 13vw, 230px) minmax(0, 1fr); }
@@ -120,3 +121,13 @@ object.file-preview { height: 420px; }
   .workspace-shell:not(.economy-editing) .inspector { grid-column: 3; grid-row: 1; }
   .strategy-inspector-jump { display: none; }
 }
+
+.strategy-nav-groups { margin-bottom: 6px; border-bottom: 0; padding-bottom: 0; }
+.strategy-nav-groups a { border: 1px solid var(--line); }
+.work-link { text-decoration: underline; text-underline-offset: 3px; }
+.study-overview { list-style: none; padding: 0; margin: 0; }
+.study-overview li { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--line); margin-top: 8px; }
+.study-overview h3 { margin: 0 0 4px; }
+.study-overview p { margin: 3px 0; overflow-wrap: anywhere; }
+.study-overview button { flex: 0 0 auto; }
+@media (max-width: 430px) { .study-overview li { flex-wrap: wrap; } }

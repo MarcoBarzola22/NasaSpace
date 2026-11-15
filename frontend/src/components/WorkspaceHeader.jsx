@@ -1,4 +1,4 @@
-export default function WorkspaceHeader({ parcels, activeParcel, onSelectParcel, rotations, activeStrategy, onSelectStrategy, localStrategyControls, scenario, periods, selectedPeriod, onPeriod }) {
+export default function WorkspaceHeader({ parcels, activeParcel, onSelectParcel, rotations, activeStrategy, onSelectStrategy, localStrategyControls, scenario, periodLabel }) {
   return (
     <header className="workspace-top" id="overview">
       <a className="workspace-brand" href="#overview" aria-label="AgroDSS, inicio">
@@ -27,12 +27,9 @@ export default function WorkspaceHeader({ parcels, activeParcel, onSelectParcel,
             {rotations.map(({ id, sequence, name, isTemplate }) => <option value={id} key={id}>{isTemplate === false ? name : `${id} · ${sequence}`}</option>)}
           </select>
         </label>}
-        <label className="workspace-control period-control">
-          <span>Período de consulta</span>
-          <select value={selectedPeriod} onChange={(event) => onPeriod(event.target.value)}>
-            {periods.map(([id, label]) => <option value={id} key={id}>{label}</option>)}
-          </select>
-        </label>
+        <div className="workspace-control period-control">
+          <span>Horizonte de indicadores</span><strong>{periodLabel}</strong>
+        </div>
       </div>
       <div className="top-actions">
         <span className="demo-tag">DATOS FICTICIOS · DEMO</span>

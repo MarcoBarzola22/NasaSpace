@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ComparisonChart } from "../src/components/MetricsPanel.jsx";
 import { metrics } from "../src/data/presentation.js";
-import { amountError, amountValue, economicChanges, editPrice, marginAxis, priceRowsForCrop } from "../src/workspaces/economics.js";
+import { amountError, amountValue, economicChanges, economicEntryErrors, editPrice, marginAxis, priceRowsForCrop } from "../src/workspaces/economics.js";
 import { updateParcelDraft, updateRecord } from "../src/workspaces/session.js";
 
 const original = {
@@ -39,6 +39,13 @@ describe("Economic input exploration", () => {
     expect(economicChanges(original, { ...original, prices })[0].delta).toBeNull();
     expect(priceRowsForCrop([...original.prices, { crop: "Soja", unit: "kg" }, { crop: "Soja de primera", unit: "t" }], "Soja"))
       .toEqual(original.prices);
+  });
+
+  it("rejects mismatched currency labels before comparing two amounts", () => {
+    const a = { ...original.prices[0], currency: "ARS" };
+    const b = { ...a, amount: "400" };
+    expect(economicEntryErrors(a).unit).toContain("no coincide");
+    expect(economicChanges({ ...original, prices: [a] }, { ...original, prices: [b] })[0].delta).toBeNull();
   });
 
   it("represents negative margins to the left of the same zero as positive margins", () => {

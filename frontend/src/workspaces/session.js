@@ -1,3 +1,4 @@
+import { soilErrors } from "./preparation.js";
 export const emptyDraft = Object.freeze({
   identity: {}, soil: {}, studies: [], history: [], historyFiles: [], prices: [], costs: [], notes: "", strategies: [],
 });
@@ -42,6 +43,7 @@ export function parcelWithIdentity(parcel, identity) {
 export function declaredParcelFacts(draft) {
   const identity = validIdentity(draft.identity);
   function soilValue(key) {
+    if (soilErrors(draft.soil)[key]) return "Sin informar";
     const { value, unit } = draft.soil[key] ?? {};
     return value?.trim() ? [value, unit].filter(Boolean).join(" ") : "Sin informar";
   }
@@ -68,7 +70,10 @@ export function exportDraft(draft) {
   const fileInfo = (file) => ({ name: file.name, size: file.size, type: file.type });
   return { ...draft, identity: validIdentity(draft.identity),
     historyFiles: draft.historyFiles.map(fileInfo),
-    studies: draft.studies.map(({ files, ...study }) => ({ ...study, files: files.map(fileInfo) })),
+    studies: draft.studies.map(({ files, analysisDate, ...study }) => ({ ...study,
+      ...(!study.sampleDate || !analysisDate || analysisDate >= study.sampleDate ? { analysisDate } : {}),
+      files: files.map(fileInfo),
+    })),
   };
 }
 

@@ -3,7 +3,7 @@ export const workspaces = [
     ["identificacion", "Identificación"], ["mapa", "Mapa de parcelas"], ["suelo", "Caracterización del suelo"], ["laboratorio", "Estudios de suelo"], ["antecedentes", "Antecedentes del lote"],
   ] },
   { id: "estrategias", label: "Explorar estrategias", icon: "M20 8a8 8 0 1 0 0 8m0-12v4h-4m4 12v-4h-4", sections: [
-    ["alternativas", "Alternativas"], ["biblioteca", "Biblioteca"], ["editor", "Editor de estrategia"], ["comparar", "Mesa comparativa"], ["cronologia", "Cronología agrícola"], ["clima", "Clima histórico"], ["agua", "Agua y cobertura"], ["produccion", "Producción"],
+    ["comparar", "Mesa comparativa"], ["biblioteca", "Biblioteca"], ["editor", "Editor de estrategia"], ["cronologia", "Cronología agrícola"], ["clima", "Clima histórico"], ["agua", "Agua y cobertura"], ["produccion", "Producción"],
   ] },
   { id: "economia", label: "Economía", icon: "M20 6c0 2-3.6 3-8 3s-8-1-8-3 3.6-3 8-3 8 1 8 3z M4 6v6c0 2 3.6 3 8 3s8-1 8-3V6 M4 12v6c0 2 3.6 3 8 3s8-1 8-3v-6", sections: [
     ["precios", "Precios"], ["costos", "Costos de actividades"], ["comparacion", "Comparación económica"], ["avanzada", "Exploración avanzada"],
@@ -16,22 +16,23 @@ export const workspaces = [
   ] },
 ];
 
-export const periods = [
-  ["two-campaigns", "Dos campañas"],
-  ["first-campaign", "Primera campaña"],
-  ["second-campaign", "Segunda campaña"],
+export const strategyGroups = [
+  ["Preparar", ["biblioteca", "editor"]],
+  ["Comparar", ["comparar", "cronologia"]],
+  ["Analizar", ["clima", "agua", "produccion"]],
 ];
 
 export const scenarios = [["historical", "Histórico · demo"]];
-const legacyRoutes = { rotations: "#estrategias/alternativas", metrics: "#economia/comparacion", sources: "#interpretacion/procedencia",
-  "parcel-context": "#parcela/mapa", "parcel-inspector": "#estrategias/alternativas" };
+const legacyRoutes = { "estrategias/alternativas": "#estrategias/comparar", rotations: "#estrategias/comparar", metrics: "#economia/comparacion", sources: "#interpretacion/procedencia",
+  "parcel-context": "#parcela/mapa", "parcel-inspector": "#estrategias/comparar" };
 
 export function readRoute(hash = "") {
   const path = hash.slice(1);
   const resolved = Object.hasOwn(legacyRoutes, path) ? legacyRoutes[path].slice(1) : path;
-  const [workspaceId, sectionId, strategyId, mode] = resolved.split("/");
+  const [workspaceId, sectionId, itemId, mode] = resolved.split("/");
   const workspace = workspaces.find(({ id }) => id === workspaceId) ?? workspaces[1];
   const section = workspace.sections.find(([id]) => id === sectionId) ?? workspace.sections[0];
-  return { workspace, section: section[0], strategyId, detail: mode === "detalle" };
+  return { workspace, section: section[0], strategyId: workspace.id === "estrategias" && section[0] === "editor" ? itemId : undefined,
+    indicatorId: workspace.id === "interpretacion" && section[0] === "resultados" ? itemId : undefined, detail: mode === "detalle" };
 }
 

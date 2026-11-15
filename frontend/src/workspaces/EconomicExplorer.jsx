@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { DataTable, Field, FieldGrid } from "./Controls.jsx";
-import { amountError, amountValue, costCategories, economicChanges, editPrice, priceRowsForCrop, priceSources, saleCrops } from "./economics.js";
+import { amountError, costCategories, economicChanges, economicEntryErrors, economicEntryIssue, economicResultNotice, editPrice, priceRowsForCrop, priceSources, saleCrops } from "./economics.js";
 import { stageName } from "./strategies/model.js";
 import { updateRecord } from "./session.js";
 
@@ -35,9 +35,11 @@ function PriceEditor({ rows, onChange, crops }) {
             ["date", "Fecha de referencia", { type: "date" }],
             ["source", "Detalle o referencia de la fuente"],
           ]} values={{ ...price, sourceType }} onChange={set} errors={{
-            amount: amountError(price.amount) || (price.amount && !price.currency ? "Elegí la moneda del precio." : undefined),
+            amount: amountError(price.amount),
+            currency: price.amount ? economicEntryErrors(price).currency : undefined,
             date: sourceType === priceSources[1] && !price.date ? "Indicá la fecha de la referencia BCR." : undefined,
           }} />
+          {price.unit && economicEntryErrors(price).unit && <p className="field-error">{economicEntryErrors(price).unit}</p>}
         </fieldset>;
       });
     })}
@@ -81,6 +83,7 @@ function ActivityCostEditor({ rows, onChange, strategies }) {
           errors={{ amount: amountError(row.amount), currency: row.amount && !row.currency ? "Indicá la moneda." : undefined,
             unit: row.amount && !row.unit ? "Indicá la unidad del costo." : undefined,
             operationId: strategy && !strategy.isTemplate && !linked ? "Vinculá una operación registrada en la estrategia." : undefined }} />
+        {!linked && <p className="work-note">Costo pendiente de asignación.</p>}
         {row.operationId && !linked && <p className="field-error">El vínculo anterior ya no está disponible. Elegí una operación vigente.</p>}
         <button type="button" className="work-button" onClick={() => onChange(rows.filter(({ id }) => row.id !== id))}>Quitar costo</button>
       </fieldset>
@@ -108,12 +111,12 @@ export default function EconomicExplorer({ parcel, scenario, selected, strategie
   const active = strategies.find(({ id }) => id === selected?.id);
   const commercialCrops = [...new Set((active?.stages ?? []).filter(({ kind }) => kind === "commercial").map((stage) =>
     stage.cropId?.startsWith("soy") ? "Soja" : stageName(stage)))];
-  const priceCrops = [...new Set([...saleCrops, ...commercialCrops.filter((name) => name !== "Cultivo sin identificar")])];
+  const priceCrops = [...new Set([...saleCrops, ...[...commercialCrops, ...draft.prices.map(({ crop }) => crop)].filter((name) => name && name !== "Cultivo sin identificar")])];
   const missingPrices = commercialCrops.filter((crop) =>
-    !priceRowsForCrop(draft.prices, crop).some(({ amount, currency }) => currency && amountValue(amount) !== null));
+    !priceRowsForCrop(draft.prices, crop).some((row) => !economicEntryIssue(row)));
   const missingOperations = (active?.stages ?? []).flatMap(({ operations }) => operations)
     .filter(({ id }) => !draft.costs.some((cost) => cost.strategy === active.id && cost.operationId === id &&
-      cost.currency && cost.unit && amountValue(cost.amount) !== null));
+      !economicEntryIssue(cost)));
 
   useEffect(() => {
     closeButton.current.focus();
@@ -134,7 +137,7 @@ export default function EconomicExplorer({ parcel, scenario, selected, strategie
           <p>{parcel.name} · {scenario} · Dos campañas · {selected?.name || "Sin estrategia seleccionada"}</p></div>
         <button ref={closeButton} className="work-button" type="button" onClick={onClose}>Cerrar</button>
       </header>
-      <p className="work-status warning" role="status">Resultados pendientes de cálculo · Integración con FastAPI pendiente.</p>
+      <p className="work-status warning" role="status">{economicResultNotice(draft) || "Resultados pendientes de cálculo · Integración con FastAPI pendiente."}</p>
       {missingPrices.length > 0 && <p className="work-note">Precios pendientes de la estrategia activa: {missingPrices.join(", ")}.</p>}
       {missingOperations.length > 0 && <p className="work-note">Operaciones sin costo declarado: {missingOperations.map(({ type, date }) => `${type} (${date})`).join(", ")}.</p>}
       <PriceEditor crops={priceCrops} rows={draft.prices} onChange={(prices) => patch({ prices })} />

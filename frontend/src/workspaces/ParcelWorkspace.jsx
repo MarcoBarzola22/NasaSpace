@@ -1,8 +1,11 @@
+import PreparationReview from "./PreparationReview.jsx";
+import SoilInputs from "./SoilInputs.jsx";
 import ParcelMap from "../components/ParcelMap.jsx";
-import { FieldGrid, Panel, Status } from "./Controls.jsx";
+import { DataTable, FieldGrid, Panel, Status } from "./Controls.jsx";
 import LabStudies from "./LabStudies.jsx";
 import LocalFiles from "./LocalFiles.jsx";
-import { updateRecord, validateIdentity } from "./session.js";
+import { economicEntryIssue } from "./economics.js";
+import { studyReviewLabel, updateRecord, validIdentity, validateIdentity } from "./session.js";
 
 const identityFields = [
   ["name", "Nombre declarado"], ["identifier", "Identificador declarado"], ["province", "Provincia"], ["locality", "Localidad o referencia"],
@@ -28,6 +31,43 @@ const historyFields = [
   ["fallow", "Barbechos"], ["residue", "Rastrojos"], ["management", "Manejo relevante"], ["notes", "Observaciones", { multiline: true }],
 ];
 
+function completion(started, complete, review = false) {
+  if (review) return "Pendiente de revisión";
+  if (complete) return "Cargado";
+  return started ? "Parcialmente cargado" : "Sin información";
+}
+
+function ParcelCompleteness({ draft }) {
+  const hasValue = (entry) => Object.entries(entry).some(([key, value]) => key !== "id" && String(value ?? "").trim());
+  const identity = validIdentity(draft.identity);
+  const soil = Object.values(draft.soil).filter(hasValue);
+  const history = draft.history.filter(hasValue);
+  const prices = draft.prices.filter(hasValue);
+  const costs = draft.costs.filter(hasValue);
+  const areas = [
+    ["Identificación", "#parcela/identificacion", completion(hasValue(draft.identity),
+      ["name", "area", "province", "production", "firstYear", "lastYear"].every((key) => identity[key]),
+      Object.keys(validateIdentity(draft.identity)).length > 0 || identity.production === "Con riego")],
+    ["Caracterización del suelo", "#parcela/suelo", completion(soil.length,
+      soilProperties.every(([key]) => draft.soil[key]?.value?.trim() && draft.soil[key]?.unit?.trim() && draft.soil[key]?.source?.trim()),
+      soil.some(({ basis }) => basis === "Supuesto"))],
+    ["Estudios de suelo", "#parcela/laboratorio", completion(draft.studies.length,
+      draft.studies.length > 0 && draft.studies.every((study) => studyReviewLabel(study) === "Revisado manualmente"),
+      draft.studies.some((study) => studyReviewLabel(study) === "Pendiente de revisión" ||
+        (study.sampleDate && study.analysisDate && study.analysisDate < study.sampleDate)))],
+    ["Antecedentes", "#parcela/antecedentes", completion(history.length || draft.historyFiles.length,
+      history.some(({ crop, season }) => crop?.trim() && season?.trim()))],
+    ["Precios", "#economia/precios", completion(prices.length, prices.length > 0 && prices.every((row) => !economicEntryIssue(row)))],
+    ["Costos de actividades", "#economia/costos", completion(costs.length, costs.length > 0 && costs.every((row) => !economicEntryIssue(row)))],
+    ["Información pendiente", "#interpretacion/advertencias", "Pendiente de revisión"],
+  ];
+  return <Panel title="Estado del expediente" description="Disponibilidad de los datos declarados de la parcela activa.">
+    <DataTable caption="Secciones del expediente" columns={["Sección", "Estado"]} rows={areas.filter(([label])=>!["Caracterización del suelo","Precios","Costos de actividades","Información pendiente"].includes(label)).map(([label, href, state]) => ({
+      id: label, cells: [<a className="work-link" href={href}>{label}</a>, state],
+    }))} />
+  </Panel>;
+}
+
 export default function ParcelWorkspace({ section, parcels, parcel, onSelectParcel, draft, patch }) {
   if (section === "mapa") return (
     <Panel title="Mapa de parcelas" description="Imagen aérea ilustrativa. Los contornos permiten identificar las parcelas ficticias.">
@@ -35,17 +75,7 @@ export default function ParcelWorkspace({ section, parcels, parcel, onSelectParc
     </Panel>
   );
   if (section === "laboratorio") return <LabStudies key={parcel.id} studies={draft.studies} onChange={(studies) => patch({ studies })} />;
-  if (section === "suelo") return (
-    <Panel title="Propiedades físicas" description="Registrá valores con su unidad y procedencia. Los campos vacíos se consideran sin dato.">
-      {soilProperties.map(([key, label]) => (
-        <fieldset className="work-fieldset" key={key}><legend>{label}</legend>
-          <FieldGrid fields={soilFields} values={draft.soil[key] || {}} onChange={(field, value) => patch({
-            soil: { ...draft.soil, [key]: { ...draft.soil[key], [field]: value } },
-          })} />
-        </fieldset>
-      ))}
-    </Panel>
-  );
+  if (section === "suelo") return <SoilInputs draft={draft} patch={patch} />;
   if (section === "antecedentes") return (
     <Panel title="Antecedentes declarados" description="Información de referencia del lote. Las entradas se conservan mientras dure la sesión."
       actions={<button type="button" className="work-button primary" onClick={() => patch({ history: [...draft.history, { id: crypto.randomUUID() }] })}>Agregar antecedente</button>}>
@@ -58,12 +88,15 @@ export default function ParcelWorkspace({ section, parcels, parcel, onSelectParc
     </Panel>
   );
   return (
+    <>
+    <PreparationReview draft={draft} /><ParcelCompleteness draft={draft} />
     <Panel title="Identificación del lote" description="Datos declarados para la parcela activa. Podés dejar campos sin informar mientras preparás el análisis.">
       <FieldGrid fields={identityFields} values={draft.identity} errors={validateIdentity(draft.identity)}
         onChange={(key, value) => patch({ identity: { ...draft.identity, [key]: value } })} />
       {draft.identity.production === "Con riego" && <Status tone="warning">El MVP solo representa sistemas de secano. Los escenarios de esta demo no incluyen riego.</Status>}
       <p className="work-note">Los campos válidos se reflejan en la ficha y el informe. Las cifras de demostración quedan como referencia independiente.</p>
     </Panel>
+    </>
   );
 }
 

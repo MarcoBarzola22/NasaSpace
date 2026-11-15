@@ -6,7 +6,8 @@ import Inspector from "./components/Inspector.jsx";
 import AssumptionsDialog from "./components/AssumptionsDialog.jsx";
 import { rotations } from "./data/demo.js";
 import { initialParcelId, parcels } from "./data/parcels.js";
-import { periods, readRoute, scenarios } from "./workspaces/routes.js";
+import { readRoute, scenarios, strategyGroups } from "./workspaces/routes.js";
+import { comparisonPeriod } from "./workspaces/comparison.js";
 import { declaredParcelFacts, emptyDraft, parcelWithIdentity, updateParcelDraft } from "./workspaces/session.js";
 import ParcelWorkspace from "./workspaces/ParcelWorkspace.jsx";
 import ExploreWorkspace from "./workspaces/ExploreWorkspace.jsx";
@@ -25,7 +26,6 @@ export default function App() {
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [parcelInspection, setParcelInspection] = useState(false);
   const [activeHistoricalScenarioId] = useState(scenarios[0][0]);
-  const [selectedPeriod, setSelectedPeriod] = useState(periods[0][0]);
   const [drafts, setDrafts] = useState({});
   const [explorerOpen, setExplorerOpen] = useState(false);
   const restoreExplorerFocus = useRef(false);
@@ -55,8 +55,9 @@ export default function App() {
     result: selection.resultSection === sectionKey ? selection.result : undefined };
   const comparisonIds = draft.comparisonIds ?? initialComparison;
   const showParcelContext = workspace.id === "parcela" && !inspectorOpen;
-  const localStrategyControls = workspace.id === "estrategias" && ["alternativas", "biblioteca", "editor", "comparar", "cronologia"].includes(section);
-  const periodLabel = periods.find(([id]) => id === selectedPeriod)[1];
+  const localStrategyControls = workspace.id === "estrategias" && ["biblioteca", "editor", "comparar", "cronologia"].includes(section);
+  const group = workspace.id === "estrategias" ? strategyGroups.find(([, ids]) => ids.includes(section)) : undefined;
+  const periodLabel = comparisonPeriod;
   const scenario = scenarios.find(([id]) => id === activeHistoricalScenarioId)[1];
 
   useEffect(() => {
@@ -138,7 +139,7 @@ export default function App() {
   }
 
   const strategyBook = {
-    strategies, comparisonIds, inspection, inspectorOpen: inspectorOpen && !explorerOpen, item, details: route.detail, missingItem: Boolean(route.strategyId && !item),
+    strategies, comparisonIds, inspection, item, details: route.detail, missingItem: Boolean(route.strategyId && !item),
     onInspect: inspectStrategy,
     notice: strategyNotice?.parcelId === parcel.id ? strategyNotice.text : "",
     onToggle: (id) => patch({ comparisonIds: toggleComparison(comparisonIds, id) }),
@@ -164,9 +165,10 @@ export default function App() {
     inspect: inspectStrategy,
   };
 
-  const report = { parcel, referenceParcel, draft, strategies, parcelRotations, selected, scenario, periodLabel };
+  const report = { parcel, referenceParcel, draft, strategies, comparisonIds, parcelRotations, selected, scenario, periodLabel };
   const workspaceProps = {
-    ...report, section, patch, parcels: displayParcels, rotations, strategyBook, explorerOpen, onOpenExplorer: openExplorer, selectedId: selected.id, metricId,
+    ...report, section, patch, requestedIndicator: route.indicatorId,
+    interpretationEvidence: storedInspection.result ? { ...storedInspection.result, strategyName: selected.name } : undefined, parcels: displayParcels, rotations, strategyBook, explorerOpen, onOpenExplorer: openExplorer, selectedId: selected.id, metricId,
     onMetric: setMetricId, onSelectParcel: selectMapParcel, onSelectStrategy: inspectStrategy, onInspectResult: inspectStrategy,
   };
 
@@ -174,7 +176,7 @@ export default function App() {
     <>
       <WorkspaceHeader parcels={displayParcels} activeParcel={parcel} onSelectParcel={selectParcel}
         rotations={strategies} activeStrategy={selected} onSelectStrategy={inspectStrategy} localStrategyControls={localStrategyControls}
-        scenario={scenario} periods={periods} selectedPeriod={selectedPeriod} onPeriod={setSelectedPeriod} />
+        scenario={scenario} periodLabel={periodLabel} />
       <div className={`shell workspace-shell${explorerOpen ? " economy-editing" : ""}${showParcelContext ? " with-parcel-context" : ""}${inspectorOpen && !explorerOpen ? " with-inspector" : ""}`}>
         <Navigation activeWorkspace={workspace.id} />
         {showParcelContext && <ParcelSidebar parcel={parcel} facts={parcelFacts} onReview={() => setReviewOpen(true)} />}
@@ -187,10 +189,18 @@ export default function App() {
               {inspectorOpen ? "Ocultar inspector" : "Abrir inspector"}
             </button>}
           </header>
-          <nav className="workspace-subnav" aria-label={`Secciones de ${workspace.label}`}>
-            {workspace.sections.map(([id, label]) => <a key={id} href={`#${workspace.id}/${id}`}
-              aria-current={id === section ? "page" : undefined}>{label}</a>)}
+          {group && <nav className="workspace-subnav strategy-nav-groups" aria-label="Flujo de estrategias">
+            {strategyGroups.map(([label, ids]) => <a key={label} href={"#estrategias/" + (ids.includes(section) ? section : ids[0])}
+              aria-current={label === group[0] ? "true" : undefined}>{label}</a>)}
+          </nav>}
+          <nav className="workspace-subnav" aria-label={"Secciones de " + (group?.[0] ?? workspace.label)}>
+            {workspace.sections.filter(([id]) => !group || group[1].includes(id)).map(([id, label]) => <a key={id}
+              href={"#" + workspace.id + "/" + id} aria-current={id === section ? "page" : undefined}>{label}</a>)}
           </nav>
+          {inspectorOpen && !explorerOpen && <a className="work-button strategy-inspector-jump" href="#parcel-inspector" onClick={(event) => {
+            event.preventDefault();
+            document.getElementById("parcel-inspector")?.focus();
+          }}>Ir al inspector</a>}
           <Workspace {...workspaceProps} />
           <footer className="footer-note">Datos ficticios de demostración. Los datos declarados se conservan durante la sesión abierta.</footer>
         </main>

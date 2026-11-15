@@ -44,6 +44,7 @@ export function blankStage(id) {
 export function duplicateStrategy(source, makeId) {
   return {
     ...blankStrategy(source.parcelId, makeId()),
+    initialResidue: source.initialResidue ? { ...source.initialResidue } : undefined,
     name: `${source.name} · copia`, description: source.description || "", notes: source.notes || "",
     firstCampaign: source.firstCampaign || "", lastCampaign: source.lastCampaign || "",
     startDate: source.startDate || "", endDate: source.endDate || "",
@@ -149,9 +150,9 @@ export function validateStrategy(strategy) {
 }
 
 export function saveStrategy(strategy) {
-  const { id, name, description, parcelId, firstCampaign, lastCampaign, startDate, endDate, stages, notes } = strategy;
+  const { id, name, description, parcelId, firstCampaign, lastCampaign, startDate, endDate, stages, notes, initialResidue } = strategy;
   return { id, name: name.trim(), description, parcelId, firstCampaign, lastCampaign, startDate, endDate,
-    stages: orderStages(stages), notes, isTemplate: false, reviewStatus: "pending", calculationStatus: "not_calculated" };
+    stages: orderStages(stages), notes, initialResidue, isTemplate: false, reviewStatus: "pending", calculationStatus: "not_calculated" };
 }
 
 export function toggleComparison(ids, id) {

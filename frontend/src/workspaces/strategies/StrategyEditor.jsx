@@ -1,3 +1,5 @@
+import AgronomicInputs, { DeclaredParameter } from "./AgronomicInputs.jsx";
+import { rangeError } from "../preparation.js";
 import { useState } from "react";
 import { FieldGrid, Panel, Status } from "../Controls.jsx";
 import { updateRecord } from "../session.js";
@@ -41,6 +43,7 @@ function StageEditor({ stage, index, errors = {}, update, remove, move, canMoveU
       </div>
       <FieldGrid fields={fields} values={stage} errors={errors} onChange={change} />
       {hasCrop && stage.cropId === "custom" && <Status tone="warning">Sin modelo disponible para esta especie.</Status>}
+      <AgronomicInputs stage={stage} update={update} />
       <h3>Operaciones</h3>
       {stage.operations.map((operation, operationIndex) => (
         <fieldset className="work-fieldset" key={operation.id}><legend>{operation.type || `Operación ${operationIndex + 1}`}</legend>
@@ -97,6 +100,8 @@ export default function StrategyEditor({ original, parcel, onSave }) {
       <FieldGrid fields={identification} values={strategy} errors={attempted ? validation.errors : {}}
         onChange={(key, value) => setStrategy((previous) => ({ ...previous, [key]: value }))} />
     </Panel>
+    <DeclaredParameter label="Cobertura inicial por rastrojos" unit="%" value={strategy.initialResidue}
+      error={rangeError(strategy.initialResidue?.value,0,100)} onChange={initialResidue=>setStrategy(previous=>({...previous,initialResidue}))}/>
     <Panel title="Cronología editable" description="Las etapas se ordenan por inicio previsto. Podés reordenar etapas con la misma fecha o sin fecha."
       actions={<button type="button" className="work-button"
         onClick={() => setStages([...stages, blankStage(newId())])}>Agregar etapa</button>}>

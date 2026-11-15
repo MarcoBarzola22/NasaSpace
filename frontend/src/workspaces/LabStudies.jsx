@@ -84,7 +84,7 @@ function SampleEditor({ sample, update }) {
 export default function LabStudies({ studies, onChange }) {
   const [studyId, setStudyId] = useState("");
   const [sampleId, setSampleId] = useState("");
-  const study = studies.find(({ id }) => id === studyId) ?? studies[0];
+  const study = studies.find(({ id }) => id === studyId);
   const sample = study?.samples.find(({ id }) => id === sampleId) ?? study?.samples[0];
   function addStudy() {
     const id = crypto.randomUUID();
@@ -98,11 +98,30 @@ export default function LabStudies({ studies, onChange }) {
   }
   return (
     <>
-      <Panel title="Estudios de suelo" description="Organizá los resultados disponibles del laboratorio y revisá los parámetros utilizados en el análisis."
+      <Panel title="Estudios de suelo" description="Informes y transcripciones manuales de la parcela activa."
         actions={<button type="button" className="work-button primary" onClick={addStudy}>Agregar estudio</button>}>
-        {!study ? <p className="work-empty">Agregá un estudio para adjuntar un informe o transcribir resultados de forma manual.</p> : <>
-          <Field label="Estudio activo" value={study.id} onChange={(id) => { setStudyId(id); setSampleId(""); }}
-            options={studies.map(({ id, report }, index) => [id, report || `Estudio ${index + 1}`])} />
+        {studies.length === 0 ? <p className="work-empty">Sin estudios de suelo registrados.</p> : <ul className="study-overview">
+          {studies.map((entry, index) => {
+            const depths = entry.samples.map(({ depth, depthUnit }) => [depth, depthUnit].filter(Boolean).join(" ")).filter(Boolean);
+            const parameters = entry.samples.flatMap(({ results }) => results);
+            const count = parameters.filter(({ value }) => value?.trim()).length;
+            return <li key={entry.id}>
+              <div><h3>{entry.report || "Estudio " + (index + 1)}</h3>
+                <p>{entry.lab || "Laboratorio sin informar"} · {"Muestreo · "+(entry.sampleDate || "Sin informar")+" · Análisis · "+(entry.analysisDate || "Sin informar")}</p>
+                <p>{entry.samples.length} {entry.samples.length === 1 ? "muestra" : "muestras"} · {parameters.length} {parameters.length === 1 ? "parámetro" : "parámetros"}</p>
+                <p>{depths.join(" · ") || "Profundidad sin informar"} · {count} {count === 1 ? "resultado transcrito" : "resultados transcritos"}</p>
+                <p>{entry.files.length} documentos adjuntos · {studyReviewLabel(entry)}{entry.files.length > 0 && (" · " + entry.files.map(({ name }) => name).join(", "))}</p>
+              </div>
+              <button type="button" className="work-button" aria-expanded={study?.id === entry.id}
+                aria-label={"Ver detalle de " + (entry.report || "Estudio " + (index + 1))} onClick={() => {
+                  setStudyId(study?.id === entry.id ? "" : entry.id);
+                  setSampleId("");
+                }}>{study?.id === entry.id ? "Ocultar detalle" : "Ver detalle"}</button>
+            </li>;
+          })}
+        </ul>}
+      </Panel>
+      {study && <Panel title="Detalle del informe">
           <Status>{studyReviewLabel(study)}</Status>
           <LocalFiles key={study.id} label="Seleccionar informe" files={study.files} onChange={(files) => update({ files })} />
           <h3>Datos del informe</h3>
@@ -110,8 +129,7 @@ export default function LabStudies({ studies, onChange }) {
             errors={study.sampleDate && study.analysisDate && study.analysisDate < study.sampleDate ? { analysisDate: "La fecha del análisis es anterior al muestreo." } : {}} />
           {studyHasResult(study) && <Field label="Estado de revisión" value={study.review || "Transcrito por el usuario"}
             options={reviewStates} onChange={(review) => update({ review })} />}
-        </>}
-      </Panel>
+      </Panel>}
       {study && <Panel title="Muestras del informe" description="Registrá cada intervalo de profundidad en su propia muestra."
         actions={<button type="button" className="work-button" onClick={() => {
           const id = crypto.randomUUID();

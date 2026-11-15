@@ -9,14 +9,20 @@ import { parcels } from "../src/data/parcels.js";
 import { rotations } from "../src/data/demo.js";
 
 describe("Workspace navigation", () => {
+  it("resolves interpretation evidence separately from editor strategy IDs", () => {
+    expect(readRoute("#interpretacion/resultados/deficit")).toMatchObject({ section: "resultados", indicatorId: "deficit", strategyId: undefined });
+    expect(readRoute("#estrategias/editor/custom/detalle")).toMatchObject({ section: "editor", strategyId: "custom", detail: true });
+  });
+
   it.each([
     ["#parcela/laboratorio", "parcela", "laboratorio"],
     ["#estrategias/cronologia", "estrategias", "cronologia"],
     ["#economia/costos", "economia", "costos"],
     ["#interpretacion/nutricion", "interpretacion", "nutricion"],
     ["#informe/gestion", "informe", "gestion"],
-    ["#constructor", "estrategias", "alternativas"],
-    ["#rotations", "estrategias", "alternativas"],
+    ["#constructor", "estrategias", "comparar"],
+    ["#estrategias/alternativas", "estrategias", "comparar"],
+    ["#rotations", "estrategias", "comparar"],
     ["#parcela/desconocida", "parcela", "identificacion"],
   ])("resolves %s", (hash, workspace, section) => {
     expect(readRoute(hash)).toMatchObject({ workspace: { id: workspace }, section });
@@ -52,6 +58,14 @@ describe("Session data integrity", () => {
     expect(html).toContain("Profunda</td><td>20–40 cm</td><td>NO₃</td><td>60</td><td>ppm");
     expect(html).toContain("Revisado manualmente");
     expect(studyReviewLabel({ samples: [] })).toBe("Pendiente de transcripción");
+  });
+
+  it("keeps the invalid laboratory date for editing and excludes it from the exported record", () => {
+    const study = { id: "1", files: [], samples: [], sampleDate: "2026-06-10", analysisDate: "2026-06-01" };
+    const draft = { ...emptyDraft, studies: [study] };
+    expect(getWarnings(draft).some(([name]) => name === "Fecha inválida")).toBe(true);
+    expect(exportDraft(draft).studies[0]).not.toHaveProperty("analysisDate");
+    expect(draft.studies[0].analysisDate).toBe("2026-06-01");
   });
 
   it("distinguishes data warnings from unavailable calculations", () => {
