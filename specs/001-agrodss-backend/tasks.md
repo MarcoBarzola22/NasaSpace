@@ -120,6 +120,7 @@
     - `test_exception_hierarchy`: existen `InputValidationError`, `PowerUnreachableError`, `PowerTimeoutError`, `PowerRateLimitedError`, `PowerBadResponseError` y `CalculationIntegrityError`, y las 4 de NASA heredan de `PowerError`.
 
 - [ ] **T007 — Aplicación FastAPI, endpoint de salud, CORS e identificador de solicitud**
+  - **Nota de ejecución:** infraestructura (no es del dominio); se deja pendiente hasta armar los routers y la API. La necesitan T032, T034 y T041, que dependen de ella.
   - **Depende de:** T005, T006
   - **RF:** RNF-13, RF-16 (CA-16.4: `request_id`)
   - **Archivos:** `app/main.py`, `app/routers/health.py`, `tests/api/test_health.py`
@@ -269,7 +270,7 @@
     - `pytest tests/invariants -m slow` (50 semillas) termina con código 0;
     - el docstring enumera y el código verifica en cada corrida las condiciones del plan §9.3: límites de los dos compartimentos, `ETa ≤ ETc`, `ETa ≤ disponible`, `E ≤ E_dem`, cierre diario ≤ 1e-9 mm, cierre total ≤ 0,01 mm, días consecutivos sin huecos y transferencia exacta entre segmentos.
 
-- [ ] **T022 — Rendimiento bajo déficit (FAO-33)**
+- [x] **T022 — Rendimiento bajo déficit (FAO-33)**
   - **Depende de:** T006, T008
   - **RF:** RF-9 (CA-9.1–CA-9.7)
   - **Archivos:** `app/domain/yield_response.py`, `tests/unit/test_yield_response.py`
