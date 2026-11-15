@@ -9,58 +9,17 @@ El reloj se fija en 2026-11-15; las series son sintéticas.
 
 from __future__ import annotations
 
-import asyncio
-from collections.abc import Callable
 from datetime import date
 from typing import Any
 
-import httpx
 import pytest
 
-from app.core.config import Settings
 from app.core.exceptions import CalculationIntegrityError, InputValidationError
 from app.domain import missing_data as md
-from app.models.request import SimulationRequest
 from app.services import simulation_service as service
-from app.services.catalog_service import load_catalog
-from app.services.power_client import PowerClient
-from app.services.simulation_service import SimulationOutcome, simulate
-from tests.builders.power_payload import power_payload
+from app.services.simulation_service import SimulationOutcome
 from tests.builders.requests import plan_request
-
-TODAY = date(2026, 11, 15)
-CATALOG = load_catalog()
-SETTINGS = Settings()
-
-
-class Power:
-    """Servidor simulado de NASA POWER: devuelve el rango pedido con las opciones indicadas."""
-
-    def __init__(self, **options: Any) -> None:
-        self.options = options
-        self.requests: list[httpx.Request] = []
-
-    def __call__(self, request: httpx.Request) -> httpx.Response:
-        self.requests.append(request)
-        params = request.url.params
-        start = date.fromisoformat(
-            f"{params['start'][:4]}-{params['start'][4:6]}-{params['start'][6:]}"
-        )
-        end = date.fromisoformat(f"{params['end'][:4]}-{params['end'][4:6]}-{params['end'][6:]}")
-        return httpx.Response(200, json=power_payload(start, end, **self.options))
-
-
-def run(
-    payload: dict[str, Any] | None = None, power: Callable[..., Any] | None = None, **options: Any
-) -> tuple[SimulationOutcome, Power]:
-    server = power if isinstance(power, Power) else Power(**options)
-    client = PowerClient(SETTINGS, transport=httpx.MockTransport(server))
-    request = SimulationRequest.model_validate(payload or plan_request())
-    outcome = asyncio.run(
-        simulate(request, catalog=CATALOG, settings=SETTINGS, power_client=client, today=TODAY)
-    )
-    return outcome, server
-
+from tests.builders.simulation import Power, run
 
 RAIN_GAP = {"PRECTOTCORR": [date(2018, 3, 4)], "ALLSKY_SFC_SW_DWN": [date(2009, 1, 17)]}
 

@@ -512,7 +512,8 @@
 
 ## Fase 6 — Orquestación y salida
 
-- [ ] **T042 — Modelos Pydantic de la respuesta**
+- [x] **T042 — Modelos Pydantic de la respuesta**
+  - **Nota de ejecución:** la prueba lee el ejemplo directamente de `plan.md` §5.3. Sobre ese ejemplo se agregaron, con valor por defecto, `n` y `no_range` en cada rango (CA-12.1, CA-12.3), `status`, `missing_fields`, `note` y `reason` en la economía de un cultivo (CA-10.9), `first_date`, `last_date` en cada bloqueo y `margin_not_computed_years` en los rangos. La lista `ALLOWED_DIMENSIONLESS` está escrita en la prueba. Los sufijos `_deg` y `_m3_m3` se suman a los del plan §9.5 (coordenadas y humedades que la respuesta devuelve).
   - **Depende de:** T033, T029
   - **RF:** RF-15 (CA-15.1, CA-15.3, CA-15.5)
   - **Archivos:** `app/models/response.py`, `tests/unit/test_response_model.py`
@@ -544,7 +545,8 @@
     - con todos los escenarios bloqueados hay 0 resultados y ninguna excepción;
     - una falla de integridad inyectada en una corrida propaga `CalculationIntegrityError`, sin resultados parciales.
 
-- [ ] **T045 — Constructor de la respuesta: redondeo, advertencias y procedencia**
+- [x] **T045 — Constructor de la respuesta: redondeo, advertencias y procedencia**
+  - **Nota de ejecución:** además del redondeo y de los NaN, el constructor verifica `0 ≤ almacenamiento ≤ capacidad` y `0 ≤ Ya ≤ Ym` antes de serializar (plan §6.2). Los mensajes de `SUBSTITUTIONS_PRESENT` y `SCENARIOS_BLOCKED` agregan los años afectados al texto fijo de `messages.py`. `CONTRACT_VERSION` y `MODEL_VERSION` pasaron a `core/constants.py` (los usará la T007). Con `provenance` nula la respuesta sigue siendo válida.
   - **Depende de:** T042, T044, T030
   - **RF:** RF-13, RF-14, RF-15 (CA-15.1–CA-15.4), RF-17 (CA-17.2, CA-17.3, CA-17.5), RF-1 (CA-1.11)
   - **Archivos:** `app/services/response_builder.py`, `tests/unit/test_response_builder.py`

@@ -368,3 +368,22 @@ POWER_VARIABLE_INFO: Final[dict[str, tuple[str, str, str]]] = {
     "WS2M_MAX": ("Velocidad máxima diaria del viento a 2 m", "m/s", "Proxy de viento fuerte"),
     "ALLSKY_SFC_SW_DWN": ("Radiación solar global en superficie", "MJ/m²/día", "ET₀"),
 }
+
+# --- Respuesta de la simulación (services/response_builder.py) ---
+
+SUBSTITUTION_METHODS: Final[dict[str, str]] = {
+    "SUBST_RADIATION_HARGREAVES": "Hargreaves (FAO-56, ec. 50), kRs = 0,16",
+    "SUBST_HUMIDITY_TMIN": "Tmín − 2 °C (FAO-56, ec. 48 y anexo 6)",
+    "SUBST_WIND_FAO56_DEFAULT": "2 m/s (valor provisional de FAO-56)",
+}
+WARNING_SUBSTITUTIONS_DETAIL: Final = "Escenarios con sustituciones: {years}."
+WARNING_BLOCKED_DETAIL: Final = "Escenarios bloqueados: {years}."
+COMPARISON_LABEL: Final = (
+    "Diferencia descriptiva de margen bruto ({minuend} − {subtrahend}); no indica qué rotación "
+    "conviene."
+)
+WIND_RULE: Final = (
+    "Velocidad máxima diaria del viento a 2 m estrictamente mayor que {threshold} m/s, solo en "
+    "días sin cultivo vivo."
+)
+WIND_NOTE: Final = "«Días sin cultivo vivo» no equivale a suelo desnudo."

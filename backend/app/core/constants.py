@@ -53,3 +53,7 @@ SAN_LUIS_LAT_MIN_DEG: Final = -36.0
 SAN_LUIS_LAT_MAX_DEG: Final = -31.8
 SAN_LUIS_LON_MIN_DEG: Final = -67.6
 SAN_LUIS_LON_MAX_DEG: Final = -64.8
+
+# --- Versiones (CA-13.3, CA-15.6) ---
+CONTRACT_VERSION: Final = "1.0"
+MODEL_VERSION: Final = "0.1.0"
