@@ -281,7 +281,7 @@
     - un cultivo de cobertura da Ya `None` con la nota «No aplica (cultivo de cobertura).»;
     - `0 ≤ Ya ≤ Ym` en 100 combinaciones parametrizadas.
 
-- [ ] **T023 — Ingreso y margen bruto**
+- [x] **T023 — Ingreso y margen bruto**
   - **Depende de:** T022
   - **RF:** RF-10 (CA-10.1–CA-10.4, CA-10.7)
   - **Archivos:** `app/domain/economics.py`, `tests/unit/test_economics.py`
@@ -291,7 +291,7 @@
     - una rotación con un cultivo sin precio queda con `status == "not_computed"` y ese cultivo en `crops_missing_economics`;
     - ningún texto producido contiene «pérdida».
 
-- [ ] **T024 — Proxy de viento fuerte (WS2M_MAX > 8 m/s sin cultivo vivo)**
+- [x] **T024 — Proxy de viento fuerte (WS2M_MAX > 8 m/s sin cultivo vivo)**
   - **Depende de:** T014
   - **RF:** RF-11 (CA-11.1–CA-11.4, CA-11.6)
   - **Archivos:** `app/domain/wind_proxy.py`, `tests/unit/test_wind_proxy.py`
