@@ -30,6 +30,20 @@ POWER_VARIABLES: tuple[str, ...] = (
 )
 RADIATION_VARIABLE = "ALLSKY_SFC_SW_DWN"
 
+# Cadenas de unidades exactas que devuelve la API en ``parameters.<VARIABLE>.units`` (V-1).
+# El parser las compara literalmente; una discrepancia es un error, nunca una conversión.
+POWER_EXPECTED_UNITS: Mapping[str, str] = MappingProxyType(
+    {
+        "PRECTOTCORR": "mm/day",
+        "T2M_MAX": "C",
+        "T2M_MIN": "C",
+        "T2MDEW": "C",
+        "WS2M": "m/s",
+        "WS2M_MAX": "m/s",
+        "ALLSKY_SFC_SW_DWN": "MJ/m^2/day",
+    }
+)
+
 # Inicio de cobertura diaria (V-1): meteorología desde 1981; radiación desde 1984.
 METEOROLOGY_COVERAGE_START = date(1981, 1, 1)
 RADIATION_COVERAGE_START = date(1984, 1, 1)

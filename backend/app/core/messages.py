@@ -149,6 +149,9 @@ ASSUMPTION_DESCRIPTIONS: Final[dict[str, str]] = {
         "escenario se bloquea."
     ),
     "FAO_REFERENCE_VALUE": "Valor tabulado FAO, no calibrado para el lote.",
+    "TEAM_REFERENCE_VALUE": (
+        "Valor de referencia definido por el equipo AgroDSS, no calibrado para el lote."
+    ),
     "USER_VALUE": "Valor ingresado por el usuario; no está calibrado para el lote.",
     "ROOT_DEPTH_LIMITED": "La profundidad radicular se limitó a la profundidad efectiva.",
     "NO_RESIDUE_DECLARED": (
@@ -329,3 +332,39 @@ CATALOG_FRACTION_RANGE: Final = "debe estar entre 0 y 1 (sin incluirlos)"
 CATALOG_COVER_HAS_KY: Final = "{crop_code}.ky: un cultivo de cobertura no lleva Ky («no aplica»)"
 CATALOG_GRAIN_NEEDS_KY: Final = "{crop_code}.ky: un cultivo de grano necesita Ky o «sin referencia»"
 CATALOG_ROOT_DEPTH_ORDER: Final = "{crop_code}: la Zr inicial no puede superar la Zr máxima"
+
+# --- Parámetros resueltos y procedencia (services/parameter_resolver.py, climate_parser.py) ---
+
+FALLOW_KC_SOURCE: Final = (
+    "decisión del equipo AgroDSS (rango 0,15–0,20); no es un valor tabulado único de FAO-56"
+)
+FALLOW_EVAPORATION_LAYER_SOURCE: Final = "FAO-56, cap. 7 (capa evaporable Ze 0,10–0,15 m)"
+NOTE_FAO_REFERENCE: Final = "Valor tabulado FAO, no calibrado para el lote."
+NOTE_TEAM_REFERENCE: Final = (
+    "Valor de referencia definido por el equipo AgroDSS, no calibrado para el lote."
+)
+NOTE_ROOT_DEPTH_LIMITED: Final = (
+    "Limitada a la profundidad efectiva ({origin_label}: {original:g} m)."
+)
+ORIGIN_LABEL_USER: Final = "valor ingresado"
+ORIGIN_LABEL_REFERENCE: Final = "valor de referencia"
+WINDOW_START_DEFAULT_VALUE: Final = "1 de julio"
+
+PROVENANCE_SOURCE: Final = "NASA POWER"
+PROVENANCE_SERVICE: Final = "API diaria de punto, comunidad {community}"
+PROVENANCE_RETRIEVAL: Final = "Consulta en vivo"
+PROVENANCE_SPATIAL_NOTE: Final = (
+    "El dato representa una celda de varios kilómetros (resolución nativa según la "
+    "documentación de POWER), no el lote."
+)
+
+# Nombre, unidad legible y uso de cada variable de NASA POWER (CA-13.1).
+POWER_VARIABLE_INFO: Final[dict[str, tuple[str, str, str]]] = {
+    "PRECTOTCORR": ("Precipitación corregida", "mm/día", "Balance hídrico"),
+    "T2M_MAX": ("Temperatura máxima a 2 m", "°C", "ET₀"),
+    "T2M_MIN": ("Temperatura mínima a 2 m", "°C", "ET₀"),
+    "T2MDEW": ("Punto de rocío a 2 m", "°C", "ET₀"),
+    "WS2M": ("Velocidad media diaria del viento a 2 m", "m/s", "ET₀"),
+    "WS2M_MAX": ("Velocidad máxima diaria del viento a 2 m", "m/s", "Proxy de viento fuerte"),
+    "ALLSKY_SFC_SW_DWN": ("Radiación solar global en superficie", "MJ/m²/día", "ET₀"),
+}

@@ -441,7 +441,8 @@
 
     y que la solicitud del plan §5.2 da 0 errores.
 
-- [ ] **T037 — Resolución de parámetros efectivos y su origen**
+- [x] **T037 — Resolución de parámetros efectivos y su origen**
+  - **Nota de ejecución:** «omitido» se distingue de «ingresado» con `model_fields_set` (un 0 explícito es del usuario). Los valores de referencia del catálogo con estado «decisión del equipo» (la Zr inicial y la Zr máxima del maíz) quedan con origen `team_default`: la Zr inicial registra `INITIAL_ROOT_DEPTH_TEAM` y las demás, el código nuevo `TEAM_REFERENCE_VALUE`, porque «valor tabulado FAO» no sería cierto para ellas. El alcance de los supuestos de cultivo es el texto `A/1/ky` y el de barbecho, `B/3` (tras el cultivo 3; `B/0` es el barbecho previo al primero).
   - **Depende de:** T035, T030, T031
   - **RF:** RF-1 (CA-1.6, CA-1.9), RF-3 (CA-3.3, CA-3.4, CA-3.10, CA-3.12), RF-4 (D-6), RF-14 (CA-14.3)
   - **Archivos:** `app/services/parameter_resolver.py`, `tests/unit/test_parameter_resolver.py`
@@ -482,7 +483,8 @@
     - 500 y 404 → `PowerBadResponseError`;
     - los timeouts usados son los de `Settings`.
 
-- [ ] **T040 — Parser de la respuesta y procedencia**
+- [x] **T040 — Parser de la respuesta y procedencia**
+  - **Nota de ejecución:** las cadenas de unidades esperadas están en `core/config.py` (`POWER_EXPECTED_UNITS`). Siguen pendientes las unidades y rutas JSON de V-1, que según `research.md` debe contrastar un humano con una consulta propia antes de cerrar esta tarea («Verificación humana sugerida»).
   - **Depende de:** T039, T008
   - **RF:** RF-5 (CA-5.2, CA-5.5), RF-6 (CA-6.1), RF-13 (CA-13.1, CA-13.2)
   - **Archivos:** `app/services/climate_parser.py`, `tests/integration/test_climate_parser.py`
@@ -519,7 +521,8 @@
     - todo campo numérico tiene un sufijo de unidad de la lista del plan §9.5 o figura en la lista `ALLOWED_DIMENSIONLESS` escrita en el test;
     - el modelo no tiene campos de serie diaria (CA-15.5).
 
-- [ ] **T043 — Servicio de simulación (1/2): escenarios, faltantes y ET₀**
+- [x] **T043 — Servicio de simulación (1/2): escenarios, faltantes y ET₀**
+  - **Nota de ejecución:** la consulta solo pide las ventanas que empiezan dentro de la cobertura común (1984-01-01); las anteriores se bloquean sin pedir sus fechas. Si ninguna ventana queda cubierta no se consulta nada y `provenance` es `None` (T045 debe contemplarlo). T044 se hizo junto con T043 porque la orquestación incluye las corridas, los rangos y las diferencias de margen.
   - **Depende de:** T037, T040, T027, T028, T012, T013
   - **RF:** RF-4 (CA-4.5), RF-5 (CA-5.1), RF-6 (CA-6.3, CA-6.7), RF-7
   - **Archivos:** `app/services/simulation_service.py`, `tests/integration/test_simulation_service.py`
@@ -530,7 +533,7 @@
     - el transporte se llama 1 vez;
     - la ET₀ se calcula una vez por escenario aunque haya 2 rotaciones (contador con `monkeypatch`).
 
-- [ ] **T044 — Servicio de simulación (2/2): corridas, resultados, rangos y comparaciones**
+- [x] **T044 — Servicio de simulación (2/2): corridas, resultados, rangos y comparaciones**
   - **Depende de:** T043, T021, T022, T023, T024, T025
   - **RF:** RF-8, RF-9, RF-10, RF-11, RF-12 (CA-12.4), RF-15 (CA-15.4), RF-16 (CA-16.2, CA-16.3)
   - **Archivos:** `app/services/simulation_service.py`, `tests/integration/test_simulation_service.py`
