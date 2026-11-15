@@ -40,6 +40,23 @@ class InputValidationError(AgroDSSError):
         super().__init__(f"{len(self.details)} error(es) de validación")
 
 
+# --- Catálogo de cultivos (archivo del propio servicio) ---
+
+
+class CatalogError(AgroDSSError):
+    """El catálogo de cultivos es inválido; ``problems`` lista todos los defectos encontrados.
+
+    Es un error de despliegue, no del usuario ni de la fuente: se informa como error interno.
+    """
+
+    category: ClassVar[str] = "internal"
+    code: ClassVar[str] = "invalid_catalog"
+
+    def __init__(self, problems: list[str], message: str | None = None) -> None:
+        self.problems = list(problems)
+        super().__init__(message or " | ".join(self.problems))
+
+
 # --- Errores de dominio (cálculo) ---
 
 

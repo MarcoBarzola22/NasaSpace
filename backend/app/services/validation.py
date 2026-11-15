@@ -17,7 +17,7 @@ Comprueba:
 - datos económicos: ``currency`` presente si hay precio o costos (CA-10.6) y sin precio en un
   cultivo de cobertura (CA-3.13).
 
-Los mensajes están en español y se reubicarán en ``core.messages`` en T029.
+Los textos en español están en ``app.core.messages``; aquí solo hay códigos y rutas de campo.
 """
 
 from __future__ import annotations
@@ -27,6 +27,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date
 
+from app.core import messages
 from app.core.config import RADIATION_COVERAGE_START
 from app.core.constants import MAX_ABS_LATITUDE_DEG
 from app.core.exceptions import InputValidationError
@@ -76,17 +77,6 @@ _SIMPLE_PARAMETERS = (
     "depletion_fraction_p",
 )
 
-_PARAMETER_LABELS = {
-    "kc_initial": "Kc inicial",
-    "kc_mid": "Kc medio",
-    "kc_end": "Kc final",
-    "root_depth_initial_m": "profundidad radicular inicial",
-    "root_depth_max_m": "profundidad radicular máxima",
-    "depletion_fraction_p": "fracción de agotamiento p",
-    "stage_lengths_days": "duración de las cuatro etapas",
-    "ky": "Ky",
-}
-
 
 @dataclass(frozen=True, slots=True)
 class ValidationIssue:
@@ -112,7 +102,7 @@ def validate_request(
             issues.append(
                 ValidationIssue(
                     f"rotations[{rotation_index}].id",
-                    f"La rotación {rotation.id} está repetida: use A, B y C una sola vez cada una.",
+                    messages.DUPLICATE_ROTATION.format(rotation_id=rotation.id),
                     CODE_DUPLICATE_ROTATION,
                 )
             )
@@ -149,8 +139,9 @@ def _check_parcel(request: SimulationRequest) -> list[ValidationIssue]:
         issues.append(
             ValidationIssue(
                 "parcel.latitude_deg",
-                f"La latitud {parcel.latitude_deg:g}° está fuera de [−{MAX_ABS_LATITUDE_DEG:g}°, "
-                f"{MAX_ABS_LATITUDE_DEG:g}°]: el MVP está pensado para San Luis (Argentina).",
+                messages.LATITUDE_OUT_OF_RANGE.format(
+                    latitude=parcel.latitude_deg, limit=MAX_ABS_LATITUDE_DEG
+                ),
                 CODE_LATITUDE_OUT_OF_RANGE,
             )
         )
@@ -158,9 +149,9 @@ def _check_parcel(request: SimulationRequest) -> list[ValidationIssue]:
         issues.append(
             ValidationIssue(
                 "parcel.theta_wp_m3_m3",
-                "El punto de marchitez permanente (θPMP) debe ser menor que la capacidad de "
-                f"campo (θCC): se recibió θPMP = {parcel.theta_wp_m3_m3:g} y "
-                f"θCC = {parcel.theta_fc_m3_m3:g}.",
+                messages.THETA_INCOHERENT.format(
+                    theta_wp=parcel.theta_wp_m3_m3, theta_fc=parcel.theta_fc_m3_m3
+                ),
                 CODE_THETA_INCOHERENT,
             )
         )
@@ -172,8 +163,8 @@ def _check_parcel(request: SimulationRequest) -> list[ValidationIssue]:
 
 def _years_text(years: Sequence[int]) -> str:
     if len(years) == 1:
-        return f"el escenario {years[0]}"
-    return "los escenarios " + ", ".join(str(year) for year in years)
+        return messages.SCENARIO_ONE.format(year=years[0])
+    return messages.SCENARIO_MANY.format(years=", ".join(str(year) for year in years))
 
 
 def _check_window(
@@ -203,9 +194,9 @@ def _check_window(
         issues.append(
             ValidationIssue(
                 "window.start_years",
-                "Los años de inicio deben ser distintos; se repite: "
-                + ", ".join(str(year) for year in resolution.duplicates)
-                + ".",
+                messages.DUPLICATE_YEARS.format(
+                    years=", ".join(str(year) for year in resolution.duplicates)
+                ),
                 CODE_DUPLICATE_YEARS,
             )
         )
@@ -214,9 +205,9 @@ def _check_window(
             issues.append(
                 ValidationIssue(
                     "window.start_years",
-                    f"La ventana del año {rejected.year} termina el "
-                    f"{rejected.window_last_day:%d-%m-%Y}, después de hoy: solo se pueden "
-                    "simular años con la ventana de dos años completa.",
+                    messages.WINDOW_ENDS_AFTER_TODAY.format(
+                        year=rejected.year, last_day=rejected.window_last_day
+                    ),
                     CODE_WINDOW_ENDS_AFTER_TODAY,
                 )
             )
@@ -240,13 +231,7 @@ def _check_currency(request: SimulationRequest) -> list[ValidationIssue]:
     )
     if not has_economics:
         return []
-    return [
-        ValidationIssue(
-            "currency",
-            "Indique la moneda (código de 3 letras, por ejemplo USD) para los precios y costos.",
-            CODE_CURRENCY_REQUIRED,
-        )
-    ]
+    return [ValidationIssue("currency", messages.CURRENCY_REQUIRED, CODE_CURRENCY_REQUIRED)]
 
 
 # --- Cultivos (CA-2.3, CA-3.2, CA-3.8, CA-3.9, CA-3.13) ---
@@ -277,9 +262,9 @@ def _check_rotation_crops(
             issues.append(
                 ValidationIssue(
                     f"{path}.crop_code",
-                    f"El cultivo «{crop.crop_code}» no existe en el catálogo. Opciones: "
-                    + ", ".join(catalog.crop_codes)
-                    + ".",
+                    messages.UNKNOWN_CROP.format(
+                        crop_code=crop.crop_code, options=", ".join(catalog.crop_codes)
+                    ),
                     CODE_UNKNOWN_CROP,
                 )
             )
@@ -304,38 +289,26 @@ def _check_sowing_date(path: str, crop: CropIn) -> list[ValidationIssue]:
 
 def _check_grain_crop(path: str, crop: CropIn) -> list[ValidationIssue]:
     if crop.ym_t_ha is None:
-        return [
-            ValidationIssue(
-                f"{path}.ym_t_ha",
-                "Un cultivo de grano necesita el rendimiento potencial Ym (t/ha), mayor que 0.",
-                CODE_YM_REQUIRED,
-            )
-        ]
+        return [ValidationIssue(f"{path}.ym_t_ha", messages.YM_REQUIRED, CODE_YM_REQUIRED)]
     return []
 
 
 def _check_cover_crop(path: str, crop: CropIn) -> list[ValidationIssue]:
-    issues: list[ValidationIssue] = []
-    forbidden = [
-        ("ym_t_ha", crop.ym_t_ha is not None, "el rendimiento potencial Ym"),
-        ("ky", crop.ky is not None, "el factor de respuesta Ky"),
-        (
-            "economics.price_per_t",
-            crop.economics is not None and crop.economics.price_per_t is not None,
-            "el precio",
-        ),
+    present = {
+        "ym_t_ha": crop.ym_t_ha is not None,
+        "ky": crop.ky is not None,
+        "economics.price_per_t": crop.economics is not None
+        and crop.economics.price_per_t is not None,
+    }
+    return [
+        ValidationIssue(
+            f"{path}.{name}",
+            messages.FORBIDDEN_FOR_COVER.format(label=messages.COVER_FORBIDDEN_LABELS[name]),
+            CODE_FORBIDDEN_FOR_COVER,
+        )
+        for name, is_present in present.items()
+        if is_present
     ]
-    for name, present, label in forbidden:
-        if present:
-            issues.append(
-                ValidationIssue(
-                    f"{path}.{name}",
-                    f"Un cultivo de cobertura no lleva {label}; quítelo (solo admite costos "
-                    "directos).",
-                    CODE_FORBIDDEN_FOR_COVER,
-                )
-            )
-    return issues
 
 
 def _check_missing_references(
@@ -358,8 +331,9 @@ def _check_missing_references(
     return [
         ValidationIssue(
             f"{path}.{parameter}",
-            f"No hay valor de referencia publicado para la {_PARAMETER_LABELS[parameter]} de "
-            f"«{crop.crop_code}»: ingréselo.",
+            messages.MISSING_REFERENCE.format(
+                label=messages.PARAMETER_LABELS[parameter], crop_code=crop.crop_code
+            ),
             CODE_MISSING_REFERENCE,
         )
         for parameter in missing
@@ -382,8 +356,7 @@ def _check_root_depths(path: str, crop: CropIn, reference: CropReference) -> lis
         return [
             ValidationIssue(
                 f"{path}.root_depth_initial_m",
-                f"La profundidad radicular inicial ({initial:g} m) no puede superar la máxima "
-                f"({maximum:g} m).",
+                messages.ROOT_DEPTH_ORDER.format(initial=initial, maximum=maximum),
                 CODE_ROOT_DEPTH_ORDER,
             )
         ]
@@ -453,9 +426,14 @@ def _check_calendar(
             result.append(
                 ValidationIssue(
                     f"{path}.sowing",
-                    f"En la rotación {rotation.id}, el cultivo {position} ({crop.crop_code}) se "
-                    f"solapa con el cultivo {other_position} ({other.crop_code}) en "
-                    f"{_years_text(years)}. Ajuste la fecha de siembra o la duración del ciclo.",
+                    messages.CALENDAR_OVERLAP.format(
+                        rotation_id=rotation.id,
+                        position=position,
+                        crop_code=crop.crop_code,
+                        other_position=other_position,
+                        other_code=other.crop_code,
+                        years=_years_text(years),
+                    ),
                     CODE_CALENDAR_OVERLAP,
                 )
             )
@@ -463,9 +441,12 @@ def _check_calendar(
             result.append(
                 ValidationIssue(
                     f"{path}.sowing",
-                    f"En la rotación {rotation.id}, el ciclo del cultivo {position} "
-                    f"({crop.crop_code}) empieza antes o termina después de la ventana de dos "
-                    f"años en {_years_text(years)}. Ajuste la fecha de siembra o la duración.",
+                    messages.CALENDAR_OUTSIDE_WINDOW.format(
+                        rotation_id=rotation.id,
+                        position=position,
+                        crop_code=crop.crop_code,
+                        years=_years_text(years),
+                    ),
                     CODE_CALENDAR_OUTSIDE_WINDOW,
                 )
             )

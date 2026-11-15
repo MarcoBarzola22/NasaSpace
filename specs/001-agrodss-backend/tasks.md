@@ -312,7 +312,7 @@
     - con n = 1 devuelve el valor único y la bandera «sin rango»;
     - las diferencias de margen B−A, C−A y C−B solo se generan cuando ambos márgenes existen (si uno es `None`, el par se excluye).
 
-- [ ] **T026 — Clasificación de datos faltantes e inconsistentes**
+- [x] **T026 — Clasificación de datos faltantes e inconsistentes**
   - **Depende de:** T006, T008
   - **RF:** RF-6 (CA-6.1, CA-6.3, CA-6.10), RF-11 (CA-11.4)
   - **Archivos:** `app/domain/missing_data.py`, `tests/unit/test_missing_data.py`
@@ -322,7 +322,7 @@
     - `None` en ALLSKY_SFC_SW_DWN, T2MDEW o WS2M → aparece en la lista de sustituciones, sin bloqueo;
     - `None` en WS2M_MAX → ni bloqueo ni sustitución.
 
-- [ ] **T027 — Sustituciones FAO-56 para la ET₀**
+- [x] **T027 — Sustituciones FAO-56 para la ET₀**
   - **Depende de:** T026, T012
   - **RF:** RF-6 (CA-6.2, CA-6.4–CA-6.8)
   - **Archivos:** `app/domain/missing_data.py`, `tests/unit/test_missing_data.py`
@@ -333,7 +333,8 @@
     - cada sustitución queda registrada con variable, método y fecha;
     - `test_no_interpolation`: con días vecinos de valores distintos, el valor sustituido es idéntico al de la fórmula y no cambia si se modifican los vecinos.
 
-- [ ] **T028 — Cobertura de la fuente y bloqueo por datos no publicados**
+- [x] **T028 — Cobertura de la fuente y bloqueo por datos no publicados**
+  - **Nota de ejecución:** la «racha final» se calcula sobre la **serie completa de la consulta**, no sobre la ventana: una ventana que termina antes de esa racha no se bloquea y un faltante aislado de radiación se sustituye (CA-6.4). Caso límite: un faltante aislado justo en el último día de la serie se interpreta como no publicado. `assess_window` reúne cobertura, faltantes y sustituciones sin repetir los días que ya explica un bloqueo; es la entrada que usará T043.
   - **Depende de:** T026, T005
   - **RF:** RF-4 (CA-4.5), plan §6.3 (`UNPUBLISHED_DATA_BLOCK`)
   - **Archivos:** `app/domain/missing_data.py`, `tests/unit/test_missing_data.py`
@@ -347,7 +348,8 @@
 
 ## Fase 3 — Textos y supuestos
 
-- [ ] **T029 — Mensajes en español y prueba de lenguaje**
+- [x] **T029 — Mensajes en español y prueba de lenguaje**
+  - **Nota de ejecución:** el rótulo de CA-12.5 contiene «probabilidad» (la niega); la prueba de lenguaje admite solo la frase literal «no es una probabilidad ni un pronóstico» (`ALLOWED_PHRASES`). Los rótulos de CA-12.5, CA-13.2, CA-11.5, CA-17.2 y CA-1.9 reproducen el texto del spec y una prueba lo verifica contra `spec.md`. `CatalogError` pasó a `core/exceptions.py` (se reexporta desde `catalog_service`). Los avisos del dominio (`NOTE_*`) siguen en `domain/`, que no puede importar `messages`; la prueba de lenguaje los revisa igual. También se agregaron los mensajes de error del plan §6.4 para T034 y T041.
   - **Depende de:** T006
   - **RF:** RF-17 (CA-17.1–CA-17.5), RF-16 (CA-16.6), RF-14 (CA-14.1), RF-10 (CA-10.7), CA-1.11
   - **Archivos:** `app/core/messages.py`, `tests/unit/test_messages.py`, `tests/nonfunctional/test_language.py`
@@ -356,7 +358,8 @@
     - existen los 7 códigos de advertencia: `HISTORICAL_DESCRIPTIVE`, `UNCALIBRATED_PARAMETERS`, `CELL_SCALE_DATA`, `NOT_A_RECOMMENDATION`, `SUBSTITUTIONS_PRESENT`, `SCENARIOS_BLOCKED` y `OUTSIDE_SAN_LUIS`;
     - existe una descripción para cada código de supuesto de CA-14.2, CA-14.3 y el plan §11.
 
-- [ ] **T030 — Registro de supuestos**
+- [x] **T030 — Registro de supuestos**
+  - **Nota de ejecución:** la lista «siempre» tiene 15 códigos (CA-14.2 más los siempre vigentes del plan §11). Se agregó el código `SUBST_WIND_FAO56_DEFAULT` (CA-6.6) y los de CA-14.3 que el plan §11 no nombraba; quedan listados en el plan §11. Las advertencias fijas están en `messages.WARNINGS`; las construye T045.
   - **Depende de:** T029
   - **RF:** RF-14 (CA-14.1–CA-14.4), RNF-1
   - **Archivos:** `app/services/assumptions.py`, `tests/unit/test_assumptions.py`
@@ -373,7 +376,7 @@
   - **Depende de:** T002, T029
   - **RF:** RF-2 (CA-2.1–CA-2.5)
   - **Archivos:** `app/data/crop_catalog.json`, `app/services/catalog_service.py`, `tests/unit/test_catalog.py`, `specs/001-agrodss-backend/research.md`
-  - **Nota de ejecución:** se hizo antes que T029 por pedido del equipo. `CatalogError` y sus mensajes en español viven en `catalog_service.py`; al hacer T029 hay que moverlos a `core/messages.py` y `core/exceptions.py`.
+  - **Nota de ejecución:** se hizo antes que T029 por pedido del equipo. Con T029, `CatalogError` pasó a `core/exceptions.py` y sus mensajes a `core/messages.py`.
   - **Hecho cuando:**
     - `pytest tests/unit/test_catalog.py` pasa verificando que:
       - hay 5 cultivos con los códigos de D-1;
@@ -424,7 +427,7 @@
     - también se detectan, con un error cada uno: `crop_code` inexistente, `rye_cover` sin Kc («sin referencia» omitido), Zr inicial > Zr máxima y datos económicos sin `currency`.
 
 - [x] **T036 — Validación semántica (2/2): años, fechas y calendario por escenario**
-  - **Nota de ejecución:** el solapamiento y la salida de la ventana usan `domain.calendar.issues_for_cycles` (extraída de la función interna de la línea de tiempo), la misma regla que el cálculo. Los mensajes están en español dentro de `validation.py` y se reubican en T029.
+  - **Nota de ejecución:** el solapamiento y la salida de la ventana usan `domain.calendar.issues_for_cycles` (extraída de la función interna de la línea de tiempo), la misma regla que el cálculo. Los mensajes están en `core/messages.py` (movidos en T029).
   - **Depende de:** T035, T014
   - **RF:** RF-1 (CA-1.12), RF-3 (CA-3.6–CA-3.8), RF-4 (CA-4.3, CA-4.4), CA-5.3
   - **Archivos:** `app/services/validation.py`, `tests/unit/test_validation.py`; agrega `MAX_ABS_LATITUDE_DEG = 60.0` a `app/core/constants.py` y su aserción a `tests/unit/test_constants.py`
