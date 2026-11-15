@@ -69,6 +69,7 @@ El plan adopta las propuestas por defecto del spec. El equipo puede cambiarlas a
 | D-14 | `rye_cover` no trae referencias FAO salvo que V-2 las encuentre: Kc, etapas, Zr y p son obligatorios del usuario. |
 | D-15 | `currency` con 3 letras, sin conversión. La terminación del centeno se incluye en sus costos directos. El backend calcula **diferencias de margen entre pares de rotaciones** por escenario, sin orden de conveniencia. |
 | D-16 | Suelo solo con θCC y θPMP (m³/m³). La entrada como agua útil (mm/m) queda diferida. |
+| Zr inicial (decisión T-26) | **La profundidad radicular inicial de referencia es 0,25 m para los cinco cultivos del catálogo.** Es una decisión técnica del equipo AgroDSS (aprobada por Mauro el 2026-11-15; rango considerado 0,2–0,3 m, punto medio), no un valor de FAO-56: la Tabla 22 de FAO-56 no contiene guía sobre Zr inicial. El usuario puede sobrescribirla por cultivo. Al ser mayor que la capa de evaporación del barbecho (0,15 m), el límite entre zonas del balance se mueve el día de la siembra; la redistribución (§7.4) conserva la masa. En el catálogo figura con `origin: team_default`. |
 
 ---
 
@@ -595,7 +596,7 @@ Los valores deben cargarse y verificarse contra las tablas citadas en la tarea V
         "kc_mid": { "value": 1.20, "source": "FAO-56, Tabla 12", "status": "referencia" },
         "kc_end": { "value": 0.35, "source": "FAO-56, Tabla 12 (grano secado en el campo)", "status": "referencia" },
         "stage_lengths_days": { "value": { "initial": 30, "development": 40, "mid": 50, "late": 30 }, "source": "FAO-56, Tabla 11", "status": "referencia" },
-        "root_depth_initial_m": { "value": 0.15, "source": "FAO-56, cap. 8 (Zr inicial 0,15–0,20 m)", "status": "referencia" },
+        "root_depth_initial_m": { "value": 0.25, "source": "Decisión técnica del equipo AgroDSS (rango 0,2–0,3 m); no es un valor de FAO-56", "status": "decisión del equipo" },
         "root_depth_max_m": { "value": 1.0, "source": "FAO-56, Tabla 22 (rango 1,0–1,7 m)", "status": "referencia" },
         "depletion_fraction_p": { "value": 0.55, "source": "FAO-56, Tabla 22", "status": "referencia" },
         "ky": { "value": 1.25, "source": "FAO-33", "status": "referencia" }
@@ -611,7 +612,7 @@ Los valores deben cargarse y verificarse contra las tablas citadas en la tarea V
         "kc_mid": { "value": null, "source": null, "status": "sin referencia" },
         "kc_end": { "value": null, "source": null, "status": "sin referencia" },
         "stage_lengths_days": { "value": null, "source": null, "status": "sin referencia" },
-        "root_depth_initial_m": { "value": 0.15, "source": "FAO-56, cap. 8", "status": "referencia" },
+        "root_depth_initial_m": { "value": 0.25, "source": "Decisión técnica del equipo AgroDSS (rango 0,2–0,3 m); no es un valor de FAO-56", "status": "decisión del equipo" },
         "root_depth_max_m": { "value": null, "source": null, "status": "sin referencia" },
         "depletion_fraction_p": { "value": null, "source": null, "status": "sin referencia" },
         "ky": { "value": null, "source": null, "status": "no aplica" }
@@ -996,8 +997,8 @@ function residue_factor(cover_pct):                                     # FAO-56
 | 13-03-2009 (fin) | Maíz, Zr = 1,2 m | 1,20 m | 31,2 | 0,0 | **31,2** | `storage_at_end_mm` del maíz = 31,2 |
 | 14-03-2009 (paso 1) | Barbecho | 1,20 → 0,15 m | 3,9 | 27,3 | **31,2** | `storage_at_start_mm` del barbecho = 31,2; el agua de 0,15–1,2 m pasa a la zona inferior |
 | Barbecho | Barbecho | 0,15 m | ≤ 24,0 | se conserva | — | La evaporación solo seca la capa de 0,15 m; el agua profunda queda para el centeno |
-| 01-04-2009 | Centeno, Zr inicial 0,15 m | 0,15 m | — | — | igual al fin del barbecho | Sin movimiento (Zr inicial = Ze) |
-| Siguientes | Centeno, Zr creciente | 0,15 → 0,8 m | ↑ | ↓ | se conserva | Al profundizar, las raíces incorporan agua de la zona inferior |
+| 01-04-2009 | Centeno, Zr inicial 0,25 m | 0,15 → 0,25 m | ↑ | ↓ | igual al fin del barbecho | El límite baja de 0,15 a 0,25 m: la franja de 0,10 m pasa de la zona inferior a la activa, sin crear ni perder agua |
+| Siguientes | Centeno, Zr creciente | 0,25 → 0,8 m | ↑ | ↓ | se conserva | Al profundizar, las raíces incorporan agua de la zona inferior |
 
 ### 7.5 Post-proceso [RF-9, RF-10, RF-11, RF-12]
 
@@ -1236,7 +1237,8 @@ Estos supuestos amplían las listas de CA-14.2 y CA-14.3 del spec. Se devuelven 
 |---|---|---|---|
 | `FALLOW_EVAPORATION_LAYER` | En barbecho, la evaporación se extrae solo de una capa superficial de 0,15 m | FAO-56, cap. 7 (Ze 0,10–0,15 m) | Siempre que haya barbecho |
 | `UNIFORM_REDISTRIBUTION` | Contenido de agua uniforme dentro de cada compartimento cuando se mueve el límite de la zona activa | Decisión del plan (T-6) | Siempre |
-| `LINEAR_ROOT_GROWTH` | Raíces lineales desde Zr inicial (siembra) hasta Zr máxima al final de la etapa de desarrollo | FAO-56, cap. 8 | Siempre que haya cultivo |
+| `LINEAR_ROOT_GROWTH` | Raíces lineales desde Zr inicial (siembra) hasta Zr máxima al final de la etapa de desarrollo | Decisión del plan, aprobada el 2026-11-15 | Siempre que haya cultivo |
+| `INITIAL_ROOT_DEPTH_TEAM` | Zr inicial de referencia de 0,25 m, decisión técnica del equipo; no es un valor de FAO-56 | Decisión del equipo AgroDSS (T-26) | Cuando el usuario no ingresa la Zr inicial |
 | `TOP_DOWN_INFILTRATION` | La lluvia llena primero la zona activa y luego la inferior; solo se pierde con el perfil lleno | Decisión 9 del spec (T-9) | Siempre |
 | `AVAILABLE_WATER_LIMITS` | La evaporación y la ETa no secan el suelo por debajo del PMP | Simplificación declarada | Siempre |
 | `HUMIDITY_FROM_DEW_POINT` | ea a partir de T2MDEW | FAO-56, ec. 14 | Siempre |
