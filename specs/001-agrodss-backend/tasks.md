@@ -42,7 +42,7 @@
 
 ## Fase 0 — Verificaciones previas (sin código)
 
-- [ ] **T001 · V-1 — Verificar la API diaria de NASA POWER**
+- [x] **T001 · V-1 — Verificar la API diaria de NASA POWER**
   - **Depende de:** —
   - **RF:** RF-5, RF-6, RF-13 (CA-4.5, CA-5.1, CA-5.5, CA-6.1, CA-13.1)
   - **Qué:** consultar la documentación oficial (power.larc.nasa.gov/docs) y, si hace falta, hacer una consulta manual de prueba para un punto de San Luis. **No se guarda ninguna serie**: solo claves y metadatos.
@@ -60,7 +60,7 @@
 
     Las 7 variables deben figurar como «disponible: sí». Si alguna figura «no», la tarea queda **bloqueada** y se escala al equipo antes de seguir.
 
-- [ ] **T002 · V-2 — Verificar y cargar los valores de referencia FAO del catálogo**
+- [x] **T002 · V-2 — Verificar y cargar los valores de referencia FAO del catálogo**
   - **Depende de:** —
   - **RF:** RF-2, RF-3 (CA-2.1, CA-2.3, CA-2.4, CA-2.5, CA-3.3), D-1, D-14
   - **Qué:** transcribir de FAO-56 (tablas 11, 12 y 22, y el capítulo 8 para la Zr inicial) y de FAO-33 (Ky) los valores de los 5 cultivos de D-1: `maize`, `soybean_first`, `soybean_second`, `wheat` y `rye_cover`.
@@ -71,7 +71,7 @@
     - las duraciones indican qué región o fila de la tabla 11 se eligió;
     - hay una línea «Revisado por: ‹nombre del agrónomo›, ‹fecha›».
 
-- [ ] **T003 · V-3 — Transcribir los ejemplos de FAO-56 para las pruebas**
+- [x] **T003 · V-3 — Transcribir los ejemplos de FAO-56 para las pruebas**
   - **Depende de:** —
   - **RF:** RF-7 (CA-7.3), RF-6 (CA-6.4)
   - **Archivos:** `specs/001-agrodss-backend/research.md` (sección «V-3 Ejemplos FAO-56»).
@@ -84,7 +84,7 @@
 
 ## Fase 1 — Esqueleto
 
-- [ ] **T004 — Crear el esqueleto del backend y fijar dependencias**
+- [x] **T004 — Crear el esqueleto del backend y fijar dependencias**
   - **Depende de:** T001, T002, T003 (puerta del plan §12: las verificaciones se cierran antes del código)
   - **RF:** RNF-8, RNF-10 (C1)
   - **Archivos:**
@@ -366,10 +366,11 @@
 
 ## Fase 4 — Catálogo y contrato de entrada
 
-- [ ] **T031 — Catálogo FAO en JSON y su carga validada**
+- [x] **T031 — Catálogo FAO en JSON y su carga validada**
   - **Depende de:** T002, T029
   - **RF:** RF-2 (CA-2.1–CA-2.5)
   - **Archivos:** `app/data/crop_catalog.json`, `app/services/catalog_service.py`, `tests/unit/test_catalog.py`, `specs/001-agrodss-backend/research.md`
+  - **Nota de ejecución:** se hizo antes que T029 por pedido del equipo. `CatalogError` y sus mensajes en español viven en `catalog_service.py`; al hacer T029 hay que moverlos a `core/messages.py` y `core/exceptions.py`.
   - **Hecho cuando:**
     - `pytest tests/unit/test_catalog.py` pasa verificando que:
       - hay 5 cultivos con los códigos de D-1;

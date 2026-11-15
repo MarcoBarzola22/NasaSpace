@@ -6,7 +6,7 @@ Este documento reúne las verificaciones previas del plan (§12). No contiene se
 |---|---|---|
 | V-1 NASA POWER | T001 | Completa y aprobada el 2026-11-15 |
 | V-2 Catálogo FAO | T002 | Completa y aprobada el 2026-11-15 |
-| V-3 Ejemplos FAO-56 | T003 | Sin empezar |
+| V-3 Ejemplos FAO-56 | T003 | Completa |
 | Prueba en vivo | T050 | Sin empezar |
 
 ---
@@ -181,11 +181,116 @@ Son decisiones tomadas para que el catálogo no quede vacío. Cada una es correg
 
 - Celdas: 40 (5 cultivos × 8 parámetros). Ninguna vacía: 37 con valor y cita, 2 «sin referencia» (duraciones de `soybean_second` y de `rye_cover`) y 1 «no aplica» (Ky de `rye_cover`).
 - Revisado por: **Mauro**, 2026-11-15. Aprobó las elecciones ⚑ y el ajuste de la Zr inicial a 0,25 m el mismo día.
-- Catálogo cargado y cotejado: la carga y las pruebas llegan con T031.
+- Catálogo cargado y cotejado: Mauro (revisión de valores) y `tests/unit/test_catalog.py` (14 pruebas en verde con `load_catalog`), 2026-11-15.
 
 ## V-3 Ejemplos FAO-56
 
-Sin empezar (tarea T003).
+**Fecha:** 2026-11-15 · **Uso:** valores de referencia para las pruebas de `et0` (T010–T012) y de sustitución de radiación (T027).
+
+**Fuentes** (FAO-56, Allen et al. 1998): Cap. 3, ejemplos 2, 3, 8, 15 y 16, <https://www.fao.org/4/x0490e/x0490e07.htm>; Cap. 4, ejemplo 18, <https://www.fao.org/4/x0490e/x0490e08.htm>; Anexo 2, tablas 2.3 y 2.4, <https://www.fao.org/4/x0490e/x0490e0j.htm>.
+
+**Control independiente.** Las páginas se leyeron con una herramienta que resume el contenido. Para no depender de esa lectura, recalculé con las fórmulas de FAO-56 los ejemplos 2, 8 y 18 y el de Hargreaves; todos reproducen los valores impresos dentro de su redondeo (columna «Recálculo»).
+
+### Ejemplo 2 — Presión atmosférica y constante psicrométrica (Cap. 3)
+
+| Dato | Valor |
+|---|---|
+| Entrada: altitud | 1800 m |
+| Presión P = 101,3 [(293 − 0,0065 z)/293]^5,26 | **81,8 kPa** (recálculo: 81,76) |
+| Constante psicrométrica γ = 0,665·10⁻³ P | **0,054 kPa/°C** (recálculo: 0,0544) |
+
+### Ejemplo 8 — Radiación extraterrestre Ra (Cap. 3)
+
+| Dato | Valor impreso | Recálculo |
+|---|---|---|
+| Entrada: latitud | 20° S (φ = −0,35 rad) | — |
+| Entrada: fecha | 3 de septiembre (J = 246) | — |
+| dr (adimensional) | 0,985 | 0,985 |
+| Declinación solar δ | 0,120 rad | 0,120 |
+| Ángulo horario de puesta ωs | 1,527 rad | 1,527 |
+| sen φ · sen δ; cos φ · cos δ | −0,041; 0,933 | — |
+| **Ra** | **32,2 MJ/m²/día** (equivale a 13,1 mm/día) | 32,19 |
+
+### Ejemplo 18 — ET₀ de Penman–Monteith, paso diario (Cap. 4)
+
+**Entradas**
+
+| Dato | Valor |
+|---|---|
+| Lugar | Uccle (Bruselas, Bélgica), 50°48′ N, 100 m s. n. m. |
+| Fecha | 6 de julio |
+| Tmáx; Tmín | 21,5 °C; 12,3 °C |
+| HRmáx; HRmín | 84 %; 63 % |
+| Viento | 10 km/h a 10 m de altura (uz = 2,78 m/s) |
+| Horas de sol n | 9,25 h |
+
+**Resultados impresos**
+
+| Magnitud | Valor impreso | Recálculo |
+|---|---|---|
+| u₂ (ec. 47) | 2,078 m/s (la página imprime «2,078» con coma decimal; 0,748 × 2,78 = 2,079) | 2,078 |
+| Presión P | 100,1 kPa | 100,1 |
+| T media | 16,9 °C | 16,90 |
+| **Δ** | **0,122 kPa/°C** | 0,1221 |
+| **γ** | **0,0666 kPa/°C** | 0,0666 |
+| 1 + 0,34 u₂ | 1,71 | — |
+| Δ/[Δ + γ(1 + 0,34 u₂)]; γ/[Δ + γ(1 + 0,34 u₂)] | 0,518; 0,282 | — |
+| 900/(T + 273) · u₂ | 6,450 | — |
+| e°(Tmáx); e°(Tmín) | 2,564 kPa; 1,431 kPa | 2,564; 1,430 |
+| **es** | **1,997 kPa** (media de ambos) | 1,997 |
+| **ea** (ec. 17, a partir de HR) | **1,409 kPa** | — |
+| es − ea | 0,589 kPa | — |
+| **Ra** (ec. 21) | **41,09 MJ/m²/día** | — |
+| N (horas de luz posibles) | 16,1 h en ec. 34; el cociente n/N se calcula con 16,3 h | — |
+| n/N | 0,57 | — |
+| **Rs** (ec. 35) | **22,07 MJ/m²/día** | — |
+| **Rso** (ec. 37) | **30,90 MJ/m²/día** | — |
+| Rs/Rso | 0,71 | 0,714 |
+| **Rns** (ec. 38) | **17,00 MJ/m²/día** | 16,99 |
+| σTmáx,K⁴; σTmín,K⁴; promedio | 36,96; 32,56; 34,76 MJ/m²/día | — |
+| 0,34 − 0,14 √ea; 1,35 Rs/Rso − 0,35 | 0,17; 0,61 | — |
+| **Rnl** (ec. 39) | **3,71 MJ/m²/día** | 3,71 |
+| **Rn** (ec. 40) | **13,28 MJ/m²/día** | 13,28 |
+| G (ec. 42) | 0 MJ/m²/día | — |
+| 0,408 (Rn − G) | 5,42 mm/día | — |
+| Término de radiación | 2,81 mm/día | — |
+| Término aerodinámico | 1,07 mm/día | — |
+| **ET₀** (ec. 6) | **3,88 ≈ 3,9 mm/día** | **3,880** |
+
+**Notas para implementar y probar:**
+1. El ejemplo 18 entrega la humedad como HRmáx/HRmín y la radiación a partir de horas de sol, mientras que el backend recibe T2MDEW y radiación en MJ/m²/día. La prueba de T012 debe invocar el cálculo con **ea = 1,409 kPa y Rs = 22,07 MJ/m²/día directamente**. Por eso el módulo `et0` debe exponer una función interna que reciba `ea`, `Rs`, `Ra` y `Rso`, además de la que parte de T2MDEW.
+2. En Rnl, FAO-56 convierte a Kelvin con 273,16 (el plan escribía 273). Con 273,16 el recálculo reproduce 3,71.
+3. Tolerancia de la prueba: ET₀ dentro de ±0,1 mm/día de 3,9 (CA-7.3). Los intermedios, dentro del redondeo impreso (por ejemplo, ±0,001 kPa/°C en Δ y γ).
+4. `es = 1,997` es correcto como promedio de 2,564 y 1,431 (la lectura automática lo marcó como errata; el recálculo confirma que no lo es).
+
+### Anexo 2 — e° y Δ a 20 °C (tablas de referencia)
+
+| T (°C) | e°(T) (kPa), Tabla 2.3 | Δ (kPa/°C), Tabla 2.4 | Recálculo a 20 °C |
+|---|---|---|---|
+| **20,0** | **2,338** | **0,145** | e° = 2,3383; Δ = 0,1447 |
+| 12,5 | 1,449 | 0,095 | — |
+| 19,0 | 2,197 | 0,137 | — |
+| 21,0 | 2,487 | 0,153 | — |
+| 21,5 | 2,564 | 0,157 | — |
+
+Tolerancias para T010: e° ±0,001 kPa y Δ ±0,001 kPa/°C (el recálculo de Δ a 20 °C da 0,1447, que se redondea a 0,145).
+
+También sirve el **ejemplo 3** (Cap. 3): e°(24,5 °C) = 3,075 kPa; e°(15 °C) = 1,705 kPa; es = 2,39 kPa; e°(19,75 °C) = 2,30 kPa.
+
+### Radiación estimada con la temperatura (Hargreaves, ec. 50)
+
+**Sí existen ejemplos resueltos.** El principal es el **ejemplo 15** (Cap. 3, Lyon, julio):
+
+| Dato | Valor |
+|---|---|
+| Entradas | Tmáx = 26,6 °C; Tmín = 14,8 °C; kRs = 0,16 (interior); Ra = 40,6 MJ/m²/día |
+| Fórmula | Rs = 0,16 √(26,6 − 14,8) Ra |
+| **Rs** | **22,3 MJ/m²/día** (0,55 × 40,6; equivale a 9,1 mm/día) |
+| Recálculo | 22,31 |
+
+El **ejemplo 16** (Cap. 3, Bangkok, abril; kRs = 0,19 por zona costera) imprime Rs = 21,9 MJ/m²/día, pero no se usa: el MVP aplica kRs = 0,16. El ejemplo 20 del Cap. 4 repite el cálculo de Lyon con Ra = 40,55 y Rso = 30,58 (Rs/Rso = 0,73).
+
+Tolerancia para T012 y T027: Rs de Lyon = 22,3 ± 0,1 MJ/m²/día. La numeración de los ejemplos 15, 16 y 20 proviene de la lectura automática; si no coincide con el texto impreso, basta corregir el número, ya que los valores se verificaron por recálculo.
 
 ## Prueba en vivo
 

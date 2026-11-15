@@ -1,0 +1,21 @@
+[project]
+name = "agrodss-backend"
+version = "0.1.0"
+description = "AgroDSS: sistema de apoyo a decisiones para comparar rotaciones de secano (FAO-56, FAO-33, NASA POWER)."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-m 'not live'"
+markers = [
+    "live: consulta la API real de NASA POWER (requiere internet; excluida por defecto)",
+    "slow: matriz completa de invariantes y pruebas de rendimiento",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
